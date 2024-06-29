@@ -17,10 +17,10 @@ public class KingMovesCalculator {
         //return a possible collection of moves
         int row = startpos.getRow();
         int col = startpos.getColumn();
-        ChessPosition up = new ChessPosition(row + 1, col);
-        if (current.getPiece(up) == null) {
-            ChessMove newUp = new ChessMove(startpos, up, null);
-            posMoves.add(newUp);
+        ChessPosition down = new ChessPosition(row - 1, col);
+        if (current.getPiece(down) == null){
+            ChessMove newDown = new ChessMove(startpos, down, null);
+            posMoves.add(newDown);
         }
         ChessPosition upright = new ChessPosition(row + 1, col + 1);
         if (current.getPiece(upright) == null){
@@ -37,15 +37,15 @@ public class KingMovesCalculator {
             ChessMove newDownRight = new ChessMove(startpos, downright, null);
             posMoves.add(newDownRight);
         }
-        ChessPosition down = new ChessPosition(row - 1, col);
-        if (current.getPiece(down) == null){
-            ChessMove newDown = new ChessMove(startpos, down, null);
-            posMoves.add(newDown);
-        }
         ChessPosition downleft = new ChessPosition(row - 1, col - 1);
         if (current.getPiece(downleft) == null){
             ChessMove newDownLeft = new ChessMove(startpos, downleft, null);
             posMoves.add(newDownLeft);
+        }
+        ChessPosition up = new ChessPosition(row + 1, col);
+        if (current.getPiece(up) == null) {
+            ChessMove newUp = new ChessMove(startpos, up, null);
+            posMoves.add(newUp);
         }
         ChessPosition left = new ChessPosition(row, col - 1);
         if (current.getPiece(left) == null){
@@ -53,7 +53,7 @@ public class KingMovesCalculator {
             posMoves.add(newLeft);
         }
         ChessPosition upLeft = new ChessPosition(row + 1, col - 1);
-        if (current.getPiece(upLeft) == null){
+        if (current.getPiece(upLeft) == null) {
             ChessMove newUpLeft = new ChessMove(startpos, upLeft, null);
             posMoves.add(newUpLeft);
         }
@@ -71,5 +71,13 @@ public class KingMovesCalculator {
     @Override
     public int hashCode() {
         return Objects.hash(startpos, current);
+    }
+
+    @Override
+    public String toString() {
+        return "KingMovesCalculator{" +
+                "startpos=" + startpos.toString() +
+                ", current=" + current.toString() +
+                '}';
     }
 }

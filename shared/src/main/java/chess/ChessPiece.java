@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -54,7 +55,12 @@ public class ChessPiece {
         if (getPieceType() == PieceType.KING){
             //check King moves
             KingMovesCalculator kMc = new KingMovesCalculator(myPosition, board);
-            return kMc.possibleMoves();
+//            System.out.println(kMc.toString());
+            Collection<ChessMove> newMoves = kMc.possibleMoves();
+//            for (ChessMove item : newMoves){
+//                System.out.print(item.toString());
+//            }
+            return newMoves;
         }
         else if(getPieceType() == PieceType.QUEEN){
             //check Queen moves
@@ -63,5 +69,18 @@ public class ChessPiece {
             //check Bishop moves
         }
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return color == that.color && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, type);
     }
 }
