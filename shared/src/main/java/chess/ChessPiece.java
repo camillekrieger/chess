@@ -54,7 +54,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (getPieceType() == PieceType.KING){
             //check King moves
-            KingMovesCalculator kMc = new KingMovesCalculator(myPosition, board);
+            KingMovesCalculator kMc = new KingMovesCalculator(myPosition, board, color);
 //            System.out.println(kMc.toString());
             Collection<ChessMove> newMoves = kMc.possibleMoves();
 //            for (ChessMove item : newMoves){
