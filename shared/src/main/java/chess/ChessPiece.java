@@ -64,6 +64,11 @@ public class ChessPiece {
         else if(getPieceType() == PieceType.BISHOP) {
             //check Bishop moves
         }
+        else if(getPieceType() == PieceType.ROOK){
+            RookMovesCalculator rMc = new RookMovesCalculator(myPosition, board, color);
+            Collection<ChessMove> newMoves = rMc.possibleMoves();
+            return newMoves;
+        }
         throw new RuntimeException("Not implemented");
     }
 
