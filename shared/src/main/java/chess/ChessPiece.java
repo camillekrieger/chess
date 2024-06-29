@@ -62,7 +62,9 @@ public class ChessPiece {
             //check Queen moves
         }
         else if(getPieceType() == PieceType.BISHOP) {
-            //check Bishop moves
+            BishopMovesCalculator bMc = new BishopMovesCalculator(myPosition, board, color);
+            Collection<ChessMove> newMoves = bMc.possibleMoves();
+            return newMoves;
         }
         else if(getPieceType() == PieceType.ROOK){
             RookMovesCalculator rMc = new RookMovesCalculator(myPosition, board, color);
