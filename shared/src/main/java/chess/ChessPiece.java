@@ -74,7 +74,11 @@ public class ChessPiece {
             KnightMovesCalculator kMc = new KnightMovesCalculator(myPosition, board, color);
             return kMc.possibleMoves();
         }
-        throw new RuntimeException("Not implemented");
+        else{
+            //is pawn
+            PawnMovesCalculator pMc = new PawnMovesCalculator(myPosition, board, color);
+            return pMc.possibleMoves();
+        }
     }
 
     @Override

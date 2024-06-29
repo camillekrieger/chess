@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class KnightMovesCalculator {
     private ChessPosition startpos;
@@ -98,5 +99,18 @@ public class KnightMovesCalculator {
             }
         }
         return posMoves;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KnightMovesCalculator that = (KnightMovesCalculator) o;
+        return Objects.equals(startpos, that.startpos) && Objects.equals(current, that.current) && color == that.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startpos, current, color);
     }
 }
