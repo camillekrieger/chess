@@ -31,7 +31,7 @@ public class PawnMovesCalculator {
                 }
             }
             int upOneRow = row + 1;
-            if (upOneRow <= 8) {
+            if (upOneRow < 8) {
                 if (current.getPiece(upOne) == null) {
                     ChessMove newOne = new ChessMove(startpos, upOne, null);
                     posMoves.add(newOne);
@@ -40,7 +40,7 @@ public class PawnMovesCalculator {
             //capture up left
             int upLRow = row + 1;
             int upLCol = col - 1;
-            if (upLRow <= 8 && upLCol > 0){
+            if (upLRow < 8 && upLCol > 0){
                 ChessPosition upLeft = new ChessPosition(upLRow, upLCol);
                 if (current.getPiece(upLeft) != null && current.getPiece(upLeft).getTeamColor() != color){
                     ChessMove newupLeft = new ChessMove(startpos, upLeft, null);
@@ -50,11 +50,40 @@ public class PawnMovesCalculator {
             //capture up right
             int upRRow = row + 1;
             int upRCol = col + 1;
-            if (upRRow <= 8 && upRCol <= 8){
+            if (upRRow < 8 && upRCol <= 8){
                 ChessPosition upRight = new ChessPosition(upRRow, upRCol);
                 if (current.getPiece(upRight) != null && current.getPiece(upRight).getTeamColor() != color){
                     ChessMove newupRight = new ChessMove(startpos, upRight, null);
                     posMoves.add(newupRight);
+                }
+            }
+            if (upOneRow == 8){
+                ChessPiece.PieceType[] pospromos = new ChessPiece.PieceType[]{ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
+                if (current.getPiece(upOne) == null) {
+                    for (ChessPiece.PieceType item : pospromos){
+                        ChessMove newOne = new ChessMove(startpos, upOne, item);
+                        posMoves.add(newOne);
+                    }
+                }
+                //capture up left
+                if (upLCol > 0){
+                    ChessPosition upLeft = new ChessPosition(upLRow, upLCol);
+                    if (current.getPiece(upLeft) != null && current.getPiece(upLeft).getTeamColor() != color){
+                        for (ChessPiece.PieceType item : pospromos) {
+                            ChessMove newupLeft = new ChessMove(startpos, upLeft, item);
+                            posMoves.add(newupLeft);
+                        }
+                    }
+                }
+                //capture up right
+                if (upRCol <= 8){
+                    ChessPosition upRight = new ChessPosition(upRRow, upRCol);
+                    if (current.getPiece(upRight) != null && current.getPiece(upRight).getTeamColor() != color){
+                        for (ChessPiece.PieceType item : pospromos) {
+                            ChessMove newupRight = new ChessMove(startpos, upRight, item);
+                            posMoves.add(newupRight);
+                        }
+                    }
                 }
             }
         }
@@ -71,7 +100,7 @@ public class PawnMovesCalculator {
                 }
             }
             int downOneRow = row - 1;
-            if (downOneRow > 0){
+            if (downOneRow > 1){
                 if (current.getPiece(downOne) == null) {
                     ChessMove newdownOne = new ChessMove(startpos, downOne, null);
                     posMoves.add(newdownOne);
@@ -80,7 +109,7 @@ public class PawnMovesCalculator {
             //capture down left
             int downLRow = row - 1;
             int downLCol = col - 1;
-            if (downLRow > 0 && downLCol > 0){
+            if (downLRow > 1 && downLCol > 0){
                 ChessPosition downLeft = new ChessPosition(downLRow, downLCol);
                 if (current.getPiece(downLeft) != null && current.getPiece(downLeft).getTeamColor() != color){
                     ChessMove newDownLeft = new ChessMove(startpos, downLeft, null);
@@ -90,11 +119,40 @@ public class PawnMovesCalculator {
             //capture down right
             int downRRow = row - 1;
             int downRCol = col + 1;
-            if (downRRow > 0 && downRCol <= 8){
+            if (downRRow > 1 && downRCol <= 8){
                 ChessPosition downRight = new ChessPosition(downRRow, downRCol);
                 if (current.getPiece(downRight) != null && current.getPiece(downRight).getTeamColor() != color){
                     ChessMove newDownRight = new ChessMove(startpos, downRight, null);
                     posMoves.add(newDownRight);
+                }
+            }
+            if (downOneRow == 1){
+                ChessPiece.PieceType[] pospromos = new ChessPiece.PieceType[]{ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
+                if (current.getPiece(downOne) == null) {
+                    for (ChessPiece.PieceType item : pospromos){
+                        ChessMove newOne = new ChessMove(startpos, downOne, item);
+                        posMoves.add(newOne);
+                    }
+                }
+                //capture down left
+                if (downLCol > 0){
+                    ChessPosition downLeft = new ChessPosition(downLRow, downLCol);
+                    if (current.getPiece(downLeft) != null && current.getPiece(downLeft).getTeamColor() != color){
+                        for (ChessPiece.PieceType item : pospromos) {
+                            ChessMove newDownLeft = new ChessMove(startpos, downLeft, item);
+                            posMoves.add(newDownLeft);
+                        }
+                    }
+                }
+                //capture down right
+                if (downRCol <= 8){
+                    ChessPosition downRight = new ChessPosition(downRRow, downRCol);
+                    if (current.getPiece(downRight) != null && current.getPiece(downRight).getTeamColor() != color){
+                        for (ChessPiece.PieceType item : pospromos) {
+                            ChessMove newDownRight = new ChessMove(startpos, downRight, item);
+                            posMoves.add(newDownRight);
+                        }
+                    }
                 }
             }
         }
