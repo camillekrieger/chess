@@ -55,24 +55,24 @@ public class ChessPiece {
         if (getPieceType() == PieceType.KING){
             //check King moves
             KingMovesCalculator kMc = new KingMovesCalculator(myPosition, board, color);
-            Collection<ChessMove> newMoves = kMc.possibleMoves();
-            return newMoves;
+            return kMc.possibleMoves();
         }
         else if(getPieceType() == PieceType.QUEEN){
             //check Queen moves
             QueenMovesCalculator qMc = new QueenMovesCalculator(myPosition, board, color);
-            Collection<ChessMove> newMoves = qMc.possibleMoves();
-            return newMoves;
+            return qMc.possibleMoves();
         }
         else if(getPieceType() == PieceType.BISHOP) {
             BishopMovesCalculator bMc = new BishopMovesCalculator(myPosition, board, color);
-            Collection<ChessMove> newMoves = bMc.possibleMoves();
-            return newMoves;
+            return bMc.possibleMoves();
         }
         else if(getPieceType() == PieceType.ROOK){
             RookMovesCalculator rMc = new RookMovesCalculator(myPosition, board, color);
-            Collection<ChessMove> newMoves = rMc.possibleMoves();
-            return newMoves;
+            return rMc.possibleMoves();
+        }
+        else if(getPieceType() == PieceType.KNIGHT){
+            KnightMovesCalculator kMc = new KnightMovesCalculator(myPosition, board, color);
+            return kMc.possibleMoves();
         }
         throw new RuntimeException("Not implemented");
     }
