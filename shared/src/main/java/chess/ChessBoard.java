@@ -116,7 +116,7 @@ public class ChessBoard {
         ChessPosition BlackKing = new ChessPosition(8, 5);
         ChessPiece newBlackKing = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
         addPiece(BlackKing, newBlackKing);
-        //white pawns
+        //black pawns
         ChessPosition BlackPawnOne = new ChessPosition(7, 1);
         ChessPiece newBlackPawnOne = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         addPiece(BlackPawnOne, newBlackPawnOne);
