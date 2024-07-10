@@ -207,15 +207,48 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        ChessPosition start;
-        if (teamColor == TeamColor.WHITE){
-            start = currBoard.getWKingPos();
+        boolean checkmate = false;
+        if (teamColor == TeamColor.WHITE) {
+            ChessPosition WKingStart = currBoard.getWKingPos();
+            if (WKingStart == null) {
+                return false;
+            }
+            for (int i = 1; i <=8; i++) {
+                for (int j = 1; j <= 8; j++) {
+                    ChessPosition maybePos = new ChessPosition(i, j);
+                    if (currBoard.getPiece(maybePos) != null) {
+                        if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.WHITE) {
+                            Collection<ChessMove> potentialMoves = validMoves(maybePos);
+                            checkmate = potentialMoves.isEmpty();
+                        }
+                    }
+                }
+            }
         }
         else{
-            start = currBoard.getBKingPos();
+            ChessPosition BKingStart = currBoard.getBKingPos();
+            if (BKingStart == null) {
+                return false;
+            }
+            for (int i = 1; i <=8; i++) {
+                for (int j = 1; j <= 8; j++) {
+                    ChessPosition maybePos = new ChessPosition(i, j);
+                    if (currBoard.getPiece(maybePos) != null) {
+                        if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.BLACK) {
+                            Collection<ChessMove> potentialMoves = validMoves(maybePos);
+                            if (potentialMoves.isEmpty()){
+                                checkmate = true;
+                            }
+                            else{
+                                checkmate = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
-//        return validMoves(start).isEmpty();
-        return false;
+        return checkmate;
     }
 
     /**
