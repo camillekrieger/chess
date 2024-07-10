@@ -17,7 +17,6 @@ public class ChessGame {
 
     public ChessGame() {
         currTeamTurn = TeamColor.WHITE;
-        this.currBoard = getBoard();
     }
 
     /**
@@ -81,7 +80,13 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promo = move.getPromotionPiece();
-        ChessPiece pp = currBoard.getPiece(start);
+        ChessPiece pp = null;
+        if (currBoard == null){
+            illegal = true;
+        }
+        else {
+            pp = currBoard.getPiece(start);
+        }
         if (pp == null){
             illegal = true;
         }
