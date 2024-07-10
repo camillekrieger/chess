@@ -25,10 +25,10 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
-        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE && piece.getPieceType() == ChessPiece.PieceType.KING){
+        if (piece != null && piece.getTeamColor() == ChessGame.TeamColor.WHITE && piece.getPieceType() == ChessPiece.PieceType.KING){
             WKingPos = position;
         }
-        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK && piece.getPieceType() == ChessPiece.PieceType.KING){
+        if (piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK && piece.getPieceType() == ChessPiece.PieceType.KING){
             BKingPos = position;
         }
     }
@@ -173,6 +173,48 @@ public class ChessBoard {
     public int hashCode() {
         int result = Objects.hash(WKingPos, BKingPos);
         result = 31 * result + Arrays.deepHashCode(squares);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <=8; j++){
+                result += '|';
+                ChessPosition pos = new ChessPosition(i, j);
+                ChessPiece p = getPiece(pos);
+                if (p == null){
+                    result += ' ';
+                }
+                else {
+                    char c = 'T';
+                    if (p.getPieceType() == ChessPiece.PieceType.KING) {
+                        c = 'K';
+                    }
+                    if (p.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        c = 'Q';
+                    }
+                    if (p.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        c = 'B';
+                    }
+                    if (p.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        c = 'N';
+                    }
+                    if (p.getPieceType() == ChessPiece.PieceType.ROOK) {
+                        c = 'R';
+                    }
+                    if (p.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        c = 'P';
+                    }
+                    if (p.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        c = Character.toLowerCase(c);
+                    }
+                    result += c;
+                }
+            }
+            result += '\n';
+        }
         return result;
     }
 }

@@ -64,8 +64,7 @@ public class ChessGame {
                 TeamColor t = p.getTeamColor();
                 ChessPiece.PieceType promo = i.getPromotionPiece();
                 ChessPosition end = i.getEndPosition();
-                ChessPiece nullPiece = new ChessPiece(t, null);
-                currBoard.addPiece(startPosition, nullPiece);
+                currBoard.addPiece(startPosition, null);
                 if (promo != null){
                     ChessPiece cp = new ChessPiece(t, promo);
                     currBoard.addPiece(end, cp);
@@ -76,7 +75,7 @@ public class ChessGame {
                 if (!isInCheck(p.getTeamColor())){
                     newMoves.add(i);
                 }
-                currBoard.addPiece(end, nullPiece);
+                currBoard.addPiece(end, null);
                 currBoard.addPiece(startPosition, p);
             }
             return newMoves;
@@ -124,8 +123,7 @@ public class ChessGame {
             ChessBoard b = getBoard();
             ChessPiece p = b.getPiece(start);
             TeamColor t = p.getTeamColor();
-            ChessPiece nullPiece = new ChessPiece(t, null);
-            currBoard.addPiece(start, nullPiece);
+            currBoard.addPiece(start, null);
             if (promo != null){
                 ChessPiece cp = new ChessPiece(t, promo);
                 currBoard.addPiece(end, cp);
@@ -145,6 +143,9 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         if (teamColor == TeamColor.WHITE){
             ChessPosition WKingStart = currBoard.getWKingPos();
+            if (WKingStart == null){
+                return false;
+            }
             //see if each black piece can hit the king
             for (int i = 1; i <=8; i++){
                 for (int j = 1; j <= 8; j++) {
@@ -164,6 +165,9 @@ public class ChessGame {
         }
         else{
             ChessPosition BKingStart = currBoard.getBKingPos();
+            if (BKingStart == null){
+                return false;
+            }
             //see if each white piece can hit the king
             for (int i = 1; i <=8; i++){
                 for (int j = 1; j <= 8; j++) {
