@@ -61,9 +61,23 @@ public class ChessGame {
             Collection<ChessMove> newMoves = new ArrayList<>();
             for (ChessMove i : posMoves){
                 //make the move by hand and move it back if it needs to be moved back
+                TeamColor t = p.getTeamColor();
+                ChessPiece.PieceType promo = i.getPromotionPiece();
+                ChessPosition end = i.getEndPosition();
+                ChessPiece nullPiece = new ChessPiece(t, null);
+                currBoard.addPiece(startPosition, nullPiece);
+                if (promo != null){
+                    ChessPiece cp = new ChessPiece(t, promo);
+                    currBoard.addPiece(end, cp);
+                }
+                else{
+                    currBoard.addPiece(end, p);
+                }
                 if (!isInCheck(p.getTeamColor())){
                     newMoves.add(i);
                 }
+                currBoard.addPiece(end, nullPiece);
+                currBoard.addPiece(startPosition, p);
             }
             return newMoves;
         }
