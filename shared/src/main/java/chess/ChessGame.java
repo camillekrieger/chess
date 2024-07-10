@@ -65,6 +65,7 @@ public class ChessGame {
                 ChessPiece.PieceType promo = i.getPromotionPiece();
                 ChessPosition end = i.getEndPosition();
                 currBoard.addPiece(startPosition, null);
+                ChessPiece pt = currBoard.getPiece(end);
                 if (promo != null){
                     ChessPiece cp = new ChessPiece(t, promo);
                     currBoard.addPiece(end, cp);
@@ -72,10 +73,15 @@ public class ChessGame {
                 else{
                     currBoard.addPiece(end, p);
                 }
-                if (!isInCheck(p.getTeamColor())){
+                if (!isInCheck(t)){
                     newMoves.add(i);
                 }
-                currBoard.addPiece(end, null);
+                if (pt != null){
+                    currBoard.addPiece(end, pt);
+                }
+                else{
+                    currBoard.addPiece(end, null);
+                }
                 currBoard.addPiece(startPosition, p);
             }
             return newMoves;
