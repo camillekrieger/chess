@@ -179,7 +179,7 @@ public class ChessGame {
                 for (int j = 1; j <= 8; j++) {
                     ChessPosition maybePos = new ChessPosition(i, j);
                     if (currBoard.getPiece(maybePos) != null) {
-                        if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.BLACK) {
+                        if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.WHITE) {
                             Collection<ChessMove> maybeMoves = currBoard.getPiece(maybePos).pieceMoves(currBoard, maybePos);
                             for (ChessMove m : maybeMoves) {
                                 if (BKingStart.equals(m.getEndPosition())) {
