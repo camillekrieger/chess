@@ -80,14 +80,19 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promo = move.getPromotionPiece();
-        for (ChessMove item : validMoves(start)){
-            ChessPosition maybe = item.getEndPosition();
-            if (end.equals(maybe)){
-                illegal = false;
-                break;
-            }
-            else{
-                illegal = true;
+        ChessPiece pp = currBoard.getPiece(start);
+        if (pp == null){
+            illegal = true;
+        }
+        else {
+            for (ChessMove item : validMoves(start)) {
+                ChessPosition maybe = item.getEndPosition();
+                if (end.equals(maybe)) {
+                    illegal = false;
+                    break;
+                } else {
+                    illegal = true;
+                }
             }
         }
         if (illegal) {
@@ -103,6 +108,7 @@ public class ChessGame {
             if (promo != null){
                 ChessPiece cp = new ChessPiece(t, promo);
                 currBoard.addPiece(end, cp);
+
             }
             else{
                 currBoard.addPiece(end, p);
