@@ -85,9 +85,6 @@ public class ChessGame {
         if (pp == null){
             illegal = true;
         }
-        else if (pp.getTeamColor() != currTeamTurn){
-            illegal = true;
-        }
         else {
             for (ChessMove item : validMoves(start)) {
                 ChessPosition maybe = item.getEndPosition();
@@ -157,7 +154,8 @@ public class ChessGame {
         else{
             start = currBoard.getBKingPos();
         }
-        return validMoves(start).isEmpty();
+//        return validMoves(start).isEmpty();
+        return false;
     }
 
     /**
