@@ -11,6 +11,9 @@ import java.util.Arrays;
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
+    ChessPosition WhitekingPos;
+    ChessPosition BlackkingPos;
+
     public ChessBoard() {
     }
 
@@ -22,6 +25,22 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
+        if (piece.getPieceType().equals(ChessPiece.PieceType.KING)){
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                WhitekingPos = position;
+            }
+            else{
+                BlackkingPos = position;
+            }
+        }
+    }
+
+    public ChessPosition getWhiteKingPosition(){
+        return WhitekingPos;
+    }
+
+    public ChessPosition getBlackKingPosition(){
+        return BlackkingPos;
     }
 
     /**

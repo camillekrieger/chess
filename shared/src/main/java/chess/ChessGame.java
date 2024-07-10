@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Collection;
 public class ChessGame {
 
     TeamColor currTeamTurn;
+    ChessBoard currBoard;
 
     public ChessGame() {
         currTeamTurn = TeamColor.WHITE;
@@ -59,7 +61,26 @@ public class ChessGame {
             return null;
         }
         else {
-            return p.pieceMoves(b, startPosition);
+            Collection<ChessMove> potentialMoves = p.pieceMoves(b, startPosition);
+            //don't leave the king in danger
+            Collection<ChessMove> validmoves = new ArrayList<>();
+            TeamColor tcolor = p.getTeamColor();
+            ChessPosition WkingPos = currBoard.getWhiteKingPosition();
+            ChessPosition BkingPos = currBoard.getBlackKingPosition();
+            if (tcolor.equals(TeamColor.WHITE)){
+                //check that no black piece can get the king
+                for (ChessMove item : potentialMoves){
+                    //figure out which are good and add to valid moves
+
+                }
+            }
+            else{
+                //check that no white piece can get the king
+                for (ChessMove item : potentialMoves){
+                    //figure out which are good and add to validmoves
+                }
+            }
+            return validmoves;
         }
     }
 
@@ -68,9 +89,42 @@ public class ChessGame {
      *
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
+     * A move is illegal if the chess piece cannot move there,
+     * if the move leaves the team’s king in danger,
+     * or if it’s not the corresponding team's turn.
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        boolean illegal = false;
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promo = move.getPromotionPiece();
+        for (ChessMove item : validMoves(start)){
+            ChessPosition maybe = item.getEndPosition();
+            if (end.equals(maybe)){
+                illegal = false;
+                break;
+            }
+            else{
+                illegal = true;
+            }
+        }
+        if (illegal) {
+            throw new InvalidMoveException("Invalid Move");
+        }
+        else{
+            //execute move
+            ChessBoard b = getBoard();
+            ChessPiece p = b.getPiece(start);
+            TeamColor t = p.getTeamColor();
+            currBoard.addPiece(start, null);
+            if (promo != null){
+                ChessPiece cp = new ChessPiece(t, promo);
+                currBoard.addPiece(end, cp);
+            }
+            else{
+                currBoard.addPiece(end, p);
+            }
+        }
     }
 
     /**
@@ -110,7 +164,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        currBoard = board;
     }
 
     /**
@@ -119,6 +173,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return currBoard;
     }
 }
