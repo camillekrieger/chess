@@ -16,7 +16,7 @@ public class ChessGame {
     ChessBoard currBoard;
 
     public ChessGame() {
-        currTeamTurn = TeamColor.WHITE;
+        currBoard = new ChessBoard();
     }
 
     /**
@@ -32,12 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        if (team == TeamColor.WHITE){
-            currTeamTurn = TeamColor.BLACK;
-        }
-        else{
-            currTeamTurn = TeamColor.WHITE;
-        }
+        currTeamTurn = team;
     }
 
     /**
