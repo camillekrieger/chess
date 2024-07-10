@@ -17,6 +17,7 @@ public class ChessGame {
 
     public ChessGame() {
         currTeamTurn = TeamColor.WHITE;
+        this.currBoard = getBoard();
     }
 
     /**
@@ -84,12 +85,20 @@ public class ChessGame {
         if (pp == null){
             illegal = true;
         }
+        else if (pp.getTeamColor() != currTeamTurn){
+            illegal = true;
+        }
         else {
             for (ChessMove item : validMoves(start)) {
                 ChessPosition maybe = item.getEndPosition();
                 if (end.equals(maybe)) {
-                    illegal = false;
-                    break;
+                    if (isInCheck(pp.getTeamColor())){
+                        illegal = true;
+                    }
+                    else {
+                        illegal = false;
+                        break;
+                    }
                 } else {
                     illegal = true;
                 }
@@ -123,7 +132,15 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingstart;
+        if (teamColor == TeamColor.WHITE){
+            kingstart = currBoard.getWKingPos();
+        }
+        else{
+            kingstart = currBoard.getBKingPos();
+        }
+        //for each black piece, see if it can hit the king's position
+        return false;
     }
 
     /**
@@ -133,7 +150,14 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start;
+        if (teamColor == TeamColor.WHITE){
+            start = currBoard.getWKingPos();
+        }
+        else{
+            start = currBoard.getBKingPos();
+        }
+        return validMoves(start).isEmpty();
     }
 
     /**

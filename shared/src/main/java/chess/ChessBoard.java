@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -10,6 +11,8 @@ import java.util.Arrays;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
+    ChessPosition WKingPos;
+    ChessPosition BKingPos;
 
     public ChessBoard() {
     }
@@ -22,6 +25,12 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE && piece.getPieceType() == ChessPiece.PieceType.KING){
+            WKingPos = position;
+        }
+        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK && piece.getPieceType() == ChessPiece.PieceType.KING){
+            BKingPos = position;
+        }
     }
 
     /**
@@ -35,10 +44,19 @@ public class ChessBoard {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
+    public ChessPosition getWKingPos() {
+        return WKingPos;
+    }
+
+    public ChessPosition getBKingPos() {
+        return BKingPos;
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
+
     public void resetBoard() {
         squares = new ChessPiece[8][8];
         //place white
@@ -148,11 +166,13 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.deepEquals(squares, that.squares);
+        return Arrays.deepEquals(squares, that.squares) && Objects.equals(WKingPos, that.WKingPos) && Objects.equals(BKingPos, that.BKingPos);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.deepHashCode(squares);
+        int result = Objects.hash(WKingPos, BKingPos);
+        result = 31 * result + Arrays.deepHashCode(squares);
+        return result;
     }
 }
