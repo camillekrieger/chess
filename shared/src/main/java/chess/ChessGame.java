@@ -106,12 +106,18 @@ public class ChessGame {
         ChessPiece pp = currBoard.getPiece(start);
         if (pp != null) {
             if (pp.getTeamColor() == currTeamTurn) {
-                for (ChessMove item : validMoves(start)) {
-                    if (move.equals(item)) {
-                        illegal = false;
-                        break;
-                    } else {
-                        illegal = true;
+                Collection<ChessMove> vM = validMoves(start);
+                if (vM.isEmpty()){
+                    illegal = true;
+                }
+                else {
+                    for (ChessMove item : vM){
+                        if (move.equals(item)) {
+                            illegal = false;
+                            break;
+                        } else {
+                            illegal = true;
+                        }
                     }
                 }
             }
