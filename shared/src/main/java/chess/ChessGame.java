@@ -267,17 +267,18 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         boolean result = false;
-        for (int i = 1; i <= 8; i++){
-            for (int j = 1; j <=8; j++){
-                ChessPosition curr = new ChessPosition(i, j);
-                if (currBoard.getPiece(curr) != null && currBoard.getPiece(curr).getTeamColor() == teamColor){
-                    Collection<ChessMove> posMoves = validMoves(curr);
-                    if (posMoves.isEmpty()){
-                        result = true;
-                    }
-                    else{
-                        result = false;
-                        break;
+        if (!isInCheck(teamColor) || !isInCheckmate(teamColor)) {
+            for (int i = 1; i <= 8; i++) {
+                for (int j = 1; j <= 8; j++) {
+                    ChessPosition curr = new ChessPosition(i, j);
+                    if (currBoard.getPiece(curr) != null && currBoard.getPiece(curr).getTeamColor() == teamColor) {
+                        Collection<ChessMove> posMoves = validMoves(curr);
+                        if (posMoves.isEmpty()) {
+                            result = true;
+                        } else {
+                            result = false;
+                            break;
+                        }
                     }
                 }
             }
