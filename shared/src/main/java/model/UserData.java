@@ -5,7 +5,11 @@ public class UserData {
     String password;
     String email;
 
-    public UserData(){}
+    public UserData(String user, String pass, String e){
+        this.username = user;
+        this.password = pass;
+        this.email = e;
+    }
 
     public String getUsername() {
         return username;

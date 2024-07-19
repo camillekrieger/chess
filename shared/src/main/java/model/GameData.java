@@ -9,7 +9,13 @@ public class GameData {
     String gameName;
     ChessGame game;
 
-    public GameData(){}
+    public GameData(int gID, String wUser, String bUser, String gName, ChessGame game){
+        this.gameID = gID;
+        this.whiteUsername = wUser;
+        this.blackUsername = bUser;
+        this.gameName = gName;
+        this.game = game;
+    }
 
     public int getGameID() {
         return gameID;
