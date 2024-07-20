@@ -1,26 +1,18 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.GameData;
 
 import java.util.Collection;
 
 public interface GameDAO {
 
-    public default void createGame(){
-        ChessGame game = new ChessGame();
-        //new GameData()
-    }
+    void createGame(String gameName) throws  DataAccessException;
 
-    public GameData getGame(int gameID){
-        //retrieve game
-    }
+    GameData getGame(int gameID) throws  DataAccessException;
 
-    public Collection<GameData> listGames(){
-        //do the thing
-    }
+    Collection<GameData> listGames() throws  DataAccessException;
 
-    public default void updateGame(){
-        //do a thing
-    }
+    void updateGame(int gameID) throws DataAccessException;
+
+    void clear() throws DataAccessException;
 }
