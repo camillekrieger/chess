@@ -1,18 +1,11 @@
 package service;
 
-import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import dataaccess.UserDAO;
 
 public class UserService {
-    private final UserDAO userDAO;
-
-    public UserService(UserDAO userDAO){
-        this.userDAO = userDAO;
-    }
-    public AuthData register(UserData user) throws DataAccessException {
-
+    public AuthData register(UserData user) {
+        return null;
     }
     public AuthData login(UserData user) {
         return null;
