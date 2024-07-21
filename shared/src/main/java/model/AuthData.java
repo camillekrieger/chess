@@ -13,6 +13,14 @@ public class AuthData {
         return authToken;
     }
 
+    public String getAuthFromUser(String username){
+        return authToken;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
