@@ -12,9 +12,9 @@ public class GameService {
         MemoryGameDAO mgd = new MemoryGameDAO();
         return mgd.listGames();
     }
-    public void createGame(UserData WhiteUser, UserData BlackUser, String gameName) throws DataAccessException {
+    public int createGame(UserData WhiteUser, UserData BlackUser, String gameName) throws DataAccessException {
         MemoryGameDAO mgd = new MemoryGameDAO();
-        mgd.createGame(gameName, WhiteUser.getUsername(), BlackUser.getUsername());
+        return mgd.createGame(gameName, WhiteUser.getUsername(), BlackUser.getUsername());
     }
 
     public void joinGame(GameData game, String username) throws DataAccessException {
