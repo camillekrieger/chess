@@ -47,6 +47,19 @@ public class Server {
         var info = serializer.fromJson(request.body(), UserData.class);
         UserService userService = new UserService();
         AuthData authData = userService.register(info);
-        return new Gson().toJson(authData);
+        if (authData == null){
+            response.status(403);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage = "Error: already taken";
+            return new Gson().toJson(ec);
+        }
+        else {
+            return new Gson().toJson(authData);
+        }
+    }
+
+    private Object LogoutHandler(Request request, Response response) {
+        var serializer = new Gson();
+        String authToken = request.headers("authorization");
     }
 }
