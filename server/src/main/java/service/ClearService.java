@@ -5,7 +5,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 
-public class AuthService {
+public class ClearService {
     public void clear() throws DataAccessException {
         MemoryAuthDAO mad = new MemoryAuthDAO();
         MemoryGameDAO mgd = new MemoryGameDAO();
