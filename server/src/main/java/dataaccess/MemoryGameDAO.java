@@ -28,8 +28,14 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void updateGame(int gameID) throws DataAccessException {
-
+    public void updateGame(int gameID, String username) throws DataAccessException {
+       GameData gd = getGame(gameID);
+       if (gd.getWhiteUsername() == null){
+           gd.setWhiteUsername(username);
+       }
+       else{
+           gd.setBlackUsername(username);
+       }
     }
 
     @Override
