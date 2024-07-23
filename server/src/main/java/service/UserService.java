@@ -44,11 +44,13 @@ public class UserService {
         return null;
     }
 
-    public void logout(String authToken) throws DataAccessException {
+    public String logout(String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             authDAO.deleteAuth(authToken);
+            return "{}";
         }
+        return null;
     }
 
     public HashMap<String, UserData> getUsers(){

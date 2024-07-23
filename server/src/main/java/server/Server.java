@@ -3,11 +3,14 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
 import spark.*;
+
+import java.util.Collection;
 
 public class Server {
 
@@ -26,8 +29,8 @@ public class Server {
         Spark.post("/user", this::RegisterHandler);
         Spark.post("/session", this::LoginHandler);
         Spark.delete("/session", this::LogoutHandler);
-//        Spark.get("/game", this::ListGamesHandler);
-//        Spark.post("/game", this::CreateGameHandler);
+        Spark.get("/game", this::ListGamesHandler);
+        Spark.post("/game", this::CreateGameHandler);
 //        Spark.put("/game", this::JoinGameHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -79,7 +82,49 @@ public class Server {
 
     private Object LogoutHandler(Request request, Response response) throws DataAccessException {
         String authToken = request.headers("authorization");
-        userService.logout(authToken);
-        return new Gson().toJson(response);
+        String result = userService.logout(authToken);
+        if (result == null){
+            response.status(401);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: unauthorized");
+            return new Gson().toJson(ec);
+        }
+        return new Gson().toJson(result);
+    }
+
+    private Object ListGamesHandler(Request request, Response response) throws DataAccessException {
+        String authToken = request.headers("authorization");
+        Collection<GameData> list = gameService.ListGames(authToken);
+        if (list == null){
+            response.status(401);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: unauthorized");
+            return new Gson().toJson(ec);
+        }
+        else{
+            return new Gson().toJson(list);
+        }
+    }
+
+    private Object CreateGameHandler(Request request, Response response) throws DataAccessException {
+        var serializer = new Gson();
+        String authToken = request.headers("authorization");
+        var gameName = serializer.fromJson(request.body(), String.class);
+        int gameID = gameService.createGame(authToken, gameName);
+        if (gameID == 0){
+            response.status(401);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: unauthorized");
+            return new Gson().toJson(ec);
+        }
+        else if (gameID == -1){
+            response.status(500);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: name already taken");
+            return new Gson().toJson(ec);
+        }
+        else{
+            return new Gson().toJson(gameID);
+        }
     }
 }

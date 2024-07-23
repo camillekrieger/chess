@@ -30,7 +30,7 @@ public class GameService {
                 return gameDAO.createGame(gameName, authdata.getUsername(), null);
             }
             else{
-                return 0;
+                return -1;
             }
         }
         return 0;
