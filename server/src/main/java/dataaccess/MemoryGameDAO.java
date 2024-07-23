@@ -36,7 +36,7 @@ public class MemoryGameDAO implements GameDAO{
                gameData.setWhiteUsername(username);
            }
        }
-       else{
+       if (color == ChessGame.TeamColor.BLACK){
            if (gameData.getBlackUsername() == null){
                gameData.setBlackUsername(username);
            }
