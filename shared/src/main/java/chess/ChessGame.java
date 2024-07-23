@@ -161,8 +161,8 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         if (teamColor == TeamColor.WHITE){
-            ChessPosition WKingStart = currBoard.getWKingPos();
-            if (WKingStart == null){
+            ChessPosition wKingStart = currBoard.getWKingPos();
+            if (wKingStart == null){
                 return false;
             }
             //see if each black piece can hit the king
@@ -173,7 +173,7 @@ public class ChessGame {
                         if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.BLACK) {
                             Collection<ChessMove> maybeMoves = currBoard.getPiece(maybePos).pieceMoves(currBoard, maybePos);
                             for (ChessMove m : maybeMoves) {
-                                if (WKingStart.equals(m.getEndPosition())) {
+                                if (wKingStart.equals(m.getEndPosition())) {
                                     return true;
                                 }
                             }
@@ -183,8 +183,8 @@ public class ChessGame {
             }
         }
         else{
-            ChessPosition BKingStart = currBoard.getBKingPos();
-            if (BKingStart == null){
+            ChessPosition bKingStart = currBoard.getBKingPos();
+            if (bKingStart == null){
                 return false;
             }
             //see if each white piece can hit the king
@@ -195,7 +195,7 @@ public class ChessGame {
                         if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.WHITE) {
                             Collection<ChessMove> maybeMoves = currBoard.getPiece(maybePos).pieceMoves(currBoard, maybePos);
                             for (ChessMove m : maybeMoves) {
-                                if (BKingStart.equals(m.getEndPosition())) {
+                                if (bKingStart.equals(m.getEndPosition())) {
                                     return true;
                                 }
                             }
@@ -216,8 +216,8 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         boolean checkmate = false;
         if (teamColor == TeamColor.WHITE) {
-            ChessPosition WKingStart = currBoard.getWKingPos();
-            if (WKingStart == null) {
+            ChessPosition wKingStart = currBoard.getWKingPos();
+            if (wKingStart == null) {
                 return false;
             }
             for (int i = 1; i <=8; i++) {
@@ -233,8 +233,8 @@ public class ChessGame {
             }
         }
         else{
-            ChessPosition BKingStart = currBoard.getBKingPos();
-            if (BKingStart == null) {
+            ChessPosition bKingStart = currBoard.getBKingPos();
+            if (bKingStart == null) {
                 return false;
             }
             for (int i = 1; i <=8; i++) {
