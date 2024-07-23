@@ -1,19 +1,27 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 public class GameService {
     GameDAO gameDAO = new MemoryGameDAO();
 
-    public Collection<GameData> ListGames() throws DataAccessException {
-        return gameDAO.listGames();
+    public Collection<GameData> ListGames(String authToken) throws DataAccessException {
+        AuthDAO authDAO = UserService.getAuthDao();
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null){
+            return gameDAO.listGames();
+        }
+        return null;
     }
 
     public int createGame(UserData WhiteUser, UserData BlackUser, String gameName) throws DataAccessException {
@@ -36,5 +44,9 @@ public class GameService {
 
     public void clear() throws DataAccessException {
         gameDAO.clear();
+    }
+
+    public HashMap<Integer, GameData> getGames(){
+        return gameDAO.getGames();
     }
 }

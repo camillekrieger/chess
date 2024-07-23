@@ -10,8 +10,12 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class UserService {
-    AuthDAO authDAO = new MemoryAuthDAO();
+    static AuthDAO authDAO = new MemoryAuthDAO();
     UserDAO userDAO = new MemoryUserDAO();
+
+    public static AuthDAO getAuthDao() {
+        return authDAO;
+    }
 
     public AuthData register(UserData user) throws DataAccessException {
         String username = user.getUsername();

@@ -39,4 +39,9 @@ public class MemoryGameDAO implements GameDAO{
     public void clear() throws DataAccessException {
         games.clear();
     }
+
+    @Override
+    public HashMap<Integer, GameData> getGames(){
+        return games;
+    }
 }
