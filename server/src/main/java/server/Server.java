@@ -4,10 +4,14 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import service.Service;
+import service.GameService;
+import service.UserService;
 import spark.*;
 
 public class Server {
+
+    UserService userService = new UserService();
+    GameService gameService = new GameService();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -35,17 +39,15 @@ public class Server {
     }
 
     private Object ClearHandler(Request request, Response response) throws DataAccessException {
-//        ClearService clearService = new ClearService();
-//        clearService.clear();
-//        return new Gson().toJson(response);
-        return null;
+        userService.clear();
+        gameService.clear();
+        return new Gson().toJson(response);
     }
 
     private Object RegisterHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
-        Service service = new Service();
-        AuthData authData = service.register(info);
+        AuthData authData = userService.register(info);
         if (authData == null){
             response.status(403);
             ErrorClass ec = new ErrorClass();
