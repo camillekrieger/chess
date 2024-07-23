@@ -23,10 +23,18 @@ public class UserService {
 
     public AuthData register(UserData user) throws DataAccessException {
         String username = user.getUsername();
-        if (userDAO.getUser(username) == null){
-            userDAO.createUser(username, user.getPassword(), user.getEmail());
-            String ad = authDAO.createAuth(username);
-            return authDAO.getAuth(ad);
+        String password = user.getPassword();
+        String email = user.getEmail();
+        if (username != null && password != null && email != null) {
+            if (userDAO.getUser(username) == null) {
+                userDAO.createUser(username, password, email);
+                String ad = authDAO.createAuth(username);
+                return authDAO.getAuth(ad);
+            }
+            else{
+                String ad = authDAO.createAuth(null);
+                return authDAO.getAuth(ad);
+            }
         }
         return null;
     }

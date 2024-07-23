@@ -9,10 +9,9 @@ public class ClearService {
     AuthDAO authDAO = UserService.getAuthDao();
     GameDAO gameDAO = GameService.getGameDAO();
     UserDAO userDAO = UserService.getUserDAO();
-    public String clear() throws DataAccessException {
+    public void clear() throws DataAccessException {
         authDAO.clear();
         gameDAO.clear();
         userDAO.clear();
-        return "{}";
     }
 }

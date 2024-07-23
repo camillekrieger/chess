@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
@@ -45,8 +46,9 @@ public class Server {
     }
 
     private Object ClearHandler(Request request, Response response) throws DataAccessException {
-        String result = clearService.clear();
-        return new Gson().toJson(result);
+        clearService.clear();
+        JsonObject emptyJsonObject = new JsonObject();
+        return new Gson().toJson(emptyJsonObject);
     }
 
     private Object RegisterHandler(Request request, Response response) throws DataAccessException {
@@ -54,6 +56,12 @@ public class Server {
         var info = serializer.fromJson(request.body(), UserData.class);
         AuthData authData = userService.register(info);
         if (authData == null){
+            response.status(400);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: bad request");
+            return new Gson().toJson(ec);
+        }
+        else if (authData.getUsername() == null){
             response.status(403);
             ErrorClass ec = new ErrorClass();
             ec.setMessage("Error: already taken");
@@ -89,7 +97,8 @@ public class Server {
             ec.setMessage("Error: unauthorized");
             return new Gson().toJson(ec);
         }
-        return new Gson().toJson(result);
+        JsonObject emptyJsonObject = new JsonObject();
+        return new Gson().toJson(emptyJsonObject);
     }
 
     private Object ListGamesHandler(Request request, Response response) throws DataAccessException {
@@ -102,7 +111,9 @@ public class Server {
             return new Gson().toJson(ec);
         }
         else{
-            return new Gson().toJson(list);
+            ListGamesResult lgr = new ListGamesResult();
+            lgr.addGames(list);
+            return new Gson().toJson(lgr);
         }
     }
 
@@ -140,6 +151,7 @@ public class Server {
             ec.setMessage("Error: unauthorized");
             return new Gson().toJson(ec);
         }
-        return new Gson().toJson(result);
+        JsonObject emptyJsonObject = new JsonObject();
+        return new Gson().toJson(emptyJsonObject);
     }
 }
