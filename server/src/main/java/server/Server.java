@@ -109,8 +109,8 @@ public class Server {
     private Object CreateGameHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
-        var gameName = serializer.fromJson(request.body(), String.class);
-        int gameID = gameService.createGame(authToken, gameName);
+        var info = serializer.fromJson(request.body(), GameData.class);
+        int gameID = gameService.createGame(authToken, info.getGameName());
         if (gameID == 0){
             response.status(401);
             ErrorClass ec = new ErrorClass();
