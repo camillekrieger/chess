@@ -11,8 +11,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    ChessPosition WKingPos;
-    ChessPosition BKingPos;
+    ChessPosition wKingPos;
+    ChessPosition bKingPos;
 
     public ChessBoard() {
     }
@@ -26,10 +26,10 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
         if (piece != null && piece.getTeamColor() == ChessGame.TeamColor.WHITE && piece.getPieceType() == ChessPiece.PieceType.KING){
-            WKingPos = position;
+            wKingPos = position;
         }
         if (piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK && piece.getPieceType() == ChessPiece.PieceType.KING){
-            BKingPos = position;
+            bKingPos = position;
         }
     }
 
@@ -45,11 +45,11 @@ public class ChessBoard {
     }
 
     public ChessPosition getWKingPos() {
-        return WKingPos;
+        return wKingPos;
     }
 
     public ChessPosition getBKingPos() {
-        return BKingPos;
+        return bKingPos;
     }
 
     /**
@@ -166,12 +166,12 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.deepEquals(squares, that.squares) && Objects.equals(WKingPos, that.WKingPos) && Objects.equals(BKingPos, that.BKingPos);
+        return Arrays.deepEquals(squares, that.squares) && Objects.equals(wKingPos, that.wKingPos) && Objects.equals(bKingPos, that.bKingPos);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(WKingPos, BKingPos);
+        int result = Objects.hash(wKingPos, bKingPos);
         result = 31 * result + Arrays.deepHashCode(squares);
         return result;
     }
