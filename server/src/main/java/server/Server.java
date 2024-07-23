@@ -1,6 +1,5 @@
 package server;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
@@ -125,7 +124,8 @@ public class Server {
             return new Gson().toJson(ec);
         }
         else{
-            return new Gson().toJson(gameID);
+            CreateGameResult cgr = new CreateGameResult(gameID);
+            return new Gson().toJson(cgr);
         }
     }
 
