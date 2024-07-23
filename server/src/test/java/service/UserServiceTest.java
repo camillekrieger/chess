@@ -4,17 +4,23 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
+    UserService userService;
+    UserData user1;
+    UserData user2;
+    UserData user3;
 
-    UserService userService = new UserService();
-    UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-    UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
-    UserData user3 = new UserData("winnie", "bees", "winniethepooh@hawoods.org");
+    @BeforeEach
+    void runBefore() {
+        userService = new UserService();
+        user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        user3 = new UserData("winnie", "bees", "winniethepooh@hawoods.org");
+    }
 
     @Test
     void register() throws DataAccessException {

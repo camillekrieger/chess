@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -14,14 +15,20 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameServiceTest {
-    GameService gameService = new GameService();
-    UserService userService = new UserService();
-    UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-    UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
-    AuthData auth1 = userService.register(user1);
-    AuthData auth2 = userService.register(user2);
-
-    GameServiceTest() throws DataAccessException {
+    GameService gameService;
+    UserService userService;
+    UserData user1;
+    UserData user2;
+    AuthData auth1;
+    AuthData auth2;
+    @BeforeEach
+    void before() throws DataAccessException {
+        gameService = new GameService();
+        userService = new UserService();
+        user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        auth1 = userService.register(user1);
+        auth2 = userService.register(user2);
     }
 
     @Test
