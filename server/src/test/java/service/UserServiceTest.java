@@ -90,16 +90,4 @@ class UserServiceTest {
         userService.logout("2345");
         Assertions.assertNotEquals(null, userService.getAuths().get(authData.getAuthToken()));
     }
-
-    @Test
-    void clear() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
-        userService.register(user1);
-        userService.register(user2);
-        userService.clear();
-        Assertions.assertTrue(userService.getUsers().isEmpty());
-        Assertions.assertTrue(userService.getAuths().isEmpty());
-    }
 }

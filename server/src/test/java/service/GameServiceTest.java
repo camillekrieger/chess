@@ -85,15 +85,4 @@ class GameServiceTest {
     void joinGame() {
     }
 
-    @Test
-    void clear() throws DataAccessException {
-        GameService gameService = new GameService();
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
-        AuthData auth1 = userService.register(user1);
-        gameService.createGame(auth1.getAuthToken(), "hundred acre tourny");
-        gameService.clear();
-        Assertions.assertTrue(gameService.ListGames(auth1.getAuthToken()).isEmpty());
-    }
 }

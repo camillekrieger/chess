@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import service.ClearService;
 import service.GameService;
 import service.UserService;
 import spark.*;
@@ -12,6 +13,8 @@ public class Server {
 
     UserService userService = new UserService();
     GameService gameService = new GameService();
+
+    ClearService clearService = new ClearService();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -39,8 +42,7 @@ public class Server {
     }
 
     private Object ClearHandler(Request request, Response response) throws DataAccessException {
-        userService.clear();
-        gameService.clear();
+        clearService.clear();
         return new Gson().toJson(response);
     }
 

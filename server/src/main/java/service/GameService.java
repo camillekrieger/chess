@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class GameService {
-    GameDAO gameDAO = new MemoryGameDAO();
+    static GameDAO gameDAO = new MemoryGameDAO();
     AuthDAO authDAO = UserService.getAuthDao();
 
     public Collection<GameData> ListGames(String authToken) throws DataAccessException {
@@ -50,15 +50,15 @@ public class GameService {
         }
     }
 
-    public void clear() throws DataAccessException {
-        gameDAO.clear();
-    }
-
     public HashMap<Integer, GameData> getGames(){
         return gameDAO.getGames();
     }
 
     public GameData getByName(String gameName) throws DataAccessException {
         return gameDAO.getGameByName(gameName);
+    }
+
+    public static GameDAO getGameDAO() {
+        return gameDAO;
     }
 }

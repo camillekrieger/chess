@@ -11,10 +11,14 @@ import java.util.HashMap;
 
 public class UserService {
     static AuthDAO authDAO = new MemoryAuthDAO();
-    UserDAO userDAO = new MemoryUserDAO();
+    static UserDAO userDAO = new MemoryUserDAO();
 
     public static AuthDAO getAuthDao() {
         return authDAO;
+    }
+
+    public static UserDAO getUserDAO(){
+        return userDAO;
     }
 
     public AuthData register(UserData user) throws DataAccessException {
@@ -45,11 +49,6 @@ public class UserService {
         if (authData != null){
             authDAO.deleteAuth(authToken);
         }
-    }
-
-    public void clear() throws DataAccessException {
-        authDAO.clear();
-        userDAO.clear();
     }
 
     public HashMap<String, UserData> getUsers(){
