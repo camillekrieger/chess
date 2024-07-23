@@ -34,14 +34,14 @@ class GameServiceTest {
     @Test
     void listGames() throws DataAccessException {
         int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
-        Collection<GameData> list = gameService.ListGames(auth1.getAuthToken());
+        Collection<GameData> list = gameService.listGames(auth1.getAuthToken());
         Assertions.assertEquals(1, list.size());
     }
 
     @Test
     void listGamesFail() throws DataAccessException {
         int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
-        Collection<GameData> list = gameService.ListGames("1234");
+        Collection<GameData> list = gameService.listGames("1234");
         Assertions.assertNull(list);
     }
 
