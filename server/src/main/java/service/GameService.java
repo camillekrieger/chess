@@ -36,15 +36,20 @@ public class GameService {
         return 0;
     }
 
-    public void joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws DataAccessException {
+    public String joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             GameData gameData = gameDAO.getGame(gameID);
             if (gameData != null) {
                 String username = authData.getUsername();
                 gameDAO.updateGame(gameData, color, username);
+                return "{}";
+            }
+            else{
+                return null;
             }
         }
+        return null;
     }
 
     public HashMap<Integer, GameData> getGames(){

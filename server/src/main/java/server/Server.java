@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
@@ -31,7 +32,7 @@ public class Server {
         Spark.delete("/session", this::LogoutHandler);
         Spark.get("/game", this::ListGamesHandler);
         Spark.post("/game", this::CreateGameHandler);
-//        Spark.put("/game", this::JoinGameHandler);
+        Spark.put("/game", this::JoinGameHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -126,5 +127,19 @@ public class Server {
         else{
             return new Gson().toJson(gameID);
         }
+    }
+
+    private Object JoinGameHandler(Request request, Response response) throws DataAccessException {
+        var serializer = new Gson();
+        String authToken = request.headers("authorization");
+        var info = serializer.fromJson(request.body(), JoinRequest.class);
+        String result = gameService.joinGame(authToken, info.getColor(), info.getGameID());
+        if (result == null){
+            response.status(401);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: unauthorized");
+            return new Gson().toJson(ec);
+        }
+        return new Gson().toJson(result);
     }
 }
