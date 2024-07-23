@@ -24,7 +24,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::ClearHandler);
         Spark.post("/user", this::RegisterHandler);
-//        Spark.post("/session", this::LoginHandler);
+        Spark.post("/session", this::LoginHandler);
 //        Spark.delete("/session", this::LogoutHandler);
 //        Spark.get("/game", this::ListGamesHandler);
 //        Spark.post("/game", this::CreateGameHandler);
@@ -61,9 +61,26 @@ public class Server {
         }
     }
 
-    private Object LogoutHandler(Request request, Response response) {
+    private Object LoginHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
-        String authToken = request.headers("authorization");
-        return null;
+        var info = serializer.fromJson(request.body(), UserData.class);
+        String username = info.getUsername();
+        String password = info.getPassword();
+        AuthData authData = userService.login(username, password);
+        if (authData == null){
+            response.status(401);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: unauthorized");
+            return new Gson().toJson(ec);
+        }
+        else{
+            return new Gson().toJson(authData);
+        }
     }
+
+//    private Object LogoutHandler(Request request, Response response) {
+//        var serializer = new Gson();
+//        String authToken = request.headers("authorization");
+//        return null;
+//    }
 }
