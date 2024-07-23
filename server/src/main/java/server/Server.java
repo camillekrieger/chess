@@ -25,7 +25,7 @@ public class Server {
         Spark.delete("/db", this::ClearHandler);
         Spark.post("/user", this::RegisterHandler);
         Spark.post("/session", this::LoginHandler);
-//        Spark.delete("/session", this::LogoutHandler);
+        Spark.delete("/session", this::LogoutHandler);
 //        Spark.get("/game", this::ListGamesHandler);
 //        Spark.post("/game", this::CreateGameHandler);
 //        Spark.put("/game", this::JoinGameHandler);
@@ -64,9 +64,8 @@ public class Server {
     private Object LoginHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
-        String username = info.getUsername();
-        String password = info.getPassword();
-        AuthData authData = userService.login(username, password);
+        System.out.println(info);
+        AuthData authData = userService.login(info.getUsername(), info.getPassword());
         if (authData == null){
             response.status(401);
             ErrorClass ec = new ErrorClass();
@@ -78,9 +77,9 @@ public class Server {
         }
     }
 
-//    private Object LogoutHandler(Request request, Response response) {
-//        var serializer = new Gson();
-//        String authToken = request.headers("authorization");
-//        return null;
-//    }
+    private Object LogoutHandler(Request request, Response response) throws DataAccessException {
+        String authToken = request.headers("authorization");
+        userService.logout(authToken);
+        return new Gson().toJson(response);
+    }
 }
