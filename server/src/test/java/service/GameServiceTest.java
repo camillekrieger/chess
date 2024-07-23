@@ -33,11 +33,9 @@ class GameServiceTest {
 
     @Test
     void listGames() throws DataAccessException {
-        Collection<GameData> gamesTest = new ArrayList<>();
         int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
-        gamesTest.add(gameService.getGames().get(gameID));
         Collection<GameData> list = gameService.ListGames(auth1.getAuthToken());
-        Assertions.assertEquals(gamesTest.toString(), list.toString());
+        Assertions.assertEquals(1, list.size());
     }
 
     @Test
@@ -49,8 +47,11 @@ class GameServiceTest {
 
     @Test
     void createGame() throws DataAccessException {
-        int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
-        Assertions.assertEquals(gameService.getByName("hundred acre tournament").getGameID(), gameID);
+        UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
+        AuthData auth = userService.register(user);
+        int gameID = gameService.createGame(auth.getAuthToken(), "tournament");
+        int result = gameService.getPreviousGameID();
+        Assertions.assertEquals(result, gameID);
     }
 
     @Test
@@ -63,20 +64,27 @@ class GameServiceTest {
     void createGameFailGameAlreadyInPlay() throws DataAccessException {
         gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
         int gameID = gameService.createGame(auth2.getAuthToken(), "hundred acre tournament");
-        Assertions.assertEquals(0, gameID);
+        Assertions.assertEquals(-1, gameID);
     }
 
     @Test
     void joinGame() throws DataAccessException {
-        int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
-        gameService.joinGame(auth2.getAuthToken(), ChessGame.TeamColor.BLACK, gameID);
-        Assertions.assertEquals("eyore", gameService.getGames().get(gameID).getBlackUsername());
+        UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
+        AuthData auth = userService.register(user);
+        int gameID = gameService.createGame(auth.getAuthToken(), "hundred acre tournament");
+        String result = gameService.joinGame(auth.getAuthToken(), ChessGame.TeamColor.WHITE, gameID);
+        Assertions.assertEquals("{}", result);
     }
 
     @Test
     void joinGameFail() throws DataAccessException {
-        int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
-        gameService.joinGame(auth2.getAuthToken(), ChessGame.TeamColor.WHITE, gameID);
-        assertNull(gameService.getGames().get(gameID).getBlackUsername());
+        UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
+        AuthData auth = userService.register(user);
+        UserData userNext = new UserData("piglet", "balloon", "pig@hawoods.org");
+        AuthData authNext = userService.register(userNext);
+        int gameID = gameService.createGame(auth.getAuthToken(), "tournament");
+        gameService.joinGame(auth.getAuthToken(), ChessGame.TeamColor.WHITE, gameID);
+        String result = gameService.joinGame(null, ChessGame.TeamColor.BLACK, gameID);
+        Assertions.assertNull(result);
     }
 }

@@ -21,4 +21,6 @@ public interface GameDAO {
     HashMap<Integer, GameData> getGames();
 
     GameData getGameByName(String name) throws DataAccessException;
+
+    int getPreviousID();
 }

@@ -71,6 +71,11 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
+    public int getPreviousID(){
+        return nextGameID - 1;
+    }
+
+    @Override
     public void clear() throws DataAccessException {
         games.clear();
     }

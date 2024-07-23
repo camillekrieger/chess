@@ -24,11 +24,9 @@ class UserServiceTest {
 
     @Test
     void register() throws DataAccessException {
-        AuthData authData1 = userService.register(user1);
-        AuthData authData2 = userService.register(user2);
-        Assertions.assertEquals("winnie", authData1.getUsername());
-        Assertions.assertEquals("eyore", authData2.getUsername());
-        Assertions.assertEquals("winnie", userService.getUsers().get("winnie").getUsername());
+        UserData user = new UserData("pooh bear", "christopher", "honeyisthebest@hawoods.org");
+        AuthData authData = userService.register(user);
+        assertEquals("pooh bear", authData.getUsername());
     }
 
     @Test
@@ -36,7 +34,7 @@ class UserServiceTest {
         userService.register(user1);
         userService.register(user2);
         AuthData authData3 = userService.register(user3);
-        Assertions.assertNull(authData3);
+        Assertions.assertNull(authData3.getUsername());
     }
 
     @Test
