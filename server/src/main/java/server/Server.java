@@ -1,12 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import service.ClearService;
-import service.UserService;
+import service.Service;
 import spark.*;
 
 public class Server {
@@ -19,11 +17,11 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::ClearHandler);
         Spark.post("/user", this::RegisterHandler);
-        Spark.post("/session", this::LoginHandler);
-        Spark.delete("/session", this::LogoutHandler);
-        Spark.get("/game", this::ListGamesHandler);
-        Spark.post("/game", this::CreateGameHandler);
-        Spark.put("/game", this::JoinGameHandler);
+//        Spark.post("/session", this::LoginHandler);
+//        Spark.delete("/session", this::LogoutHandler);
+//        Spark.get("/game", this::ListGamesHandler);
+//        Spark.post("/game", this::CreateGameHandler);
+//        Spark.put("/game", this::JoinGameHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -37,20 +35,21 @@ public class Server {
     }
 
     private Object ClearHandler(Request request, Response response) throws DataAccessException {
-        ClearService clearService = new ClearService();
-        clearService.clear();
-        return new Gson().toJson(response);
+//        ClearService clearService = new ClearService();
+//        clearService.clear();
+//        return new Gson().toJson(response);
+        return null;
     }
 
     private Object RegisterHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
-        UserService userService = new UserService();
-        AuthData authData = userService.register(info);
+        Service service = new Service();
+        AuthData authData = service.register(info);
         if (authData == null){
             response.status(403);
             ErrorClass ec = new ErrorClass();
-            ec.setMessage = "Error: already taken";
+            ec.setMessage("Error: already taken");
             return new Gson().toJson(ec);
         }
         else {
@@ -61,5 +60,6 @@ public class Server {
     private Object LogoutHandler(Request request, Response response) {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
+        return null;
     }
 }

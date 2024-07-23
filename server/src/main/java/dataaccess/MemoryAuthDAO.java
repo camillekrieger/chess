@@ -40,4 +40,8 @@ public class MemoryAuthDAO implements AuthDAO{
     public void clear() throws DataAccessException {
         authData.clear();
     }
+
+    public HashMap<String, AuthData> getAuths(){
+        return authData;
+    }
 }

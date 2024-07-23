@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.AuthData;
 
+import java.util.HashMap;
+
 public interface AuthDAO {
 
     String createAuth(String username) throws DataAccessException;
@@ -13,4 +15,6 @@ public interface AuthDAO {
     String getToken(String username) throws DataAccessException;
 
     void clear() throws DataAccessException;
+
+    HashMap<String, AuthData> getAuths();
 }
