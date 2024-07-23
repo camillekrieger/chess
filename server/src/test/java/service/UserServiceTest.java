@@ -4,17 +4,20 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
 
+    UserService userService = new UserService();
+    UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+    UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+    UserData user3 = new UserData("winnie", "bees", "winniethepooh@hawoods.org");
+
     @Test
     void register() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         AuthData authData1 = userService.register(user1);
         AuthData authData2 = userService.register(user2);
         Assertions.assertEquals("winnie", authData1.getUsername());
@@ -24,10 +27,6 @@ class UserServiceTest {
 
     @Test
     void registerFail() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
-        UserData user3 = new UserData("winnie", "bees", "winniethepooh@hawoods.org");
         userService.register(user1);
         userService.register(user2);
         AuthData authData3 = userService.register(user3);
@@ -36,9 +35,6 @@ class UserServiceTest {
 
     @Test
     void login() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "honey");
@@ -47,9 +43,6 @@ class UserServiceTest {
 
     @Test
     void loginFailUsername() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("piglet", "honey");
@@ -57,9 +50,6 @@ class UserServiceTest {
     }
     @Test
     void loginFailPassword() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "bees");
@@ -69,9 +59,6 @@ class UserServiceTest {
 
     @Test
     void logout() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "honey");
@@ -81,9 +68,6 @@ class UserServiceTest {
 
     @Test
     void logoutFail() throws DataAccessException {
-        UserService userService = new UserService();
-        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
-        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "honey");

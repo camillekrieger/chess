@@ -37,15 +37,12 @@ public class GameService {
     }
 
     public void joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws DataAccessException {
-        GameData gameData = gameDAO.getGame(gameID);
-        if (color.equals(ChessGame.TeamColor.WHITE)){
-            if (gameData.getWhiteUsername() == null){
-                gameDAO.updateGame(gameData, gameID);
-            }
-        }
-        else{
-            if (gameData.getBlackUsername() == null){
-                gameDAO.updateGame(gameData, gameID);
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null){
+            GameData gameData = gameDAO.getGame(gameID);
+            if (gameData != null) {
+                String username = authData.getUsername();
+                gameDAO.updateGame(gameData, color, username);
             }
         }
     }
