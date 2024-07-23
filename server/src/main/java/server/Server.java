@@ -144,11 +144,29 @@ public class Server {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         var info = serializer.fromJson(request.body(), JoinRequest.class);
+        if (info.getGameID() == null){
+            response.status(400);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: bad request");
+            return new Gson().toJson(ec);
+        }
         String result = gameService.joinGame(authToken, info.getColor(), info.getGameID());
         if (result == null){
             response.status(401);
             ErrorClass ec = new ErrorClass();
             ec.setMessage("Error: unauthorized");
+            return new Gson().toJson(ec);
+        }
+        else if (result.equals("no color")){
+            response.status(400);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: bad request");
+            return new Gson().toJson(ec);
+        }
+        else if(result.equals("taken")){
+            response.status(403);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: already taken");
             return new Gson().toJson(ec);
         }
         JsonObject emptyJsonObject = new JsonObject();

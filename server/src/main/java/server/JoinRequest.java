@@ -4,13 +4,13 @@ import chess.ChessGame;
 
 public class JoinRequest {
     ChessGame.TeamColor color;
-    int gameID;
+    Integer gameID;
 
     ChessGame.TeamColor getColor(){
         return color;
     }
 
-    int getGameID(){
+    Integer getGameID(){
         return gameID;
     }
 }
