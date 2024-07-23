@@ -18,4 +18,6 @@ public interface GameDAO {
     void clear() throws DataAccessException;
 
     HashMap<Integer, GameData> getGames();
+
+    GameData getGameByName(String name) throws DataAccessException;
 }

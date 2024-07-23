@@ -7,16 +7,15 @@ import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import java.util.Collection;
 import java.util.HashMap;
 
 public class GameService {
     GameDAO gameDAO = new MemoryGameDAO();
+    AuthDAO authDAO = UserService.getAuthDao();
 
     public Collection<GameData> ListGames(String authToken) throws DataAccessException {
-        AuthDAO authDAO = UserService.getAuthDao();
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             return gameDAO.listGames();
@@ -24,8 +23,17 @@ public class GameService {
         return null;
     }
 
-    public int createGame(UserData WhiteUser, UserData BlackUser, String gameName) throws DataAccessException {
-        return gameDAO.createGame(gameName, WhiteUser.getUsername(), BlackUser.getUsername());
+    public int createGame(String authToken, String gameName) throws DataAccessException {
+        AuthData authdata = authDAO.getAuth(authToken);
+        if (authdata != null){
+            if (gameDAO.getGameByName(gameName) == null){
+                return gameDAO.createGame(gameName, authdata.getUsername(), null);
+            }
+            else{
+                return 0;
+            }
+        }
+        return 0;
     }
 
     public void joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws DataAccessException {
@@ -48,5 +56,9 @@ public class GameService {
 
     public HashMap<Integer, GameData> getGames(){
         return gameDAO.getGames();
+    }
+
+    public GameData getByName(String gameName) throws DataAccessException {
+        return gameDAO.getGameByName(gameName);
     }
 }

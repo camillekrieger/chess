@@ -32,7 +32,18 @@ public class MemoryGameDAO implements GameDAO{
     @Override
     public void updateGame(GameData gameData, int gameID) throws DataAccessException {
        GameData gd = getGame(gameID);
+    }
 
+    public GameData getGameByName(String gameName) throws DataAccessException {
+        for (Integer key : games.keySet()){
+            if (games.get(key).getGameName().equals(gameName)){
+                return games.get(key);
+            }
+            else{
+                return null;
+            }
+        }
+        return null;
     }
 
     @Override
