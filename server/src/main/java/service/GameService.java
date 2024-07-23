@@ -27,7 +27,7 @@ public class GameService {
         AuthData authdata = authDAO.getAuth(authToken);
         if (authdata != null){
             if (gameDAO.getGameByName(gameName) == null){
-                return gameDAO.createGame(gameName, authdata.getUsername(), null);
+                return gameDAO.createGame(gameName, null, null);
             }
             else{
                 return -1;

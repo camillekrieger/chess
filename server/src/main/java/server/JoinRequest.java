@@ -3,11 +3,11 @@ package server;
 import chess.ChessGame;
 
 public class JoinRequest {
-    ChessGame.TeamColor color;
+    ChessGame.TeamColor playerColor;
     Integer gameID;
 
     ChessGame.TeamColor getColor(){
-        return color;
+        return playerColor;
     }
 
     Integer getGameID(){

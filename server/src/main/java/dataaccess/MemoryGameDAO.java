@@ -36,6 +36,9 @@ public class MemoryGameDAO implements GameDAO{
                gameData.setWhiteUsername(username);
                return "{}";
            }
+           else if (gameData.getWhiteUsername().equals(username)){
+               return "{}";
+           }
            else{
                return "taken";
            }
@@ -43,6 +46,9 @@ public class MemoryGameDAO implements GameDAO{
        if (color == ChessGame.TeamColor.BLACK){
            if (gameData.getBlackUsername() == null){
                gameData.setBlackUsername(username);
+               return "{}";
+           }
+           else if (gameData.getBlackUsername().equals(username)){
                return "{}";
            }
            else{
