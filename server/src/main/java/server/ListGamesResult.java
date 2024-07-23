@@ -7,12 +7,13 @@ import java.util.Collection;
 public class ListGamesResult {
     Collection<ListResult> games;
 
-    void addGame(GameData gameData){
-        ListResult lr = new ListResult(gameData.getGameID(), gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName());
-        games.add(lr);
-    }
+    public ListGamesResult(){}
 
-    Collection<ListResult> getGames(){
+    Collection<ListResult> addGames(Collection<GameData> gameData){
+        for (GameData gd : gameData) {
+            ListResult lr = new ListResult(gd.getGameID(), gd.getWhiteUsername(), gd.getBlackUsername(), gd.getGameName());
+            games.add(lr);
+        }
         return games;
     }
 }
