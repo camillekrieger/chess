@@ -35,8 +35,37 @@ class UserServiceTest {
     }
 
     @Test
-    void login() {
+    void login() throws DataAccessException {
+        UserService userService = new UserService();
+        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        userService.register(user1);
+        userService.register(user2);
+        AuthData authData = userService.login("winnie", "honey");
+        Assertions.assertEquals("winnie", authData.getUsername());
     }
+
+    @Test
+    void loginFailUsername() throws DataAccessException {
+        UserService userService = new UserService();
+        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        userService.register(user1);
+        userService.register(user2);
+        AuthData authData = userService.login("piglet", "honey");
+        Assertions.assertNull(authData);
+    }
+    @Test
+    void loginFailPassword() throws DataAccessException {
+        UserService userService = new UserService();
+        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        userService.register(user1);
+        userService.register(user2);
+        AuthData authData = userService.login("winnie", "bees");
+        Assertions.assertNull(authData);
+    }
+
 
     @Test
     void logout() {

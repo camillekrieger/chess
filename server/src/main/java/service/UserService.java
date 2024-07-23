@@ -22,11 +22,20 @@ public class UserService {
         }
         return null;
     }
-    public AuthData login(UserData user) throws DataAccessException {
-        String username = user.getUsername();
-        String ad = authDAO.createAuth(username);
-        return authDAO.getAuth(ad);
+    public AuthData login(String username, String password) throws DataAccessException {
+        UserData user = userDAO.getUser(username);
+        if (user != null){
+            if(user.getPassword().equals(password)){
+                String ad = authDAO.createAuth(username);
+                return authDAO.getAuth(ad);
+            }
+            else{
+                return null;
+            }
+        }
+        return null;
     }
+
     public void logout(UserData user) throws DataAccessException {
         String authToken = authDAO.getToken(user.getUsername());
         authDAO.deleteAuth(authToken);
