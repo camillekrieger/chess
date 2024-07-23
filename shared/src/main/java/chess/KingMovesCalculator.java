@@ -39,11 +39,11 @@ public class KingMovesCalculator {
             }
         }
         //right
-        int RCol = col + 1;
-        if (RCol <= 8) {
-            ChessPosition Right = new ChessPosition(row, RCol);
-            if (current.getPiece(Right) == null || current.getPiece(Right).getTeamColor() != color) {
-                ChessMove newRight = new ChessMove(startpos, Right, null);
+        int rCol = col + 1;
+        if (rCol <= 8) {
+            ChessPosition right = new ChessPosition(row, rCol);
+            if (current.getPiece(right) == null || current.getPiece(right).getTeamColor() != color) {
+                ChessMove newRight = new ChessMove(startpos, right, null);
                 posMoves.add(newRight);
             }
         }

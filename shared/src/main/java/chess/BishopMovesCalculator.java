@@ -19,15 +19,15 @@ public class BishopMovesCalculator {
         int row = startpos.getRow();
         int col = startpos.getColumn();
         //up left
-        int UpLRow = row + 1;
-        int UpLCol = col - 1;
-        while (UpLRow <= 8 && UpLCol > 0){
-            ChessPosition upLeft = new ChessPosition(UpLRow, UpLCol);
+        int upLRow = row + 1;
+        int upLCol = col - 1;
+        while (upLRow <= 8 && upLCol > 0){
+            ChessPosition upLeft = new ChessPosition(upLRow, upLCol);
             if (current.getPiece(upLeft) == null){
                 ChessMove newUpLeft = new ChessMove(startpos, upLeft, null);
                 posMoves.add(newUpLeft);
-                UpLRow++;
-                UpLCol--;
+                upLRow++;
+                upLCol--;
             }
             else if(current.getPiece(upLeft).getTeamColor() != color){
                 ChessMove newUpLeft = new ChessMove(startpos, upLeft, null);
@@ -39,15 +39,15 @@ public class BishopMovesCalculator {
             }
         }
         //up right
-        int UpRRow = row + 1;
-        int UpRCol = col + 1;
-        while (UpRRow <= 8 && UpRCol <= 8){
-            ChessPosition upRight = new ChessPosition(UpRRow, UpRCol);
+        int upRRow = row + 1;
+        int upRCol = col + 1;
+        while (upRRow <= 8 && upRCol <= 8){
+            ChessPosition upRight = new ChessPosition(upRRow, upRCol);
             if (current.getPiece(upRight) == null){
                 ChessMove newUpRight = new ChessMove(startpos, upRight, null);
                 posMoves.add(newUpRight);
-                UpRRow++;
-                UpRCol++;
+                upRRow++;
+                upRCol++;
             }
             else if(current.getPiece(upRight).getTeamColor() != color){
                 ChessMove newUpRight = new ChessMove(startpos, upRight, null);
@@ -59,15 +59,15 @@ public class BishopMovesCalculator {
             }
         }
         //down left
-        int DownLRow = row - 1;
-        int DownLCol = col - 1;
-        while (DownLRow > 0 && DownLCol > 0){
-            ChessPosition downLeft = new ChessPosition(DownLRow, DownLCol);
+        int downLRow = row - 1;
+        int downLCol = col - 1;
+        while (downLRow > 0 && downLCol > 0){
+            ChessPosition downLeft = new ChessPosition(downLRow, downLCol);
             if (current.getPiece(downLeft) == null){
                 ChessMove newDownLeft = new ChessMove(startpos, downLeft, null);
                 posMoves.add(newDownLeft);
-                DownLRow--;
-                DownLCol--;
+                downLRow--;
+                downLCol--;
             }
             else if(current.getPiece(downLeft).getTeamColor() != color){
                 ChessMove newDownLeft = new ChessMove(startpos, downLeft, null);
@@ -79,15 +79,15 @@ public class BishopMovesCalculator {
             }
         }
         //down right
-        int DownRRow = row - 1;
-        int DownRCol = col + 1;
-        while (DownRRow > 0 && DownRCol <= 8){
-            ChessPosition downRight = new ChessPosition(DownRRow, DownRCol);
+        int downRRow = row - 1;
+        int downRCol = col + 1;
+        while (downRRow > 0 && downRCol <= 8){
+            ChessPosition downRight = new ChessPosition(downRRow, downRCol);
             if (current.getPiece(downRight) == null){
                 ChessMove newDownRight = new ChessMove(startpos, downRight, null);
                 posMoves.add(newDownRight);
-                DownRRow--;
-                DownRCol++;
+                downRRow--;
+                downRCol++;
             }
             else if(current.getPiece(downRight).getTeamColor() != color){
                 ChessMove newDownRight = new ChessMove(startpos, downRight, null);
