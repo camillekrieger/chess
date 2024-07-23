@@ -68,7 +68,27 @@ class UserServiceTest {
 
 
     @Test
-    void logout() {
+    void logout() throws DataAccessException {
+        UserService userService = new UserService();
+        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        userService.register(user1);
+        userService.register(user2);
+        AuthData authData = userService.login("winnie", "honey");
+        userService.logout(authData.getAuthToken());
+        Assertions.assertNull(userService.getAuths().get(authData.getAuthToken()));
+    }
+
+    @Test
+    void logoutFail() throws DataAccessException {
+        UserService userService = new UserService();
+        UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
+        UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
+        userService.register(user1);
+        userService.register(user2);
+        AuthData authData = userService.login("winnie", "honey");
+        userService.logout("2345");
+        Assertions.assertNotEquals(null, userService.getAuths().get(authData.getAuthToken()));
     }
 
     @Test
