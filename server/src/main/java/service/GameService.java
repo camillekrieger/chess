@@ -15,7 +15,7 @@ public class GameService {
     static GameDAO gameDAO = new MemoryGameDAO();
     AuthDAO authDAO = UserService.getAuthDao();
 
-    public Collection<GameData> ListGames(String authToken) throws DataAccessException {
+    public Collection<GameData> listGames(String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             return gameDAO.listGames();

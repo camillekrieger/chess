@@ -26,13 +26,13 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", this::ClearHandler);
-        Spark.post("/user", this::RegisterHandler);
-        Spark.post("/session", this::LoginHandler);
-        Spark.delete("/session", this::LogoutHandler);
-        Spark.get("/game", this::ListGamesHandler);
-        Spark.post("/game", this::CreateGameHandler);
-        Spark.put("/game", this::JoinGameHandler);
+        Spark.delete("/db", this::clearHandler);
+        Spark.post("/user", this::registerHandler);
+        Spark.post("/session", this::loginHandler);
+        Spark.delete("/session", this::logoutHandler);
+        Spark.get("/game", this::listGamesHandler);
+        Spark.post("/game", this::createGameHandler);
+        Spark.put("/game", this::joinGameHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -45,13 +45,13 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object ClearHandler(Request request, Response response) throws DataAccessException {
+    private Object clearHandler(Request request, Response response) throws DataAccessException {
         clearService.clear();
         JsonObject emptyJsonObject = new JsonObject();
         return new Gson().toJson(emptyJsonObject);
     }
 
-    private Object RegisterHandler(Request request, Response response) throws DataAccessException {
+    private Object registerHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
         AuthData authData = userService.register(info);
@@ -72,7 +72,7 @@ public class Server {
         }
     }
 
-    private Object LoginHandler(Request request, Response response) throws DataAccessException {
+    private Object loginHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
         System.out.println(info);
@@ -88,7 +88,7 @@ public class Server {
         }
     }
 
-    private Object LogoutHandler(Request request, Response response) throws DataAccessException {
+    private Object logoutHandler(Request request, Response response) throws DataAccessException {
         String authToken = request.headers("authorization");
         String result = userService.logout(authToken);
         if (result == null){
@@ -101,9 +101,9 @@ public class Server {
         return new Gson().toJson(emptyJsonObject);
     }
 
-    private Object ListGamesHandler(Request request, Response response) throws DataAccessException {
+    private Object listGamesHandler(Request request, Response response) throws DataAccessException {
         String authToken = request.headers("authorization");
-        Collection<GameData> list = gameService.ListGames(authToken);
+        Collection<GameData> list = gameService.listGames(authToken);
         if (list == null){
             response.status(401);
             ErrorClass ec = new ErrorClass();
@@ -117,7 +117,7 @@ public class Server {
         }
     }
 
-    private Object CreateGameHandler(Request request, Response response) throws DataAccessException {
+    private Object createGameHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         var info = serializer.fromJson(request.body(), GameData.class);
@@ -140,7 +140,7 @@ public class Server {
         }
     }
 
-    private Object JoinGameHandler(Request request, Response response) throws DataAccessException {
+    private Object joinGameHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         var info = serializer.fromJson(request.body(), JoinRequest.class);
