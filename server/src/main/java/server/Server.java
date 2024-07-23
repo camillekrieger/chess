@@ -45,8 +45,8 @@ public class Server {
     }
 
     private Object ClearHandler(Request request, Response response) throws DataAccessException {
-        clearService.clear();
-        return new Gson().toJson(response);
+        String result = clearService.clear();
+        return new Gson().toJson(result);
     }
 
     private Object RegisterHandler(Request request, Response response) throws DataAccessException {
