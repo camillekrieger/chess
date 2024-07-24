@@ -72,7 +72,7 @@ public class PawnMovesCalculator {
             }
         }
         if (upOneRow == 8) {
-            ChessPiece.PieceType[] posPromos = new ChessPiece.PieceType[]{ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
+            ChessPiece.PieceType[] posPromos = {ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
             if (current.getPiece(upOne) == null) {
                 for (ChessPiece.PieceType item : posPromos) {
                     ChessMove newOne = new ChessMove(startpos, upOne, item);
@@ -144,7 +144,7 @@ public class PawnMovesCalculator {
             }
         }
         if (downOneRow == 1){
-            ChessPiece.PieceType[] posPromos = new ChessPiece.PieceType[]{ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
+            ChessPiece.PieceType[] posPromos = {ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
             if (current.getPiece(downOne) == null) {
                 for (ChessPiece.PieceType item : posPromos){
                     ChessMove newOne = new ChessMove(startpos, downOne, item);
