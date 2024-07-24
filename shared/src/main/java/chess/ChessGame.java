@@ -162,7 +162,7 @@ public class ChessGame {
     /**
      * Determines if the given team is in check
      *
-     * @param teamColor which team to check for check
+     * param team color which team to check for check
      * @return True if the specified team is in check
      */
 
@@ -231,7 +231,7 @@ public class ChessGame {
     /**
      * Determines if the given team is in checkmate
      *
-     * @param teamColor which team to check for checkmate
+     * teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
     private boolean whiteInCheckmate(){
