@@ -59,7 +59,6 @@ public class ChessBoard {
 
     public void resetBoard() {
         squares = new ChessPiece[8][8];
-        //place white
         ChessPosition lRook = new ChessPosition(1, 1);
         ChessPiece newLRook = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         addPiece(lRook, newLRook);
@@ -84,7 +83,6 @@ public class ChessBoard {
         ChessPosition king = new ChessPosition(1, 5);
         ChessPiece newKing = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
         addPiece(king, newKing);
-        //white pawns
         ChessPosition pawnOne = new ChessPosition(2, 1);
         ChessPiece newPawnOne = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         addPiece(pawnOne, newPawnOne);
@@ -134,7 +132,6 @@ public class ChessBoard {
         ChessPosition blackKing = new ChessPosition(8, 5);
         ChessPiece newBlackKing = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
         addPiece(blackKing, newBlackKing);
-        //black pawns
         ChessPosition blackPawnOne = new ChessPosition(7, 1);
         ChessPiece newBlackPawnOne = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         addPiece(blackPawnOne, newBlackPawnOne);
