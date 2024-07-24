@@ -250,22 +250,30 @@ public class ChessGame {
         return checkmate;
     }
 
+    private Collection<ChessMove> blackCheckmate(ChessPosition maybePos){
+        if (currBoard.getPiece(maybePos) != null) {
+            if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.BLACK) {
+                return validMoves(maybePos);
+            }
+        }
+        return null;
+    }
+
     private boolean blackInCheckmate(){
         boolean checkmate = false;
         for (int i = 1; i <=8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition maybePos = new ChessPosition(i, j);
-                if (currBoard.getPiece(maybePos) != null) {
-                    if (currBoard.getPiece(maybePos).getTeamColor() == TeamColor.BLACK) {
-                        Collection<ChessMove> potentialMoves = validMoves(maybePos);
-                        if (potentialMoves.isEmpty()){
-                            checkmate = true;
-                        }
-                        else{
-                            checkmate = false;
-                            break;
-                        }
-                    }
+                Collection<ChessMove> noValid = blackCheckmate(maybePos);
+                if (noValid == null){
+                    continue;
+                }
+                else if (noValid.isEmpty()){
+                    checkmate = true;
+                }
+                else{
+                    checkmate = false;
+                    break;
                 }
             }
         }
