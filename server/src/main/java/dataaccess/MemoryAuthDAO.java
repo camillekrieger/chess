@@ -22,15 +22,6 @@ public class MemoryAuthDAO implements AuthDAO{
         return authData.get(authToken);
     }
 
-    public String getToken(String username) throws DataAccessException{
-        for (String token : authData.keySet()){
-            if (authData.get(token).getUsername().equals(username)){
-                return token;
-            }
-        }
-        return null;
-    }
-
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         authData.remove(authToken);

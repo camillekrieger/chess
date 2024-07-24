@@ -107,7 +107,6 @@ public class ChessBoard {
         ChessPosition pawnEight = new ChessPosition(2, 8);
         ChessPiece newPawnEight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         addPiece(pawnEight, newPawnEight);
-        //reset black
         ChessPosition blackLRook = new ChessPosition(8, 1);
         ChessPiece newBlackLRook = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
         addPiece(blackLRook, newBlackLRook);

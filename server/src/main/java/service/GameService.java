@@ -56,10 +56,6 @@ public class GameService {
         return gameDAO.getGames();
     }
 
-    public GameData getByName(String gameName) throws DataAccessException {
-        return gameDAO.getGameByName(gameName);
-    }
-
     public static GameDAO getGameDAO() {
         return gameDAO;
     }

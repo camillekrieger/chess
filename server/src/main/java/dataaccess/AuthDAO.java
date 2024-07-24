@@ -12,8 +12,6 @@ public interface AuthDAO {
 
     void deleteAuth(String authToken) throws DataAccessException;
 
-    String getToken(String username) throws DataAccessException;
-
     void clear() throws DataAccessException;
 
     HashMap<String, AuthData> getAuths();
