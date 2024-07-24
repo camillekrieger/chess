@@ -103,8 +103,8 @@ public class BishopMovesCalculator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         BishopMovesCalculator that = (BishopMovesCalculator) o;
         return Objects.equals(startpos, that.startpos) && Objects.equals(current, that.current) && color == that.color;
     }
