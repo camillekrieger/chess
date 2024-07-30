@@ -52,7 +52,7 @@ public class GameService {
         }
     }
 
-    public HashMap<Integer, GameData> getGames(){
+    public HashMap<Integer, GameData> getGames() throws DataAccessException {
         return gameDAO.getGames();
     }
 

@@ -65,7 +65,7 @@ public class UserService {
         return userDAO.getUsers();
     }
 
-    public HashMap<String, AuthData> getAuths(){
+    public HashMap<String, AuthData> getAuths() throws DataAccessException {
         return authDAO.getAuths();
     }
 }

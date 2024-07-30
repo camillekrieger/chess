@@ -14,5 +14,5 @@ public interface AuthDAO {
 
     void clear() throws DataAccessException;
 
-    HashMap<String, AuthData> getAuths();
+    HashMap<String, AuthData> getAuths() throws DataAccessException;
 }

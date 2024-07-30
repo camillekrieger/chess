@@ -48,7 +48,7 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException {
-        var statement = "TRUNCATE pet";
+        var statement = "TRUNCATE user";
         executeUpdate(statement);
     }
 
