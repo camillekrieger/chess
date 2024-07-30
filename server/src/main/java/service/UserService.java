@@ -61,7 +61,7 @@ public class UserService {
         return null;
     }
 
-    public HashMap<String, UserData> getUsers(){
+    public HashMap<String, UserData> getUsers() throws DataAccessException {
         return userDAO.getUsers();
     }
 

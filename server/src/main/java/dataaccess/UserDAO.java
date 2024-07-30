@@ -13,5 +13,5 @@ public interface UserDAO {
 
     void clear() throws DataAccessException;
 
-    HashMap<String, UserData> getUsers();
+    HashMap<String, UserData> getUsers() throws DataAccessException;
 }

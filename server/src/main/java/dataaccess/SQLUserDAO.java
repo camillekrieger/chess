@@ -3,6 +3,7 @@ package dataaccess;
 import com.google.gson.Gson;
 import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -25,17 +26,49 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data: %s");
+        }
         return null;
+    }
+
+    private UserData readUser(ResultSet rs) throws SQLException, DataAccessException {
+        var username = rs.getString("username");
+        return getUser(username);
     }
 
     @Override
     public void clear() throws DataAccessException {
-
+        var statement = "TRUNCATE pet";
+        executeUpdate(statement);
     }
 
     @Override
-    public HashMap<String, UserData> getUsers() {
-        return null;
+    public HashMap<String, UserData> getUsers() throws DataAccessException {
+        var result = new HashMap<String, UserData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM user";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String username = "SELECT username FROM rs";
+                        result.put(username, readUser(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data: %s");
+        }
+        return result;
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
