@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,14 @@ class SQLUserDAOTest {
     }
 
     @Test
+    void createUserFail() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> {
+                sud.createUser("winnie", "honey", "wtp@hawoods.com");
+                sud.createUser("winnie", "bees", "thepooh@hawoods.com");
+        });
+    }
+
+    @Test
     void getUser() throws DataAccessException {
         UserData info = new UserData("winnie", "honey", "wtp@hawoods.com");
         sud.createUser("winnie", "honey", "wtp@hawoods.com");
@@ -43,6 +52,13 @@ class SQLUserDAOTest {
         Assertions.assertEquals(info.getUsername(), actual.getUsername());
         Assertions.assertEquals(info.getPassword(), actual.getPassword());
         Assertions.assertEquals(info.getEmail(), actual.getEmail());
+    }
+
+    @Test
+    void getUserFail() throws DataAccessException {
+        sud.createUser("winnie", "honey", "wtp@hawoods.com");
+        UserData info = sud.getUser("piglet");
+        Assertions.assertNull(info);
     }
 
     @Test
