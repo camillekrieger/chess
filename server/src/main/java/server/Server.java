@@ -11,6 +11,7 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 public class Server {
@@ -45,7 +46,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object clearHandler(Request request, Response response) throws DataAccessException {
+    private Object clearHandler(Request request, Response response) throws DataAccessException, SQLException {
         clearService.clear();
         JsonObject emptyJsonObject = new JsonObject();
         return new Gson().toJson(emptyJsonObject);
@@ -117,7 +118,7 @@ public class Server {
         }
     }
 
-    private Object createGameHandler(Request request, Response response) throws DataAccessException {
+    private Object createGameHandler(Request request, Response response) throws DataAccessException, SQLException {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         var info = serializer.fromJson(request.body(), GameData.class);

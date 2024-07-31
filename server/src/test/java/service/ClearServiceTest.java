@@ -6,12 +6,14 @@ import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClearServiceTest {
 
     @Test
-    void clear() throws DataAccessException {
+    void clear() throws DataAccessException, SQLException {
         UserService userService = new UserService();
         GameService gameService = new GameService();
         ClearService clearService = new ClearService();

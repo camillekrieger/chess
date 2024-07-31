@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -32,21 +33,21 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames() throws DataAccessException {
+    void listGames() throws DataAccessException, SQLException {
         int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
         Collection<GameData> list = gameService.listGames(auth1.getAuthToken());
         Assertions.assertEquals(1, list.size());
     }
 
     @Test
-    void listGamesFail() throws DataAccessException {
+    void listGamesFail() throws DataAccessException, SQLException {
         int gameID = gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
         Collection<GameData> list = gameService.listGames("1234");
         Assertions.assertNull(list);
     }
 
     @Test
-    void createGame() throws DataAccessException {
+    void createGame() throws DataAccessException, SQLException {
         UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
         AuthData auth = userService.register(user);
         int gameID = gameService.createGame(auth.getAuthToken(), "tournament");
@@ -55,20 +56,20 @@ class GameServiceTest {
     }
 
     @Test
-    void createGameFailAuth() throws DataAccessException {
+    void createGameFailAuth() throws DataAccessException, SQLException {
         int gameID = gameService.createGame("1234", "hundred acre tournament");
         Assertions.assertEquals(0, gameID);
     }
 
     @Test
-    void createGameFailGameAlreadyInPlay() throws DataAccessException {
+    void createGameFailGameAlreadyInPlay() throws DataAccessException, SQLException {
         gameService.createGame(auth1.getAuthToken(), "hundred acre tournament");
         int gameID = gameService.createGame(auth2.getAuthToken(), "hundred acre tournament");
         Assertions.assertEquals(-1, gameID);
     }
 
     @Test
-    void joinGame() throws DataAccessException {
+    void joinGame() throws DataAccessException, SQLException {
         UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
         AuthData auth = userService.register(user);
         int gameID = gameService.createGame(auth.getAuthToken(), "hundred acre tournament");
@@ -77,7 +78,7 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGameFail() throws DataAccessException {
+    void joinGameFail() throws DataAccessException, SQLException {
         UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
         AuthData auth = userService.register(user);
         UserData userNext = new UserData("piglet", "balloon", "pig@hawoods.org");
