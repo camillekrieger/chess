@@ -10,6 +10,7 @@ import service.UserService;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +48,8 @@ class SQLUserDAOTest {
     @Test
     void clear() throws SQLException, DataAccessException {
         sud.clear();
+        HashMap<String, List> result = sud.getTable();
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
