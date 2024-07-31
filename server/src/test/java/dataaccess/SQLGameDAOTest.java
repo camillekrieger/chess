@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 class SQLGameDAOTest {
 
@@ -33,7 +34,10 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void listGames() {
+    void listGames() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
+        Collection<GameData> list = sgd.listGames();
+        Assertions.assertEquals(1, list.size());
     }
 
     @Test
