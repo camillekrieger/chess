@@ -3,16 +3,12 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SQLGameDAO implements GameDAO{
 
@@ -186,14 +182,13 @@ public class SQLGameDAO implements GameDAO{
             CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL AUTO_INCREMENT,
               `whiteUsername` varchar(256),
-              'blackUsername' varchar(256),
-              'gameName' varchar(256) NOT NULL,
-              'game' ChessGame NOT NULL,
+              `blackUsername` varchar(256),
+              `gameName` varchar(256) NOT NULL,
+              `game` JSON NOT NULL,
               PRIMARY KEY (`gameID`),
-              INDEX(whiteUsername),
-              INDEX(blackUsername),
-              INDEX(gameName),
-              INDEX(game)
+              INDEX idx_whiteUsername (whiteUsername),
+              INDEX idx_blackUsername (blackUsername),
+              INDEX idx_gameName (gameName)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
