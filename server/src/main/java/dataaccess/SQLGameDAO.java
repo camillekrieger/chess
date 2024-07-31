@@ -102,6 +102,46 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public String updateGame(GameData gameData, ChessGame.TeamColor color, String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            int id = gameData.getGameID();
+            String wUser = gameData.getWhiteUsername();
+            String bUser = gameData.getBlackUsername();
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)){
+                try (var rs = ps.executeQuery()) {
+                    if (color == ChessGame.TeamColor.WHITE){
+                        if (wUser == null){
+                            var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
+                            var ts = conn.prepareStatement(updateStatement);
+                            ts.executeQuery();
+                            return "{}";
+                        }
+                        else if (wUser.equals(username)){
+                            return "{}";
+                        }
+                        else {
+                            return "taken";
+                        }
+                    }
+                    if (color == ChessGame.TeamColor.BLACK){
+                        if (bUser == null){
+                            var updateStatement = "UPDATE game SET blackUsername = ? WHERE gameID=?";
+                            var ts = conn.prepareStatement(updateStatement);
+                            ts.executeQuery();
+                            return "{}";
+                        }
+                        else if (bUser.equals(username)){
+                            return "{}";
+                        }
+                        else {
+                            return "taken";
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data, %s");
+        }
         return null;
     }
 
@@ -155,8 +195,8 @@ public class SQLGameDAO implements GameDAO{
             """
             CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              'blackUsername' varchar(256) NOT NULL,
+              `whiteUsername` varchar(256),
+              'blackUsername' varchar(256),
               'gameName' varchar(256) NOT NULL,
               'game' ChessGame NOT NULL,
               PRIMARY KEY (`gameID`),
