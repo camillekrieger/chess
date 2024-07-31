@@ -2,6 +2,7 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,21 +70,19 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public HashMap<String, UserData> getUsers() throws DataAccessException {
-        var result = new HashMap<String, UserData>();
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email FROM user";
-            try (var ps = conn.prepareStatement(statement)) {
-                try (var rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        String username = "SELECT username FROM rs";
-                        result.put(username, readUser(rs));
-                    }
-                }
+        HashMap<String, UserData> results = new HashMap<>();
+        String query = "SELECT username, password, email FROM user";
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(query);
+             var rs = ps.executeQuery()) {
+            while (rs.next()) {
+                UserData user = readUser(rs);
+                results.put(rs.getString("username"), user);
             }
-        } catch (Exception e) {
-            throw new DataAccessException("Unable to read data: %s");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return result;
+        return results;
     }
 
     private final String[] createStatements = {
