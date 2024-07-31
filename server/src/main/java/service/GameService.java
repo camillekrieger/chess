@@ -8,6 +8,7 @@ import dataaccess.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -23,7 +24,7 @@ public class GameService {
         return null;
     }
 
-    public int createGame(String authToken, String gameName) throws DataAccessException {
+    public int createGame(String authToken, String gameName) throws DataAccessException, SQLException {
         AuthData authdata = authDAO.getAuth(authToken);
         if (authdata != null){
             if (gameDAO.getGameByName(gameName) == null){

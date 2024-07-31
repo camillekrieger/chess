@@ -27,6 +27,7 @@ public class SQLGameDAO implements GameDAO{
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         ChessGame newGame = new ChessGame();
         //change chess game to json object
+        var gameJson = new Gson().toJson(newGame);
         GameData game = new GameData(nextGameID, whiteUsername, blackUsername, gameName, newGame);
         var json = new Gson().toJson(game);
         try (var conn = DatabaseManager.getConnection()){
