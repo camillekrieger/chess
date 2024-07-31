@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,13 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void updateGame() {
+    void updateGame() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", null, null);
+        GameData data = sgd.getGameByName("hundred acre woods");
+        String result = sgd.updateGame(data, ChessGame.TeamColor.WHITE, "winnie");
+        Assertions.assertEquals("{}", result);
+        String blackResult = sgd.updateGame(data, ChessGame.TeamColor.BLACK, "piglet");
+        Assertions.assertEquals("{}", blackResult);
     }
 
     @Test

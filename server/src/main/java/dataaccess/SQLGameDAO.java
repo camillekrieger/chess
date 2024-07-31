@@ -87,39 +87,41 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public String updateGame(GameData gameData, ChessGame.TeamColor color, String username) throws DataAccessException {
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
         try (var conn = DatabaseManager.getConnection()) {
             int id = gameData.getGameID();
-            String wUser = gameData.getWhiteUsername();
-            String bUser = gameData.getBlackUsername();
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)){
+                ps.setInt(1, id);
                 try (var rs = ps.executeQuery()) {
-                    if (color == ChessGame.TeamColor.WHITE){
-                        if (wUser == null){
-                            var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
-                            var ts = conn.prepareStatement(updateStatement);
-                            ts.executeQuery();
-                            return "{}";
+                    if (rs.next()) {
+                        if (color == ChessGame.TeamColor.WHITE) {
+                            String user = rs.getString("whiteUsername");
+                            if (user == null) {
+                                var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
+                                var ts = conn.prepareStatement(updateStatement);
+                                ts.setString(1, username);
+                                ts.setInt(2, id);
+                                ts.executeUpdate();
+                                return "{}";
+                            } else if (rs.getString("whiteUsername").equals(username)) {
+                                return "{}";
+                            } else {
+                                return "taken";
+                            }
                         }
-                        else if (wUser.equals(username)){
-                            return "{}";
-                        }
-                        else {
-                            return "taken";
-                        }
-                    }
-                    if (color == ChessGame.TeamColor.BLACK){
-                        if (bUser == null){
-                            var updateStatement = "UPDATE game SET blackUsername = ? WHERE gameID=?";
-                            var ts = conn.prepareStatement(updateStatement);
-                            ts.executeQuery();
-                            return "{}";
-                        }
-                        else if (bUser.equals(username)){
-                            return "{}";
-                        }
-                        else {
-                            return "taken";
+                        if (color == ChessGame.TeamColor.BLACK) {
+                            if (rs.getString("blackUsername") == null) {
+                                var updateStatement = "UPDATE game SET blackUsername = ? WHERE gameID=?";
+                                var ts = conn.prepareStatement(updateStatement);
+                                ts.setString(1, username);
+                                ts.setInt(2, id);
+                                ts.executeUpdate();
+                                return "{}";
+                            } else if (rs.getString("blackUsername").equals(username)) {
+                                return "{}";
+                            } else {
+                                return "taken";
+                            }
                         }
                     }
                 }
