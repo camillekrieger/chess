@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 class SQLGameDAOTest {
 
@@ -45,7 +47,10 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void clear() {
+    void clear() throws SQLException, DataAccessException {
+        sgd.clear();
+        Collection<GameData> result = sgd.listGames();
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
