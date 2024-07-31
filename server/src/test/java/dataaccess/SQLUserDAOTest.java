@@ -35,7 +35,13 @@ class SQLUserDAOTest {
     }
 
     @Test
-    void getUser() {
+    void getUser() throws DataAccessException {
+        UserData info = new UserData("winnie", "honey", "wtp@hawoods.com");
+        sud.createUser("winnie", "honey", "wtp@hawoods.com");
+        UserData actual = sud.getUser("winnie");
+        Assertions.assertEquals(info.getUsername(), actual.getUsername());
+        Assertions.assertEquals(info.getPassword(), actual.getPassword());
+        Assertions.assertEquals(info.getEmail(), actual.getEmail());
     }
 
     @Test
