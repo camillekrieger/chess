@@ -5,7 +5,10 @@ import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -17,7 +20,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     @Override
-    public void createUser(String username, String password, String email) throws DataAccessException, SQLException {
+    public void createUser(String username, String password, String email) throws DataAccessException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()){
             try (var ps = conn.prepareStatement(statement)){
@@ -26,6 +29,8 @@ public class SQLUserDAO implements UserDAO{
                 ps.setString(3, email);
                 ps.executeUpdate();
             }
+        } catch (Exception e) {
+            throw new DataAccessException("Error creating user");
         }
     }
 
@@ -85,16 +90,31 @@ public class SQLUserDAO implements UserDAO{
             CREATE TABLE IF NOT EXISTS  user (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
-              'email' varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
               PRIMARY KEY (`username`),
-              INDEX(password),
-              INDEX(email)
+              INDEX idx_password (`password`),
+              INDEX idx_email (`email`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
 
-    public String[] getTable(){
-        return createStatements;
+    public HashMap<String, List> getTable() throws DataAccessException {
+        HashMap<String, List> results = new HashMap<>();
+        String query = "SELECT username, password, email FROM user";
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(query);
+             var rs = ps.executeQuery()) {
+            while (rs.next()) {
+                List<String> info = new ArrayList<>();
+                info.add(rs.getString("username"));
+                info.add(rs.getString("password"));
+                info.add(rs.getString("email"));
+                results.put(rs.getString("username"), info);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return results;
     }
 
     private void configureDatabase() throws DataAccessException {

@@ -73,7 +73,7 @@ public class Server {
         }
     }
 
-    private Object loginHandler(Request request, Response response) throws DataAccessException {
+    private Object loginHandler(Request request, Response response) throws DataAccessException, SQLException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
         System.out.println(info);
@@ -89,7 +89,7 @@ public class Server {
         }
     }
 
-    private Object logoutHandler(Request request, Response response) throws DataAccessException {
+    private Object logoutHandler(Request request, Response response) throws DataAccessException, SQLException {
         String authToken = request.headers("authorization");
         String result = userService.logout(authToken);
         if (result == null){
