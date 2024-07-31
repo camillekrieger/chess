@@ -1,12 +1,11 @@
 package dataaccess;
 
+import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SQLGameDAOTest {
 
@@ -25,7 +24,12 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void getGame() {
+    void getGame() throws SQLException, DataAccessException {
+        int id = sgd.createGame("hundred acre woods", "winnie", null);
+        GameData data = sgd.getGame(id);
+        Assertions.assertEquals("winnie", data.getWhiteUsername());
+        Assertions.assertNull(data.getBlackUsername());
+        Assertions.assertEquals("hundred acre woods", data.getGameName());
     }
 
     @Test
