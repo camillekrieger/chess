@@ -6,31 +6,38 @@ import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
     UserService userService;
+
+    ClearService clearService;
     UserData user1;
     UserData user2;
     UserData user3;
 
     @BeforeEach
-    void runBefore() {
+    void runBefore() throws SQLException, DataAccessException {
         userService = new UserService();
+        clearService = new ClearService();
+        clearService.clear();
         user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
         user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         user3 = new UserData("winnie", "bees", "winniethepooh@hawoods.org");
     }
 
     @Test
-    void register() throws DataAccessException {
+    void register() throws DataAccessException, SQLException {
         UserData user = new UserData("pooh bear", "christopher", "honeyisthebest@hawoods.org");
         AuthData authData = userService.register(user);
         assertNotNull(authData);
     }
 
     @Test
-    void registerFail() throws DataAccessException {
+    void registerFail() throws DataAccessException, SQLException {
         userService.register(user1);
         userService.register(user2);
         AuthData authData3 = userService.register(user3);
@@ -38,7 +45,7 @@ class UserServiceTest {
     }
 
     @Test
-    void login() throws DataAccessException {
+    void login() throws DataAccessException, SQLException {
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "honey");
@@ -46,14 +53,14 @@ class UserServiceTest {
     }
 
     @Test
-    void loginFailUsername() throws DataAccessException {
+    void loginFailUsername() throws DataAccessException, SQLException {
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("piglet", "honey");
         Assertions.assertNull(authData);
     }
     @Test
-    void loginFailPassword() throws DataAccessException {
+    void loginFailPassword() throws DataAccessException, SQLException {
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "bees");
@@ -62,7 +69,7 @@ class UserServiceTest {
 
 
     @Test
-    void logout() throws DataAccessException {
+    void logout() throws DataAccessException, SQLException {
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "honey");
@@ -71,7 +78,7 @@ class UserServiceTest {
     }
 
     @Test
-    void logoutFail() throws DataAccessException {
+    void logoutFail() throws DataAccessException, SQLException {
         userService.register(user1);
         userService.register(user2);
         AuthData authData = userService.login("winnie", "honey");

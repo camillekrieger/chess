@@ -52,7 +52,7 @@ public class Server {
         return new Gson().toJson(emptyJsonObject);
     }
 
-    private Object registerHandler(Request request, Response response) throws DataAccessException {
+    private Object registerHandler(Request request, Response response) throws DataAccessException, SQLException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
         AuthData authData = userService.register(info);

@@ -5,6 +5,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
+import dataaccess.SQLGameDAO;
 import model.AuthData;
 import model.GameData;
 
@@ -13,7 +14,16 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class GameService {
-    static GameDAO gameDAO = new MemoryGameDAO();
+    static GameDAO gameDAO;
+
+    static {
+        try {
+            gameDAO = new SQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     AuthDAO authDAO = UserService.getAuthDao();
 
     public Collection<GameData> listGames(String authToken) throws DataAccessException {

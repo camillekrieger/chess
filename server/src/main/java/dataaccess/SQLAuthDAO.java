@@ -19,38 +19,19 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public String createAuth(String username) throws DataAccessException {
+    public String createAuth(String username) throws DataAccessException, SQLException {
         String newAuth = java.util.UUID.randomUUID().toString();
         var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
-        AuthData createdAuth = new AuthData(username, newAuth);
-        var json = new Gson().toJson(createdAuth);
-        executeUpdate(statement, createdAuth.getAuthToken(), createdAuth.getUsername(), json);
-        return newAuth;
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String u) {
-                        ps.setString(i + 1, u);
-                    }
-                    else if (param == null) {
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
+        try (var conn = DatabaseManager.getConnection()){
+            try (var ps = conn.prepareStatement(statement)){
+                ps.setString(1, newAuth);
+                ps.setString(2, username);
                 ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new DataAccessException("unable to update database: %s, %s");
         }
+        return newAuth;
     }
 
     @Override
@@ -76,15 +57,20 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException {
+    public void deleteAuth(String authToken) throws DataAccessException, SQLException {
         var statement = "DELETE FROM auth WHERE authToken=?";
-        executeUpdate(statement, authToken);
+        var conn = DatabaseManager.getConnection();
+        var ps = conn.prepareStatement(statement);
+        ps.setString(1, authToken);
+        ps.executeUpdate();
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, SQLException {
         var statement = "TRUNCATE auth";
-        executeUpdate(statement);
+        var conn = DatabaseManager.getConnection();
+        var ps = conn.prepareStatement(statement);
+        ps.executeUpdate();
     }
 
     @Override

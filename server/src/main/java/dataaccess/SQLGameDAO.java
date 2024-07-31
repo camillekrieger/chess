@@ -28,10 +28,13 @@ public class SQLGameDAO implements GameDAO{
         ChessGame newGame = new ChessGame();
         //change chess game to json object
         var gameJson = new Gson().toJson(newGame);
-        GameData game = new GameData(nextGameID, whiteUsername, blackUsername, gameName, newGame);
-        var json = new Gson().toJson(game);
         try (var conn = DatabaseManager.getConnection()){
             try (var ps = conn.prepareStatement(statement)){
+                ps.setInt(1, nextGameID);
+                ps.setString(2, whiteUsername);
+                ps.setString(3, blackUsername);
+                ps.setString(4, gameName);
+                ps.setString(5, gameJson);
                 ps.executeUpdate();
                 int temp = nextGameID;
                 nextGameID++;
@@ -59,7 +62,12 @@ public class SQLGameDAO implements GameDAO{
 
     private GameData readGame(ResultSet rs) throws SQLException, DataAccessException {
         var gameID = rs.getInt("gameID");
-        return getGame(gameID);
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        var game = rs.getString("game");
+        var gotGame = new Gson().fromJson(game, ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, gotGame);
     }
 
     @Override

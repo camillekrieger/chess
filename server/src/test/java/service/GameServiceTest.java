@@ -23,7 +23,7 @@ class GameServiceTest {
     AuthData auth1;
     AuthData auth2;
     @BeforeEach
-    void before() throws DataAccessException {
+    void before() throws DataAccessException, SQLException {
         gameService = new GameService();
         userService = new UserService();
         user1 = new UserData("winnie", "honey", "wtp@hawoods.org");

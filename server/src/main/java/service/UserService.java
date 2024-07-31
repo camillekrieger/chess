@@ -7,13 +7,31 @@ import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 public class UserService {
-    static AuthDAO authDAO = new MemoryAuthDAO();
-    static UserDAO userDAO = new MemoryUserDAO();
+    static AuthDAO authDAO;
+
+    static {
+        try {
+            authDAO = new SQLAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static UserDAO userDAO;
+
+    static {
+        try {
+            userDAO = new SQLUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final HashMap<String, String> hashedPasswords = new HashMap<>();
 
@@ -25,7 +43,7 @@ public class UserService {
         return userDAO;
     }
     //put password hashing in this class
-    public AuthData register(UserData user) throws DataAccessException {
+    public AuthData register(UserData user) throws DataAccessException, SQLException {
         String username = user.getUsername();
         String password = user.getPassword();
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());

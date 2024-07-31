@@ -17,11 +17,16 @@ public class SQLUserDAO implements UserDAO{
     }
 
     @Override
-    public void createUser(String username, String password, String email) throws DataAccessException {
+    public void createUser(String username, String password, String email) throws DataAccessException, SQLException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-        UserData user = new UserData(username, password, email);
-        var json = new Gson().toJson(user);
-        executeUpdate(statement, user.getUsername(), user.getPassword(), json);
+        try (var conn = DatabaseManager.getConnection()){
+            try (var ps = conn.prepareStatement(statement)){
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, email);
+                ps.executeUpdate();
+            }
+        }
     }
 
     @Override
@@ -43,13 +48,17 @@ public class SQLUserDAO implements UserDAO{
 
     private UserData readUser(ResultSet rs) throws SQLException, DataAccessException {
         var username = rs.getString("username");
-        return getUser(username);
+        var password = rs.getString("password");
+        var email = rs.getString("email");
+        return new UserData(username, password, email);
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, SQLException {
         var statement = "TRUNCATE user";
-        executeUpdate(statement);
+        var conn = DatabaseManager.getConnection();
+        var ps = conn.prepareStatement(statement);
+        ps.executeUpdate();
     }
 
     @Override
@@ -71,32 +80,6 @@ public class SQLUserDAO implements UserDAO{
         return result;
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String u) {
-                        ps.setString(i + 1, u);
-                    }
-                    else if (param == null) {
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("unable to update database: %s, %s");
-        }
-    }
-
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  user (
@@ -109,6 +92,10 @@ public class SQLUserDAO implements UserDAO{
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
+
+    public String[] getTable(){
+        return createStatements;
+    }
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
