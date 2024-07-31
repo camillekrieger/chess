@@ -54,7 +54,10 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void getGames() {
+    void getGames() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
+        HashMap<Integer, GameData> actual = sgd.getGames();
+        Assertions.assertEquals("hundred acre woods", actual.get(sgd.getPreviousID()).getGameName());
     }
 
     @Test

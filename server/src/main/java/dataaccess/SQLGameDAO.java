@@ -80,7 +80,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to read data: %s");
+            throw new DataAccessException("Unable to read data");
         }
         return result;
     }
@@ -125,7 +125,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to read data, %s");
+            throw new DataAccessException("Unable to read data");
         }
         return null;
     }
@@ -141,8 +141,8 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public HashMap<Integer, GameData> getGames() throws DataAccessException {
         var result = new HashMap<Integer, GameData>();
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -151,7 +151,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to read data: %s");
+            throw new DataAccessException("Unable to read data");
         }
         return result;
     }
@@ -168,7 +168,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to read data: %s");
+            throw new DataAccessException("Unable to read data");
         }
         return null;
     }
@@ -203,7 +203,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Unable to configure database: %s");
+            throw new DataAccessException("Unable to configure database");
         }
     }
 }
