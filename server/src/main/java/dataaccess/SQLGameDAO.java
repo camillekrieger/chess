@@ -158,9 +158,10 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public GameData getGameByName(String name) throws DataAccessException {
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameName=?";
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameName=?";
             try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, name);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readGame(rs);

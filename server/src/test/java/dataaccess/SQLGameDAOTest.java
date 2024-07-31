@@ -61,7 +61,10 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void getGameByName() {
+    void getGameByName() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
+        GameData actual = sgd.getGameByName("hundred acre woods");
+        Assertions.assertEquals("winnie", actual.getWhiteUsername());
     }
 
     @Test
