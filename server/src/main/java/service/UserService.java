@@ -71,7 +71,7 @@ public class UserService {
         return hashedPasswords.get(username);
     }
 
-    public AuthData login(String username, String password) throws DataAccessException {
+    public AuthData login(String username, String password) throws DataAccessException, SQLException {
         UserData user = userDAO.getUser(username);
         if (user != null){
             String hashedPassword = getHashedPass(username);
@@ -86,7 +86,7 @@ public class UserService {
         return null;
     }
 
-    public String logout(String authToken) throws DataAccessException {
+    public String logout(String authToken) throws DataAccessException, SQLException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             authDAO.deleteAuth(authToken);
