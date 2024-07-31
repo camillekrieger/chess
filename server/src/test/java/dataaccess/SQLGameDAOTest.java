@@ -68,6 +68,8 @@ class SQLGameDAOTest {
     }
 
     @Test
-    void getPreviousID() {
+    void getPreviousID() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
+        Assertions.assertEquals(1, sgd.getPreviousID());
     }
 }
