@@ -23,40 +23,19 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public int createGame(String gameName, String whiteUsername, String blackUsername) throws DataAccessException {
+    public int createGame(String gameName, String whiteUsername, String blackUsername) throws DataAccessException, SQLException {
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         ChessGame newGame = new ChessGame();
+        //change chess game to json object
         GameData game = new GameData(nextGameID, whiteUsername, blackUsername, gameName, newGame);
         var json = new Gson().toJson(game);
-        executeUpdate(statement, game.getGameID(), game.getWhiteUsername(), game.getBlackUsername(), game.getGameName(), game.getGame(), json);
-        int temp = nextGameID;
-        nextGameID++;
-        return temp;
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String u) {
-                        ps.setString(i + 1, u);
-                    }
-                    else if (param == null) {
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
+        try (var conn = DatabaseManager.getConnection()){
+            try (var ps = conn.prepareStatement(statement)){
                 ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
+                int temp = nextGameID;
+                nextGameID++;
+                return temp;
             }
-        } catch (SQLException e) {
-            throw new DataAccessException("unable to update database: %s, %s");
         }
     }
 
@@ -146,9 +125,11 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, SQLException {
         var statement = "TRUNCATE game";
-        executeUpdate(statement);
+        var conn = DatabaseManager.getConnection();
+        var ps = conn.prepareStatement(statement);
+        ps.executeUpdate();
     }
 
     @Override

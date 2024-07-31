@@ -20,7 +20,7 @@ public class UserService {
     public static UserDAO getUserDAO(){
         return userDAO;
     }
-
+    //put password hashing in this class
     public AuthData register(UserData user) throws DataAccessException {
         String username = user.getUsername();
         String password = user.getPassword();
