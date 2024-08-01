@@ -1,15 +1,11 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 public class UserService {

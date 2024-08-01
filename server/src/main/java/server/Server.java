@@ -76,7 +76,6 @@ public class Server {
     private Object loginHandler(Request request, Response response) throws DataAccessException, SQLException {
         var serializer = new Gson();
         var info = serializer.fromJson(request.body(), UserData.class);
-        System.out.println(info);
         AuthData authData = userService.login(info.getUsername(), info.getPassword());
         if (authData == null){
             response.status(401);
