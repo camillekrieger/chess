@@ -29,8 +29,6 @@ public class UserService {
         }
     }
 
-    private final HashMap<String, String> hashedPasswords = new HashMap<>();
-
     public static AuthDAO getAuthDao() {
         return authDAO;
     }
@@ -46,7 +44,6 @@ public class UserService {
         String email = user.getEmail();
         if (username != null && password != null && email != null) {
             if (userDAO.getUser(username) == null) {
-                keepHashedPass(username, hashedPassword);
                 userDAO.createUser(username, hashedPassword, email);
                 String ad = authDAO.createAuth(username);
                 return authDAO.getAuth(ad);
@@ -59,19 +56,10 @@ public class UserService {
         return null;
     }
 
-    private void keepHashedPass(String username, String hPass){
-        hashedPasswords.put(username, hPass);
-    }
-
-    private String getHashedPass(String username){
-        return hashedPasswords.get(username);
-    }
-
     public AuthData login(String username, String password) throws DataAccessException, SQLException {
         UserData user = userDAO.getUser(username);
         if (user != null){
-            String hashedPassword = getHashedPass(username);
-            if(BCrypt.checkpw(password, hashedPassword)){
+            if(BCrypt.checkpw(password, user.getPassword())){
                 String ad = authDAO.createAuth(username);
                 return authDAO.getAuth(ad);
             }
