@@ -13,7 +13,6 @@ import spark.*;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Objects;
 
 public class Server {
 
@@ -146,7 +145,7 @@ public class Server {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         var info = serializer.fromJson(request.body(), JoinRequest.class);
-        if (info.getGameID() == null){
+        if (info.getGameID() == null || info.getColor() == null){
             response.status(400);
             ErrorClass ec = new ErrorClass();
             ec.setMessage("Error: bad request");
