@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameServiceTest {
     GameService gameService;
     UserService userService;
+    ClearService clearService;
     UserData user1;
     UserData user2;
     AuthData auth1;
@@ -26,6 +27,8 @@ class GameServiceTest {
     void before() throws DataAccessException, SQLException {
         gameService = new GameService();
         userService = new UserService();
+        clearService = new ClearService();
+        clearService.clear();
         user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
         user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         auth1 = userService.register(user1);

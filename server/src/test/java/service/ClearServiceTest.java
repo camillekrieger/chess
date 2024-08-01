@@ -17,6 +17,7 @@ class ClearServiceTest {
         UserService userService = new UserService();
         GameService gameService = new GameService();
         ClearService clearService = new ClearService();
+        clearService.clear();
         UserData user1 = new UserData("winnie", "honey", "wtp@hawoods.org");
         UserData user2 = new UserData("eyore", "tailgone", "edonkey@hawoods.org");
         AuthData authData1 = userService.register(user1);
