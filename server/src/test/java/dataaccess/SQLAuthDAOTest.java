@@ -27,11 +27,31 @@ class SQLAuthDAOTest {
     }
 
     @Test
-    void getAuth() {
+    void getAuth() throws SQLException, DataAccessException {
+        String newAuth = sad.createAuth("winnie");
+        AuthData result = sad.getAuth(newAuth);
+        Assertions.assertEquals("winnie", result.getUsername());
     }
 
     @Test
-    void deleteAuth() {
+    void getAuthFail() throws SQLException, DataAccessException {
+        sad.createAuth("winnie");
+        AuthData result = sad.getAuth("1234");
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void deleteAuth() throws SQLException, DataAccessException {
+        String token = sad.createAuth("winnie");
+        sad.deleteAuth(token);
+        Assertions.assertNull(sad.getAuth(token));
+    }
+
+    @Test
+    void deleteAuthFail() throws SQLException, DataAccessException {
+        String token = sad.createAuth("winnie");
+        sad.deleteAuth("1234");
+        Assertions.assertNotNull(sad.getAuth(token));
     }
 
     @Test
