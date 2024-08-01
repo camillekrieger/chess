@@ -1,18 +1,12 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SQLUserDAO implements UserDAO{
 
@@ -53,7 +47,7 @@ public class SQLUserDAO implements UserDAO{
         return null;
     }
 
-    private UserData readUser(ResultSet rs) throws SQLException, DataAccessException {
+    private UserData readUser(ResultSet rs) throws SQLException {
         var username = rs.getString("username");
         var password = rs.getString("password");
         var email = rs.getString("email");

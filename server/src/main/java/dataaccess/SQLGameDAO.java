@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class SQLGameDAO implements GameDAO{
         return null;
     }
 
-    private GameData readGame(ResultSet rs) throws SQLException, DataAccessException {
+    private GameData readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
@@ -87,6 +88,39 @@ public class SQLGameDAO implements GameDAO{
         return result;
     }
 
+    private String checkUpdate(ChessGame.TeamColor color, Connection conn, ResultSet rs, String username, int id) throws SQLException {
+        if (color == ChessGame.TeamColor.WHITE) {
+            String user = rs.getString("whiteUsername");
+            if (user == null) {
+                var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
+                var ts = conn.prepareStatement(updateStatement);
+                ts.setString(1, username);
+                ts.setInt(2, id);
+                ts.executeUpdate();
+                return "{}";
+            } else if (rs.getString("whiteUsername").equals(username)) {
+                return "{}";
+            } else {
+                return "taken";
+            }
+        }
+        if (color == ChessGame.TeamColor.BLACK) {
+            if (rs.getString("blackUsername") == null) {
+                var updateStatement = "UPDATE game SET blackUsername = ? WHERE gameID=?";
+                var ts = conn.prepareStatement(updateStatement);
+                ts.setString(1, username);
+                ts.setInt(2, id);
+                ts.executeUpdate();
+                return "{}";
+            } else if (rs.getString("blackUsername").equals(username)) {
+                return "{}";
+            } else {
+                return "taken";
+            }
+        }
+        return null;
+    }
+
     @Override
     public String updateGame(GameData gameData, ChessGame.TeamColor color, String username) throws DataAccessException {
         var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
@@ -96,35 +130,7 @@ public class SQLGameDAO implements GameDAO{
                 ps.setInt(1, id);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        if (color == ChessGame.TeamColor.WHITE) {
-                            String user = rs.getString("whiteUsername");
-                            if (user == null) {
-                                var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
-                                var ts = conn.prepareStatement(updateStatement);
-                                ts.setString(1, username);
-                                ts.setInt(2, id);
-                                ts.executeUpdate();
-                                return "{}";
-                            } else if (rs.getString("whiteUsername").equals(username)) {
-                                return "{}";
-                            } else {
-                                return "taken";
-                            }
-                        }
-                        if (color == ChessGame.TeamColor.BLACK) {
-                            if (rs.getString("blackUsername") == null) {
-                                var updateStatement = "UPDATE game SET blackUsername = ? WHERE gameID=?";
-                                var ts = conn.prepareStatement(updateStatement);
-                                ts.setString(1, username);
-                                ts.setInt(2, id);
-                                ts.executeUpdate();
-                                return "{}";
-                            } else if (rs.getString("blackUsername").equals(username)) {
-                                return "{}";
-                            } else {
-                                return "taken";
-                            }
-                        }
+                        return checkUpdate(color, conn, rs, username, id);
                     }
                 }
             }
