@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 class SQLGameDAOTest {
 

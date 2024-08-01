@@ -1,16 +1,10 @@
 package dataaccess;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SQLAuthDAO implements AuthDAO{
 
@@ -39,6 +33,7 @@ public class SQLAuthDAO implements AuthDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readAuth(rs);
@@ -53,7 +48,8 @@ public class SQLAuthDAO implements AuthDAO{
 
     private AuthData readAuth(ResultSet rs) throws SQLException, DataAccessException {
         var authToken = rs.getString("authToken");
-        return getAuth(authToken);
+        var username = rs.getString("username");
+        return new AuthData(username, authToken);
     }
 
     @Override
@@ -81,13 +77,13 @@ public class SQLAuthDAO implements AuthDAO{
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        String authToken = "SELECT authToken FROM rs";
+                        String authToken = rs.getString("authToken");
                         result.put(authToken, readAuth(rs));
                     }
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to read data: %s");
+            throw new DataAccessException("Unable to read data");
         }
         return result;
     }
@@ -96,9 +92,9 @@ public class SQLAuthDAO implements AuthDAO{
             """
             CREATE TABLE IF NOT EXISTS  auth (
               `authToken` varchar(256) NOT NULL,
-              'username' varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
               PRIMARY KEY (`authToken`),
-              FOREIGN KEY (username)
+              INDEX idx_username (username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -112,7 +108,7 @@ public class SQLAuthDAO implements AuthDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Unable to configure database: %s");
+            throw new DataAccessException("Unable to configure database");
         }
     }
 }
