@@ -36,6 +36,8 @@ public class SQLGameDAO implements GameDAO{
                 nextGameID++;
                 return temp;
             }
+        } catch (Exception e){
+            throw new DataAccessException("Unable to read data");
         }
     }
 

@@ -37,6 +37,12 @@ class SQLGameDAOTest {
     }
 
     @Test
+    void getGameFail() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
+        Assertions.assertNull(sgd.getGame(0));
+    }
+
+    @Test
     void listGames() throws SQLException, DataAccessException {
         sgd.createGame("hundred acre woods", "winnie", null);
         Collection<GameData> list = sgd.listGames();
@@ -51,6 +57,18 @@ class SQLGameDAOTest {
         Assertions.assertEquals("{}", result);
         String blackResult = sgd.updateGame(data, ChessGame.TeamColor.BLACK, "piglet");
         Assertions.assertEquals("{}", blackResult);
+    }
+
+    @Test
+    void updateGameFail() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", null, null);
+        GameData data = sgd.getGameByName("hundred acre woods");
+        sgd.updateGame(data, ChessGame.TeamColor.WHITE, "winnie");
+        String whiteResult = sgd.updateGame(data, ChessGame.TeamColor.WHITE, "piglet");
+        Assertions.assertEquals("taken", whiteResult);
+        sgd.updateGame(data, ChessGame.TeamColor.BLACK, "piglet");
+        String blackResult = sgd.updateGame(data, ChessGame.TeamColor.BLACK, "rabbit");
+        Assertions.assertEquals("taken", blackResult);
     }
 
     @Test
@@ -70,6 +88,12 @@ class SQLGameDAOTest {
     @Test
     void getGameByName() throws SQLException, DataAccessException {
         sgd.createGame("hundred acre woods", "winnie", null);
+        Assertions.assertNull(sgd.getGameByName("tournament"));
+    }
+
+    @Test
+    void getGameByNameFail() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
         GameData actual = sgd.getGameByName("hundred acre woods");
         Assertions.assertEquals("winnie", actual.getWhiteUsername());
     }
@@ -78,5 +102,11 @@ class SQLGameDAOTest {
     void getPreviousID() throws SQLException, DataAccessException {
         sgd.createGame("hundred acre woods", "winnie", null);
         Assertions.assertEquals(1, sgd.getPreviousID());
+    }
+
+    @Test
+    void getPreviousIDFail() throws SQLException, DataAccessException {
+        sgd.createGame("hundred acre woods", "winnie", null);
+        Assertions.assertNotEquals(2, sgd.getPreviousID());
     }
 }
