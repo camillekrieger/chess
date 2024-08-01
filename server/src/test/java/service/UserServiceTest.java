@@ -41,7 +41,7 @@ class UserServiceTest {
         userService.register(user1);
         userService.register(user2);
         AuthData authData3 = userService.register(user3);
-        Assertions.assertNull(authData3.getUsername());
+        Assertions.assertNull(authData3);
     }
 
     @Test

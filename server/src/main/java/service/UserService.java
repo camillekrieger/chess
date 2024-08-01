@@ -56,7 +56,7 @@ public class UserService {
                 return authDAO.getAuth(ad);
             }
             else{
-                String ad = authDAO.createAuth(null);
+                String ad = authDAO.createAuth("taken");
                 return authDAO.getAuth(ad);
             }
         }

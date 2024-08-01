@@ -13,6 +13,7 @@ import spark.*;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Server {
 
@@ -62,7 +63,7 @@ public class Server {
             ec.setMessage("Error: bad request");
             return new Gson().toJson(ec);
         }
-        else if (authData.getUsername() == null){
+        else if ("taken".equals(authData.getUsername())){
             response.status(403);
             ErrorClass ec = new ErrorClass();
             ec.setMessage("Error: already taken");

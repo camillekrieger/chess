@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,10 +57,16 @@ class SQLAuthDAOTest {
     }
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException, SQLException {
+        sad.clear();
+        HashMap<String, AuthData> result = sad.getAuths();
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAuths() {
+    void getAuths() throws SQLException, DataAccessException {
+        sad.createAuth("winnie");
+        HashMap<String, AuthData> result = sad.getAuths();
+        Assertions.assertEquals(1, result.size());
     }
 }
