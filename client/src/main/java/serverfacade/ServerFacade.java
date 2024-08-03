@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.net.*;
 
 public class ServerFacade {
-
     private final String serverURL;
 
     private String path = null;
