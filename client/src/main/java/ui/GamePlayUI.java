@@ -7,4 +7,8 @@ public class GamePlayUI {
     public String help(){
         return null;
     }
+
+    public void drawBoard(){
+        //draw the initial board
+    }
 }
