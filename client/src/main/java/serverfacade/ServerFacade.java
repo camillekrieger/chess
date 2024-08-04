@@ -29,8 +29,9 @@ public class ServerFacade {
         makeRequest("DELETE", path, null, null);
     }
 
-    public Object register(UserData user) throws URISyntaxException, IOException {
+    public Object register(String username, String password, String email) throws URISyntaxException, IOException {
         path = "/user";
+        UserData user = new UserData(username, password, email);
         return makeRequest("POST", path, user, AuthData.class);
     }
 
