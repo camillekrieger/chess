@@ -62,6 +62,7 @@ public class ServerFacadeTests {
 
     @Test
     void createGame() throws Exception {
+        facade.clear();
         facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame("newGame");
         Assertions.assertEquals(1, gameID);

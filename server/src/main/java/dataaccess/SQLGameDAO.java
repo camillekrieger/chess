@@ -146,6 +146,7 @@ public class SQLGameDAO implements GameDAO{
         var conn = DatabaseManager.getConnection();
         var ps = conn.prepareStatement(statement);
         ps.executeUpdate();
+        nextGameID = 1;
     }
 
     @Override
