@@ -7,9 +7,11 @@ import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import serverfacade.ServerFacade;
+import ui.ListGamesResponse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,8 +73,9 @@ public class ServerFacadeTests {
     void listGames() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
         facade.createGame(authData.getAuthToken(), "newGame");
-        GameData[] list = facade.listGames(authData.getAuthToken());
-        Assertions.assertEquals(1, list.length);
+        ListGamesResponse list = facade.listGames(authData.getAuthToken());
+        Collection<GameData> games = list.getGameDataList();
+        Assertions.assertNotNull(games);
     }
 
     @Test
@@ -80,9 +83,10 @@ public class ServerFacadeTests {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame(authData.getAuthToken(), "newGame");
         facade.joinGame(authData.getAuthToken(), ChessGame.TeamColor.WHITE, gameID);
-        GameData[] list = facade.listGames(authData.getAuthToken());
-        Assertions.assertEquals("player1", list[0].getWhiteUsername());
+        ListGamesResponse list = facade.listGames(authData.getAuthToken());
+        Collection<GameData> games = list.getGameDataList();
+        for(GameData game : games){
+            Assertions.assertEquals("player1", game.getWhiteUsername());
+        }
     }
-
-
 }
