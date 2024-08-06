@@ -10,7 +10,6 @@ import serverfacade.ServerFacade;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.HashMap;
 
 
@@ -55,7 +54,7 @@ public class ServerFacadeTests {
     void logout() throws Exception {
         facade.register("player1", "password", "p1@email.com");
         AuthData authData = facade.login("player1", "password");
-        facade.logout(authData.getAuthToken());
+        facade.logout();
         SQLAuthDAO sad = new SQLAuthDAO();
         HashMap<String, AuthData> list = sad.getAuths();
         Assertions.assertNull(list.get("player1"));
@@ -64,24 +63,24 @@ public class ServerFacadeTests {
     @Test
     void createGame() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
-        int gameID = facade.createGame(authData.getAuthToken(), "newGame");
+        int gameID = facade.createGame("newGame");
         Assertions.assertEquals(1, gameID);
     }
 
     @Test
     void listGames() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
-        facade.createGame(authData.getAuthToken(), "newGame");
-        GameData[] list = facade.listGames(authData.getAuthToken());
+        facade.createGame("newGame");
+        GameData[] list = facade.listGames();
         Assertions.assertNotNull(list);
     }
 
     @Test
     void joinGame() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
-        int gameID = facade.createGame(authData.getAuthToken(), "newGame");
-        facade.joinGame(authData.getAuthToken(), ChessGame.TeamColor.WHITE, gameID);
-        GameData[] list = facade.listGames(authData.getAuthToken());
+        int gameID = facade.createGame("newGame");
+        facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+        GameData[] list = facade.listGames();
         for(GameData game : list){
             Assertions.assertEquals("player1", game.getWhiteUsername());
         }
@@ -90,7 +89,7 @@ public class ServerFacadeTests {
     @Test
     void clear() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
-        facade.createGame(authData.getAuthToken(), "newGame");
+        facade.createGame("newGame");
         facade.clear();
     }
 }

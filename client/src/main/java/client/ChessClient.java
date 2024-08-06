@@ -50,7 +50,7 @@ public class ChessClient {
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout(params);
-                case "help" -> "help";
+                case "help" -> this.help();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -62,9 +62,8 @@ public class ChessClient {
     public String register(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
             server.register(params[0], params[1], params[2]);
-            return String.format("You registered as %s.", visitorName);
+            return String.format("You registered as %s.", params[0]);
         }
         throw new IOException();
     }
@@ -72,7 +71,7 @@ public class ChessClient {
     public String login(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
+            visitorName = params[0];
             server.login(params[0], params[1]);
             return String.format("You are signed in as %s.", visitorName);
         }
@@ -81,7 +80,7 @@ public class ChessClient {
 
     public String createGame(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            server.createGame(params[0], params[1]);
+            server.createGame(params[0]);
             return "You created a game";
         }
         throw new IOException();
@@ -89,7 +88,7 @@ public class ChessClient {
 
     public String listGames(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            server.listGames(params[0]);
+            server.listGames();
             return "These are the current games.";
         }
         throw new IOException();
@@ -102,13 +101,13 @@ public class ChessClient {
             if ("WHITE".equals(params[1])){
                 ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
                 int gameID = Integer.parseInt(params[2]);
-                server.joinGame(params[0], color, gameID);
+                server.joinGame(color, gameID);
                 c = "White";
             }
             else{
                 ChessGame.TeamColor color = ChessGame.TeamColor.BLACK;
                 int gameID = Integer.parseInt(params[2]);
-                server.joinGame(params[0], color, gameID);
+                server.joinGame(color, gameID);
                 c = "Black";
             }
             gamePlay.draw();
@@ -129,7 +128,7 @@ public class ChessClient {
         if (params.length >= 1) {
             state = State.SIGNEDOUT;
             visitorName = String.join("-", params);
-            server.logout(params[0]);
+            server.logout();
             return "You are logged out";
         }
         throw new IOException();

@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import ui.CreateGameRequest;
 import ui.JoinGameRequest;
 import ui.LoginRequest;
 
@@ -19,6 +18,7 @@ public class ServerFacade {
     private final int port;
 
     private String path = null;
+    private String authToken;
 
     public ServerFacade(int port){
         this.port = port;
@@ -26,47 +26,51 @@ public class ServerFacade {
 
     public void clear() throws URISyntaxException, IOException {
         path = "/db";
-        makeRequest("DELETE", path, null, null);
+        makeRequest("DELETE", path, null, null,null);
     }
 
     public AuthData register(String username, String password, String email) throws URISyntaxException, IOException {
         path = "/user";
         UserData user = new UserData(username, password, email);
-        return makeRequest("POST", path, user, AuthData.class);
+        AuthData authData = makeRequest("POST", path, user, null, AuthData.class);
+        authToken = authData.getAuthToken();
+        return authData;
     }
 
     public AuthData login(String username, String password) throws URISyntaxException, IOException {
         path = "/session";
         LoginRequest loginRequest = new LoginRequest(username, password);
-        return makeRequest("POST", path, loginRequest, AuthData.class);
+        AuthData authData = makeRequest("POST", path, loginRequest, null, AuthData.class);
+        authToken = authData.getAuthToken();
+        return authData;
     }
 
-    public void logout(String authToken) throws URISyntaxException, IOException {
+    public void logout() throws URISyntaxException, IOException {
         path = "/session";
-        makeRequest("DELETE", path, authToken, null);
+        makeRequest("DELETE", path, null, authToken, null);
     }
 
-    public GameData[] listGames(String authToken) throws URISyntaxException, IOException {
+    public GameData[] listGames() throws URISyntaxException, IOException {
         path = "/game";
         record listGamesResponse(GameData[] games) {
         }
-        var response = makeRequest("GET", path, authToken, listGamesResponse.class);
+        var response = makeRequest("GET", path, null, authToken, listGamesResponse.class);
         return response.games();
     }
 
-    public int createGame(String authToken, String gameName) throws URISyntaxException, IOException {
+    public int createGame(String gameName) throws URISyntaxException, IOException {
         path = "/game";
-        CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
-        return makeRequest("POST", path, createGameRequest, int.class);
+        return makeRequest("POST", path, gameName, authToken, int.class);
     }
 
-    public void joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws URISyntaxException, IOException {
+    public void joinGame(ChessGame.TeamColor color, int gameID) throws URISyntaxException, IOException {
         path = "/game";
-        JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color, gameID);
-        makeRequest("PUT", path, joinGameRequest, null);
+        JoinGameRequest joinGameRequest = new JoinGameRequest(color, gameID);
+        makeRequest("PUT", path, joinGameRequest, authToken, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> response) throws URISyntaxException, IOException {
+    //have header data be different from body data
+    private <T> T makeRequest(String method, String path, Object request, String headerValue, Class<T> response) throws URISyntaxException, IOException {
         try {
             String scheme = "http";
             String host = "localhost";
@@ -74,7 +78,12 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-            writeBody(request, http);
+            if (headerValue != null){
+                http.setRequestProperty("authorization", headerValue);
+            }
+            if (request != null) {
+                writeBody(request, http);
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, response);
