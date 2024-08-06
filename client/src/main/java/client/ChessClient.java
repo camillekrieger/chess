@@ -15,8 +15,9 @@ public class ChessClient {
     private State state = State.SIGNEDOUT;
     private final ServerFacade server;
     private String visitorName = null;
+    private GamePlayUI gamePlay;
 
-    public ChessClient(String serverURL){
+    public ChessClient(int serverURL){
         this.server = new ServerFacade(serverURL);
     }
 
@@ -26,7 +27,8 @@ public class ChessClient {
             return preLog.help();
         }
         else if (state == State.PLAYGAME){
-            GamePlayUI gamePlay = new GamePlayUI();
+            ChessGame game = new ChessGame();
+            gamePlay = new GamePlayUI(game);
             return gamePlay.help();
         }
         else{
@@ -94,19 +96,23 @@ public class ChessClient {
     }
 
     public String joinGame(String... params) throws URISyntaxException, IOException {
+        String c;
         if (params.length >= 1) {
             state = State.PLAYGAME;
             if ("WHITE".equals(params[1])){
                 ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
                 int gameID = Integer.parseInt(params[2]);
                 server.joinGame(params[0], color, gameID);
+                c = "White";
             }
             else{
                 ChessGame.TeamColor color = ChessGame.TeamColor.BLACK;
                 int gameID = Integer.parseInt(params[2]);
                 server.joinGame(params[0], color, gameID);
+                c = "Black";
             }
-            return "You have joined the game.";
+            gamePlay.draw();
+            return String.format("You have joined the game as %s", c);
         }
         throw new IOException();
     }

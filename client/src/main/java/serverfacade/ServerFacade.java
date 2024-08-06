@@ -16,12 +16,12 @@ import java.io.OutputStream;
 import java.net.*;
 
 public class ServerFacade {
-    private final String serverURL;
+    private final int port;
 
     private String path = null;
 
-    public ServerFacade(String url){
-        this.serverURL = url;
+    public ServerFacade(int port){
+        this.port = port;
     }
 
     public void clear() throws URISyntaxException, IOException {
@@ -29,7 +29,7 @@ public class ServerFacade {
         makeRequest("DELETE", path, null, null);
     }
 
-    public Object register(String username, String password, String email) throws URISyntaxException, IOException {
+    public AuthData register(String username, String password, String email) throws URISyntaxException, IOException {
         path = "/user";
         UserData user = new UserData(username, password, email);
         return makeRequest("POST", path, user, AuthData.class);
@@ -48,8 +48,7 @@ public class ServerFacade {
 
     public Object listGames(String authToken) throws URISyntaxException, IOException {
         path = "/game";
-        record listGamesResponse(GameData[] gameData) {
-        }
+        record listGamesResponse(GameData[] gameData) {}
         return makeRequest("GET", path, authToken, listGamesResponse.class);
     }
 
@@ -67,7 +66,9 @@ public class ServerFacade {
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> response) throws URISyntaxException, IOException {
         try {
-            URL url = (new URI(serverURL + path)).toURL();
+            String scheme = "http";
+            String host = "localhost";
+            URL url = (new URI(scheme, null, host, port, path, null, null)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
