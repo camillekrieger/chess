@@ -25,12 +25,12 @@ public class ServerFacade {
         this.port = port;
     }
 
-    public void clear() throws URISyntaxException, IOException {
+    public void clear() throws IOException {
         path = "/db";
         makeRequest("DELETE", path, null, null,null);
     }
 
-    public AuthData register(String username, String password, String email) throws URISyntaxException, IOException {
+    public AuthData register(String username, String password, String email) throws IOException {
         path = "/user";
         UserData user = new UserData(username, password, email);
         AuthData authData = makeRequest("POST", path, user, null, AuthData.class);
@@ -38,7 +38,7 @@ public class ServerFacade {
         return authData;
     }
 
-    public AuthData login(String username, String password) throws URISyntaxException, IOException {
+    public AuthData login(String username, String password) throws IOException {
         path = "/session";
         LoginRequest loginRequest = new LoginRequest(username, password);
         AuthData authData = makeRequest("POST", path, loginRequest, null, AuthData.class);
@@ -46,19 +46,19 @@ public class ServerFacade {
         return authData;
     }
 
-    public void logout() throws URISyntaxException, IOException {
+    public void logout() throws IOException {
         path = "/session";
         makeRequest("DELETE", path, null, authToken, null);
     }
 
-    public GameData[] listGames() throws URISyntaxException, IOException {
+    public GameData[] listGames() throws IOException {
         path = "/game";
         record listGamesResponse(GameData[] games) {}
         var response = makeRequest("GET", path, null, authToken, listGamesResponse.class);
         return response.games();
     }
 
-    public int createGame(String gameName) throws URISyntaxException, IOException {
+    public int createGame(String gameName) throws IOException {
         path = "/game";
         CreateGameRequest cgr = new CreateGameRequest(gameName);
         record createGameResponse(int gameID){}
@@ -66,14 +66,13 @@ public class ServerFacade {
         return response.gameID;
     }
 
-    public void joinGame(ChessGame.TeamColor color, int gameID) throws URISyntaxException, IOException {
+    public void joinGame(ChessGame.TeamColor color, int gameID) throws IOException {
         path = "/game";
         JoinGameRequest joinGameRequest = new JoinGameRequest(color, gameID);
         makeRequest("PUT", path, joinGameRequest, authToken, null);
     }
 
-    //have header data be different from body data
-    private <T> T makeRequest(String method, String path, Object request, String headerValue, Class<T> response) throws URISyntaxException, IOException {
+    private <T> T makeRequest(String method, String path, Object request, String headerValue, Class<T> response) throws IOException {
         try {
             String scheme = "http";
             String host = "localhost";

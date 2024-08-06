@@ -143,7 +143,7 @@ public class Server {
     private Object joinGameHandler(Request request, Response response) throws DataAccessException {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
-        var info = serializer.fromJson(request.body(), JoinRequest.class);
+        JoinRequest info = serializer.fromJson(request.body(), JoinRequest.class);
         if (info.getGameID() == null || info.getColor() == null){
             response.status(400);
             ErrorClass ec = new ErrorClass();

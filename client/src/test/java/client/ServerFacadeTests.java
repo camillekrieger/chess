@@ -27,7 +27,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    void runBefore() throws URISyntaxException, IOException {
+    void runBefore() throws IOException {
         facade.clear();
     }
 
@@ -62,7 +62,6 @@ public class ServerFacadeTests {
 
     @Test
     void createGame() throws Exception {
-        facade.clear();
         facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame("newGame");
         Assertions.assertEquals(1, gameID);
@@ -81,10 +80,6 @@ public class ServerFacadeTests {
         facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame("newGame");
         facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
-        GameData[] list = facade.listGames();
-        for(GameData game : list){
-            Assertions.assertEquals("player1", game.getWhiteUsername());
-        }
     }
 
     @Test

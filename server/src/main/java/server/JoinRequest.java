@@ -4,7 +4,12 @@ import chess.ChessGame;
 
 public class JoinRequest {
     ChessGame.TeamColor playerColor;
-    Integer gameID;
+    int gameID;
+
+    public JoinRequest(ChessGame.TeamColor color, int id){
+        this.playerColor = color;
+        this.gameID = id;
+    }
 
     ChessGame.TeamColor getColor(){
         return playerColor;
