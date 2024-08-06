@@ -6,16 +6,15 @@ import java.util.Scanner;
 
 public class Repl {
     private final ChessClient client;
+    private final State state;
 
     public Repl(int serverURL){
-        client = new ChessClient(serverURL);
+        state = State.LOGGED_OUT;
+        client = new ChessClient(serverURL, state);
     }
 
     public void run(){
-        System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type Help to get started. \uD83D\uDC36");
-        System.out.println();
-        System.out.print(client.help());
-
+        System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type help to get started. \uD83D\uDC36");
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -24,9 +23,6 @@ public class Repl {
             try {
                 result = client.eval(input);
                 System.out.print(result);
-                if (result.equals("You are logged out")){
-                    break;
-                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -36,6 +32,6 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\nprompt: ");
+        System.out.printf("\n[%s] >>> ", state);
     }
 }

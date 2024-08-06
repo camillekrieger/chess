@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import ui.CreateGameRequest;
 import ui.JoinGameRequest;
 import ui.LoginRequest;
 
@@ -52,15 +53,17 @@ public class ServerFacade {
 
     public GameData[] listGames() throws URISyntaxException, IOException {
         path = "/game";
-        record listGamesResponse(GameData[] games) {
-        }
+        record listGamesResponse(GameData[] games) {}
         var response = makeRequest("GET", path, null, authToken, listGamesResponse.class);
         return response.games();
     }
 
     public int createGame(String gameName) throws URISyntaxException, IOException {
         path = "/game";
-        return makeRequest("POST", path, gameName, authToken, int.class);
+        CreateGameRequest cgr = new CreateGameRequest(gameName);
+        record createGameResponse(int gameID){}
+        createGameResponse response = makeRequest("POST", path, cgr, authToken, createGameResponse.class);
+        return response.gameID;
     }
 
     public void joinGame(ChessGame.TeamColor color, int gameID) throws URISyntaxException, IOException {

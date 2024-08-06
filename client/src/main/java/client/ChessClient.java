@@ -12,17 +12,17 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 
 public class ChessClient {
-    private State state = State.SIGNEDOUT;
+    private State state;
     private final ServerFacade server;
-    private String visitorName = null;
     private GamePlayUI gamePlay;
 
-    public ChessClient(int serverURL){
+    public ChessClient(int serverURL, State state){
         this.server = new ServerFacade(serverURL);
+        this.state = state;
     }
 
     public String help(){
-        if (state == State.SIGNEDOUT){
+        if (state == State.LOGGED_OUT){
             PreloginUI preLog = new PreloginUI();
             return preLog.help();
         }
@@ -61,19 +61,18 @@ public class ChessClient {
 
     public String register(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            state = State.SIGNEDIN;
+            state = State.LOGGED_IN;
             server.register(params[0], params[1], params[2]);
-            return String.format("You registered as %s.", params[0]);
+            return String.format("Logged in as %s.", params[0]);
         }
         throw new IOException();
     }
 
     public String login(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            state = State.SIGNEDIN;
-            visitorName = params[0];
+            state = State.LOGGED_IN;
             server.login(params[0], params[1]);
-            return String.format("You are signed in as %s.", visitorName);
+            return String.format("Logged in as %s.", params[0]);
         }
         throw new IOException();
     }
@@ -126,8 +125,7 @@ public class ChessClient {
 
     public String logout(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            state = State.SIGNEDOUT;
-            visitorName = String.join("-", params);
+            state = State.LOGGED_OUT;
             server.logout();
             return "You are logged out";
         }
