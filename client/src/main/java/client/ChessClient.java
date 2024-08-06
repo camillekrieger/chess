@@ -119,7 +119,8 @@ public class ChessClient {
 
     public String observeGame(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            return "Observe game.";
+            gamePlay.draw();
+            return "You are now observing a game.";
         }
         throw new IOException();
     }

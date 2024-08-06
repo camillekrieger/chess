@@ -6,12 +6,12 @@ public class PostloginUI {
 
     public String help(){
         return """
-                - create <NAME> - a game
-                - list - games
-                - join <ID> [WHITE|BLACK] - a game
-                - observe <ID> - a game
-                - logout - when you are done
-                - quit - playing chess
-                - help - with possible commands""";
+                  \tcreate <NAME> - a game
+                  \tlist - games
+                  \tjoin <ID> [WHITE|BLACK] - a game
+                  \tobserve <ID> - a game
+                  \tlogout - when you are done
+                  \tquit - playing chess
+                  \thelp - with possible commands""";
     }
 }

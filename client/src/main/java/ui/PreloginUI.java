@@ -6,9 +6,9 @@ public class PreloginUI {
 
     public String help(){
         return """
-                - register <USERNAME> <PASSWORD> <EMAIL> - to create an account
-                - login <USERNAME> <PASSWORD> - to play chess
-                - quit - playing chess
-                - help - with possible commands""";
+                  \tregister <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                  \tlogin <USERNAME> <PASSWORD> - to play chess
+                  \tquit - playing chess
+                  \thelp - with possible commands""";
     }
 }

@@ -7,7 +7,6 @@ import model.GameData;
 import model.UserData;
 import ui.CreateGameRequest;
 import ui.JoinGameRequest;
-import ui.ListGamesResponse;
 import ui.LoginRequest;
 
 import java.io.IOException;
@@ -15,8 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
-import java.util.Collection;
-import java.util.List;
 
 public class ServerFacade {
     private final int port;
@@ -49,9 +46,12 @@ public class ServerFacade {
         makeRequest("DELETE", path, authToken, null);
     }
 
-    public ListGamesResponse listGames(String authToken) throws URISyntaxException, IOException {
+    public GameData[] listGames(String authToken) throws URISyntaxException, IOException {
         path = "/game";
-        return makeRequest("GET", path, authToken, ListGamesResponse.class);
+        record listGamesResponse(GameData[] games) {
+        }
+        var response = makeRequest("GET", path, authToken, listGamesResponse.class);
+        return response.games();
     }
 
     public int createGame(String authToken, String gameName) throws URISyntaxException, IOException {
@@ -91,7 +91,7 @@ public class ServerFacade {
     }
 
     private boolean isSuccessful(int status){
-        return status / 100 == 2;
+        return status == 200;
     }
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
