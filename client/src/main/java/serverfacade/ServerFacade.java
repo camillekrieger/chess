@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.List;
 
 public class ServerFacade {
     private final int port;
@@ -35,33 +36,33 @@ public class ServerFacade {
         return makeRequest("POST", path, user, AuthData.class);
     }
 
-    public Object login(String username, String password) throws URISyntaxException, IOException {
+    public AuthData login(String username, String password) throws URISyntaxException, IOException {
         path = "/session";
         LoginRequest loginRequest = new LoginRequest(username, password);
         return makeRequest("POST", path, loginRequest, AuthData.class);
     }
 
-    public Object logout(String authToken) throws URISyntaxException, IOException {
+    public void logout(String authToken) throws URISyntaxException, IOException {
         path = "/session";
-        return makeRequest("DELETE", path, authToken, null);
+        makeRequest("DELETE", path, authToken, null);
     }
 
-    public Object listGames(String authToken) throws URISyntaxException, IOException {
+    public GameData[] listGames(String authToken) throws URISyntaxException, IOException {
         path = "/game";
         record listGamesResponse(GameData[] gameData) {}
         return makeRequest("GET", path, authToken, listGamesResponse.class);
     }
 
-    public Object createGame(String authToken, String gameName) throws URISyntaxException, IOException {
+    public int createGame(String authToken, String gameName) throws URISyntaxException, IOException {
         path = "/game";
         CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
         return makeRequest("POST", path, createGameRequest, int.class);
     }
 
-    public Object joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws URISyntaxException, IOException {
+    public void joinGame(String authToken, ChessGame.TeamColor color, int gameID) throws URISyntaxException, IOException {
         path = "/game";
         JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color, gameID);
-        return makeRequest("PUT", path, joinGameRequest, null);
+        makeRequest("PUT", path, joinGameRequest, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> response) throws URISyntaxException, IOException {

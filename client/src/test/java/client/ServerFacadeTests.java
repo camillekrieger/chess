@@ -1,12 +1,17 @@
 package client;
 
+import chess.ChessGame;
+import dataaccess.SQLAuthDAO;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import serverfacade.ServerFacade;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class ServerFacadeTests {
@@ -20,6 +25,10 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade(port);
+    }
+
+    @BeforeEach
+    void runBefore() throws URISyntaxException, IOException {
         facade.clear();
     }
 
@@ -34,4 +43,46 @@ public class ServerFacadeTests {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
         Assertions.assertTrue(authData.getAuthToken().length() > 10);
     }
+
+    @Test
+    void login() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        AuthData loginResult = facade.login("player1", "password");
+        Assertions.assertEquals("player1", loginResult.getUsername());
+    }
+
+    @Test
+    void logout() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.logout(authData.getAuthToken());
+        SQLAuthDAO sad = new SQLAuthDAO();
+        HashMap<String, AuthData> list = sad.getAuths();
+        Assertions.assertNull(list.get("player1"));
+    }
+
+    @Test
+    void createGame() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        int gameID = facade.createGame(authData.getAuthToken(), "newGame");
+        Assertions.assertEquals(1, gameID);
+    }
+
+    @Test
+    void listGames() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.createGame(authData.getAuthToken(), "newGame");
+        GameData[] list = facade.listGames(authData.getAuthToken());
+        Assertions.assertEquals(1, list.length);
+    }
+
+    @Test
+    void joinGame() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        int gameID = facade.createGame(authData.getAuthToken(), "newGame");
+        facade.joinGame(authData.getAuthToken(), ChessGame.TeamColor.WHITE, gameID);
+        GameData[] list = facade.listGames(authData.getAuthToken());
+        Assertions.assertEquals("player1", list[0].getWhiteUsername());
+    }
+
+
 }
