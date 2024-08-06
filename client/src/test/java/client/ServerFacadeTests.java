@@ -9,7 +9,6 @@ import server.Server;
 import serverfacade.ServerFacade;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 
 
@@ -44,10 +43,26 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void registerFail() throws IOException {
+        Assertions.assertThrows(IOException.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            facade.register("player1", "newPassword", "player@email.com");
+        });
+    }
+
+    @Test
     void login() throws Exception {
         facade.register("player1", "password", "p1@email.com");
         AuthData loginResult = facade.login("player1", "password");
         Assertions.assertEquals("player1", loginResult.getUsername());
+    }
+
+    @Test
+    void loginFail() {
+        Assertions.assertThrows(IOException.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            facade.login("player1", "wrongPassword");
+        });
     }
 
     @Test
@@ -68,6 +83,15 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void createGameFail() {
+        Assertions.assertThrows(IOException.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            facade.createGame("newGame");
+            facade.createGame("newGame");
+        });
+    }
+
+    @Test
     void listGames() throws Exception {
         facade.register("player1", "password", "p1@email.com");
         facade.createGame("newGame");
@@ -80,6 +104,23 @@ public class ServerFacadeTests {
         facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame("newGame");
         facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+        GameData[] games = facade.listGames();
+        for (GameData game : games){
+            if (game.getGameID() == gameID) {
+                Assertions.assertEquals("player1", game.getWhiteUsername());
+            }
+        }
+    }
+
+    @Test
+    void joinGameFail(){
+        Assertions.assertThrows(IOException.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            int gameID = facade.createGame("newGame");
+            facade.joinGame(ChessGame.TeamColor.BLACK, gameID);
+            facade.register("piglet", "wind", "pig@hawoods.com");
+            facade.joinGame(ChessGame.TeamColor.BLACK, gameID);
+        });
     }
 
     @Test
