@@ -53,7 +53,7 @@ public class ServerFacadeTests {
     @Test
     void logout() throws Exception {
         facade.register("player1", "password", "p1@email.com");
-        AuthData authData = facade.login("player1", "password");
+        facade.login("player1", "password");
         facade.logout();
         SQLAuthDAO sad = new SQLAuthDAO();
         HashMap<String, AuthData> list = sad.getAuths();
@@ -62,14 +62,14 @@ public class ServerFacadeTests {
 
     @Test
     void createGame() throws Exception {
-        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame("newGame");
         Assertions.assertEquals(1, gameID);
     }
 
     @Test
     void listGames() throws Exception {
-        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.register("player1", "password", "p1@email.com");
         facade.createGame("newGame");
         GameData[] list = facade.listGames();
         Assertions.assertNotNull(list);
@@ -77,7 +77,7 @@ public class ServerFacadeTests {
 
     @Test
     void joinGame() throws Exception {
-        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame("newGame");
         facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
         GameData[] list = facade.listGames();
@@ -88,7 +88,7 @@ public class ServerFacadeTests {
 
     @Test
     void clear() throws Exception {
-        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.register("player1", "password", "p1@email.com");
         facade.createGame("newGame");
         facade.clear();
     }
