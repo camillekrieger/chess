@@ -17,7 +17,6 @@ public class ChessClient {
     public ChessClient(int serverURL, State state) throws IOException {
         this.server = new ServerFacade(serverURL);
         this.state = state;
-        server.clear();
     }
 
     public String help(){
@@ -51,11 +50,18 @@ public class ChessClient {
                 case "logout" -> logout(params);
                 case "help" -> this.help();
                 case "quit" -> "quit";
+                case "exit" -> exit();
                 default -> help();
             };
         } catch (Exception ex) {
             return ex.getMessage();
         }
+    }
+
+
+    public String exit(){
+        state = State.LOGGED_IN;
+        return "exit";
     }
 
     public String register(String... params) throws IOException {
@@ -80,27 +86,24 @@ public class ChessClient {
         if (params.length >= 1) {
             CreateGameResponse response = server.createGame(params[0]);
             if (response.getGameID() == 0 || response.getGameID() == -1){
-                return response.getMessage();
+                return "Invalid name or name already taken.";
             }
-            return String.format("Created %s game with %d id.", params[0], response.getGameID());
+            return String.format("Created game name: %s with game id: %d.", params[0], response.getGameID());
         }
         throw new IOException("Invalid game name.");
     }
 
-    public String listGames(String... params) throws IOException {
-        if (params.length >= 1) {
-            ListGamesResponse response = server.listGames();
-            if (response.getGames().isEmpty()){
-                return response.getMessage();
-            }
-            else{
-                for (GameData game : response.getGames()){
-                    System.out.println(game);
-                }
-                return "These are the current games.";
-            }
+    public String listGames() throws IOException {
+        ListGamesResponse response = server.listGames();
+        if (response.getGames().isEmpty()){
+            return response.getMessage();
         }
-        throw new IOException("There are no current games.");
+        else{
+            for (GameData game : response.getGames()){
+                System.out.println(game);
+            }
+            return "These are the current games.";
+        }
     }
 
     public String joinGame(String... params) throws IOException {
@@ -119,6 +122,12 @@ public class ChessClient {
                 server.joinGame(color, gameID);
                 c = "Black";
             }
+            ListGamesResponse games = server.listGames();
+            for (GameData game : games.getGames()){
+                if (game.getGameID() == Integer.parseInt(params[0])){
+                    gamePlay = new GamePlayUI(game.getGame());
+                }
+            }
             gamePlay.draw();
             return String.format("You have joined the game as %s", c);
         }
@@ -126,20 +135,25 @@ public class ChessClient {
     }
 
     public String observeGame(String... params) throws IOException {
+        String name = null;
         if (params.length >= 1) {
+            ListGamesResponse games = server.listGames();
+            for (GameData game : games.getGames()){
+                if (game.getGameID() == Integer.parseInt(params[0])){
+                    gamePlay = new GamePlayUI(game.getGame());
+                    name = game.getGameName();
+                }
+            }
             gamePlay.draw();
-            return "You are now observing a game.";
+            return String.format("You are now observing %s game.", name);
         }
         throw new IOException("Game does not exist.");
     }
 
     public String logout(String... params) throws IOException {
-        if (params.length >= 1) {
-            state = State.LOGGED_OUT;
-            server.logout();
-            //if it is null that means you are logged out
-            return "You are logged out";
-        }
-        throw new IOException("You are not logged out.");
+        state = State.LOGGED_OUT;
+        server.logout();
+        //if it is null that means you are logged out
+        return "You are logged out";
     }
 }

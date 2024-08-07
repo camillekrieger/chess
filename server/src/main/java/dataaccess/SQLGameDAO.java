@@ -7,6 +7,7 @@ import model.GameData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,21 +22,24 @@ public class SQLGameDAO implements GameDAO{
 
     @Override
     public int createGame(String gameName, String whiteUsername, String blackUsername) throws DataAccessException, SQLException {
-        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+        var statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         ChessGame newGame = new ChessGame();
         //change chess game to json object
         var gameJson = new Gson().toJson(newGame);
         try (var conn = DatabaseManager.getConnection()){
-            try (var ps = conn.prepareStatement(statement)){
-                ps.setInt(1, nextGameID);
-                ps.setString(2, whiteUsername);
-                ps.setString(3, blackUsername);
-                ps.setString(4, gameName);
-                ps.setString(5, gameJson);
+            try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)){
+                ps.setString(1, whiteUsername);
+                ps.setString(2, blackUsername);
+                ps.setString(3, gameName);
+                ps.setString(4, gameJson);
                 ps.executeUpdate();
-                int temp = nextGameID;
-                nextGameID++;
-                return temp;
+                //return game id
+                var resultSet = ps.getGeneratedKeys();
+                var ID = 0;
+                if (resultSet.next()) {
+                    ID = resultSet.getInt(1);
+                }
+                return ID;
             }
         } catch (Exception e){
             throw new DataAccessException("Unable to read data");

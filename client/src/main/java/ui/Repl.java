@@ -34,7 +34,7 @@ public class Repl {
     }
 
     private void changeState(String result){
-        if (result.contains("register") || result.contains("login")){
+        if (result.contains("register") || result.contains("login") || result.contains("exit")){
             state = State.LOGGED_IN;
         }
         else if (result.contains("logout")){

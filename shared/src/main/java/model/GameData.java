@@ -56,4 +56,15 @@ public class GameData {
     public void setGame(ChessGame game) {
         this.game = game;
     }
+
+    @Override
+    public String toString() {
+        return "GameData{" +
+                "gameID=" + gameID +
+                ", whiteUsername='" + whiteUsername + '\'' +
+                ", blackUsername='" + blackUsername + '\'' +
+                ", gameName='" + gameName + '\'' +
+                ", game=" + game +
+                '}';
+    }
 }

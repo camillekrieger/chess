@@ -22,7 +22,8 @@ public class GamePlayUI {
     }
 
     public String help(){
-        return null;
+        return """
+                \texit - exit the game""";
     }
 
     public void draw() {
