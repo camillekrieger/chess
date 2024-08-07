@@ -14,8 +14,6 @@ import java.util.HashMap;
 
 public class SQLGameDAO implements GameDAO{
 
-    private int nextGameID = 1;
-
     public SQLGameDAO() throws DataAccessException {
         configureDatabase();
     }
@@ -150,7 +148,6 @@ public class SQLGameDAO implements GameDAO{
         var conn = DatabaseManager.getConnection();
         var ps = conn.prepareStatement(statement);
         ps.executeUpdate();
-        nextGameID = 1;
     }
 
     @Override
@@ -161,7 +158,8 @@ public class SQLGameDAO implements GameDAO{
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        result.put(getPreviousID(), readGame(rs));
+                        int ID = rs.getInt("gameID");
+                        result.put(ID, readGame(rs));
                     }
                 }
             }
@@ -187,11 +185,6 @@ public class SQLGameDAO implements GameDAO{
             throw new DataAccessException("Unable to read data");
         }
         return null;
-    }
-
-    @Override
-    public int getPreviousID() {
-        return nextGameID - 1;
     }
 
     private final String[] createStatements = {

@@ -144,7 +144,7 @@ public class Server {
         var serializer = new Gson();
         String authToken = request.headers("authorization");
         JoinRequest info = serializer.fromJson(request.body(), JoinRequest.class);
-        if (info.getGameID() == null || info.getColor() == null){
+        if (info.getGameID() == null || info.getColor() == null || info.getGameID() < 1){
             response.status(400);
             ErrorClass ec = new ErrorClass();
             ec.setMessage("Error: bad request");

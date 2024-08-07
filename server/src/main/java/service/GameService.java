@@ -69,8 +69,4 @@ public class GameService {
     public static GameDAO getGameDAO() {
         return gameDAO;
     }
-
-    public int getPreviousGameID(){
-        return gameDAO.getPreviousID();
-    }
 }

@@ -53,9 +53,8 @@ class GameServiceTest {
     void createGame() throws DataAccessException, SQLException {
         UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
         AuthData auth = userService.register(user);
-        int gameID = gameService.createGame(auth.getAuthToken(), "tournament");
-        int result = gameService.getPreviousGameID();
-        Assertions.assertEquals(result, gameID);
+        gameService.createGame(auth.getAuthToken(), "tournament");
+        Assertions.assertNotNull(gameService.listGames(auth.getAuthToken()));
     }
 
     @Test

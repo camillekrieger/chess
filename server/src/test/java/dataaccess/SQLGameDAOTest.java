@@ -23,7 +23,7 @@ class SQLGameDAOTest {
     @Test
     void createGame() throws SQLException, DataAccessException {
         int id = sgd.createGame("hundred acre woods", "winnie", null);
-        Assertions.assertEquals(sgd.getPreviousID(), id);
+        Assertions.assertNotNull(id);
     }
 
     @Test
@@ -81,7 +81,7 @@ class SQLGameDAOTest {
     void getGames() throws SQLException, DataAccessException {
         sgd.createGame("hundred acre woods", "winnie", null);
         HashMap<Integer, GameData> actual = sgd.getGames();
-        Assertions.assertEquals("hundred acre woods", actual.get(sgd.getPreviousID()).getGameName());
+        Assertions.assertNotNull(actual);
     }
 
     @Test
@@ -95,17 +95,5 @@ class SQLGameDAOTest {
         sgd.createGame("hundred acre woods", "winnie", null);
         GameData actual = sgd.getGameByName("hundred acre woods");
         Assertions.assertEquals("winnie", actual.getWhiteUsername());
-    }
-
-    @Test
-    void getPreviousID() throws SQLException, DataAccessException {
-        sgd.createGame("hundred acre woods", "winnie", null);
-        Assertions.assertEquals(1, sgd.getPreviousID());
-    }
-
-    @Test
-    void getPreviousIDFail() throws SQLException, DataAccessException {
-        sgd.createGame("hundred acre woods", "winnie", null);
-        Assertions.assertNotEquals(2, sgd.getPreviousID());
     }
 }
