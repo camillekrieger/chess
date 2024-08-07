@@ -13,9 +13,9 @@ public class GamePlayUI {
 
     private static ChessGame currGame;
 
-    private static final int gameBoardDimensions = 8;
-    private static final String[] topHeaders = {"a", "b", "c", "d", "e", "f", "g", "h"};
-    private static final String[] sideHeaders = {"1", "2", "3", "4", "5", "6", "7", "8"};
+    private static final int GAME_BOARD_DIMENSIONS = 8;
+    private static final String[] TOP_HEADERS = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    private static final String[] SIDE_HEADERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
     public GamePlayUI(ChessGame game){
         currGame = game;
@@ -50,20 +50,20 @@ public class GamePlayUI {
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(EMPTY);
         for (int boardCol = 8; boardCol > 0; boardCol--) {
-            drawHeader(out, topHeaders[boardCol - 1]);
+            drawHeader(out, TOP_HEADERS[boardCol - 1]);
         }
         out.println();
     }
 
     private static void drawUpsideDown(PrintStream out, ChessGame game){
         boolean boardColor;
-        for (int squareRow = 1; squareRow <= gameBoardDimensions; squareRow++) {
+        for (int squareRow = 1; squareRow <= GAME_BOARD_DIMENSIONS; squareRow++) {
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
-            out.print(sideHeaders[squareRow - 1]);
+            out.print(SIDE_HEADERS[squareRow - 1]);
             out.print(" ");
             boardColor = squareRow % 2 == 0;
-            for (int boardCol = 1; boardCol <= gameBoardDimensions; boardCol++) {
+            for (int boardCol = 1; boardCol <= GAME_BOARD_DIMENSIONS; boardCol++) {
                 if (boardColor){
                     out.print(SET_BG_COLOR_DARK_GREEN);
                     boardColor = false;
@@ -77,7 +77,7 @@ public class GamePlayUI {
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
-            out.print(sideHeaders[squareRow - 1]);
+            out.print(SIDE_HEADERS[squareRow - 1]);
             out.print(" ");
             out.println();
         }
@@ -85,7 +85,7 @@ public class GamePlayUI {
 
     private static void drawHorizontalLine(PrintStream out){;
         out.print(SET_BG_COLOR_DARK_GREEN);
-        out.print(EMPTY.repeat(gameBoardDimensions + 2));
+        out.print(EMPTY.repeat(GAME_BOARD_DIMENSIONS + 2));
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
         out.println();
@@ -96,7 +96,7 @@ public class GamePlayUI {
         for (int squareRow = 8; squareRow > 0; squareRow--) {
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
-            out.print(sideHeaders[squareRow - 1]);
+            out.print(SIDE_HEADERS[squareRow - 1]);
             out.print(" ");
             boardColor = squareRow % 2 == 1;
             for (int boardCol = 8; boardCol > 0; boardCol--) {
@@ -113,7 +113,7 @@ public class GamePlayUI {
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
-            out.print(sideHeaders[squareRow - 1]);
+            out.print(SIDE_HEADERS[squareRow - 1]);
             out.print(" ");
             out.println();
         }
@@ -193,8 +193,8 @@ public class GamePlayUI {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(EMPTY);
-        for (int boardCol = 0; boardCol < gameBoardDimensions; ++boardCol) {
-            drawHeader(out, topHeaders[boardCol]);
+        for (int boardCol = 0; boardCol < GAME_BOARD_DIMENSIONS; ++boardCol) {
+            drawHeader(out, TOP_HEADERS[boardCol]);
         }
         out.println();
     }

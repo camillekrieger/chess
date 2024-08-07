@@ -33,11 +33,11 @@ public class SQLGameDAO implements GameDAO{
                 ps.executeUpdate();
                 //return game id
                 var resultSet = ps.getGeneratedKeys();
-                var ID = 0;
+                var iD = 0;
                 if (resultSet.next()) {
-                    ID = resultSet.getInt(1);
+                    iD = resultSet.getInt(1);
                 }
-                return ID;
+                return iD;
             }
         } catch (Exception e){
             throw new DataAccessException("Unable to read data");
@@ -158,8 +158,8 @@ public class SQLGameDAO implements GameDAO{
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        int ID = rs.getInt("gameID");
-                        result.put(ID, readGame(rs));
+                        int iD = rs.getInt("gameID");
+                        result.put(iD, readGame(rs));
                     }
                 }
             }
