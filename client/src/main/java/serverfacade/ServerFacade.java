@@ -5,10 +5,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import ui.CreateGameRequest;
-import ui.CreateGameResponse;
-import ui.JoinGameRequest;
-import ui.LoginRequest;
+import ui.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,11 +49,9 @@ public class ServerFacade {
         makeRequest("DELETE", path, null, authToken, null);
     }
 
-    public GameData[] listGames() throws IOException {
+    public ListGamesResponse listGames() throws IOException {
         path = "/game";
-        record listGamesResponse(GameData[] games) {}
-        var response = makeRequest("GET", path, null, authToken, listGamesResponse.class);
-        return response.games();
+        return makeRequest("GET", path, null, authToken, ListGamesResponse.class);
     }
 
     public CreateGameResponse createGame(String gameName) throws IOException {
@@ -90,7 +85,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, response);
         } catch (Exception e){
-            throw new IOException();
+            throw new IOException(e.getMessage());
         }
     }
 

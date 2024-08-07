@@ -8,6 +8,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import serverfacade.ServerFacade;
 import ui.CreateGameResponse;
+import ui.ListGamesResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -96,8 +97,8 @@ public class ServerFacadeTests {
     void listGames() throws Exception {
         facade.register("player1", "password", "p1@email.com");
         facade.createGame("newGame");
-        GameData[] list = facade.listGames();
-        Assertions.assertNotNull(list);
+        ListGamesResponse list = facade.listGames();
+        Assertions.assertNotNull(list.getGames());
     }
 
     @Test
@@ -105,8 +106,8 @@ public class ServerFacadeTests {
         facade.register("player1", "password", "p1@email.com");
         CreateGameResponse response = facade.createGame("newGame");
         facade.joinGame(ChessGame.TeamColor.WHITE, response.getGameID());
-        GameData[] games = facade.listGames();
-        for (GameData game : games){
+        ListGamesResponse games = facade.listGames();
+        for (GameData game : games.getGames()){
             if (game.getGameID() == response.getGameID()) {
                 Assertions.assertEquals("player1", game.getWhiteUsername());
             }

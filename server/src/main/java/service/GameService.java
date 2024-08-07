@@ -4,7 +4,6 @@ import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.MemoryGameDAO;
 import dataaccess.SQLGameDAO;
 import model.AuthData;
 import model.GameData;

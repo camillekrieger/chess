@@ -2,13 +2,14 @@ package ui;
 
 import client.ChessClient;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Repl {
     private final ChessClient client;
     private State state;
 
-    public Repl(int serverURL){
+    public Repl(int serverURL) throws IOException {
         state = State.LOGGED_OUT;
         client = new ChessClient(serverURL, state);
     }

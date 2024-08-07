@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
 
@@ -13,9 +14,10 @@ public class ChessClient {
     private final ServerFacade server;
     private GamePlayUI gamePlay;
 
-    public ChessClient(int serverURL, State state){
+    public ChessClient(int serverURL, State state) throws IOException {
         this.server = new ServerFacade(serverURL);
         this.state = state;
+        server.clear();
     }
 
     public String help(){
@@ -77,7 +79,7 @@ public class ChessClient {
     public String createGame(String... params) throws IOException {
         if (params.length >= 1) {
             CreateGameResponse response = server.createGame(params[0]);
-            if (response.getGameID() < 1){
+            if (response.getGameID() == 0 || response.getGameID() == -1){
                 return response.getMessage();
             }
             return String.format("Created %s game with %d id.", params[0], response.getGameID());
@@ -87,9 +89,16 @@ public class ChessClient {
 
     public String listGames(String... params) throws IOException {
         if (params.length >= 1) {
-            server.listGames();
-            //know if that returns null or not
-            return "These are the current games.";
+            ListGamesResponse response = server.listGames();
+            if (response.getGames().isEmpty()){
+                return response.getMessage();
+            }
+            else{
+                for (GameData game : response.getGames()){
+                    System.out.println(game);
+                }
+                return "These are the current games.";
+            }
         }
         throw new IOException("There are no current games.");
     }
@@ -100,13 +109,13 @@ public class ChessClient {
             state = State.PLAYGAME;
             if ("WHITE".equals(params[1])){
                 ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
-                int gameID = Integer.parseInt(params[2]);
+                int gameID = Integer.parseInt(params[0]);
                 server.joinGame(color, gameID);
                 c = "White";
             }
             else{
                 ChessGame.TeamColor color = ChessGame.TeamColor.BLACK;
-                int gameID = Integer.parseInt(params[2]);
+                int gameID = Integer.parseInt(params[0]);
                 server.joinGame(color, gameID);
                 c = "Black";
             }
