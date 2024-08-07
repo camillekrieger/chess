@@ -23,8 +23,13 @@ public class Repl {
             result = scanner.nextLine();
             try {
                 String output = client.eval(result);
-                System.out.print(output);
-                changeState(result);
+                if (output != null){
+                    System.out.print(output);
+                    changeState(result);
+                }
+                else{
+                    System.out.print("Invalid input.");
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);

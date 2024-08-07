@@ -128,7 +128,7 @@ public class ChessClient {
             }
             gamePlay = new GamePlayUI(currGame);
             gamePlay.draw();
-            return String.format("You have joined the game as %s", c);
+            return String.format("You have joined the game as %s.", c);
         }
         throw new IOException("Invalid credentials");
     }
@@ -153,6 +153,6 @@ public class ChessClient {
         state = State.LOGGED_OUT;
         server.logout();
         //if it is null that means you are logged out
-        return "You are logged out";
+        return "You are logged out.";
     }
 }
