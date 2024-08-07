@@ -14,7 +14,7 @@ public class ListGamesResult {
 
     void addGames(Collection<GameData> gameData){
         for (GameData gd : gameData) {
-            ListResult lr = new ListResult(gd.getGameID(), gd.getWhiteUsername(), gd.getBlackUsername(), gd.getGameName());
+            ListResult lr = new ListResult(gd.getGameID(), gd.getWhiteUsername(), gd.getBlackUsername(), gd.getGameName(), gd.getGame());
             games.add(lr);
         }
     }
