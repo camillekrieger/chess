@@ -63,12 +63,12 @@ public class SQLGameDAO implements GameDAO{
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
-        var gameID = rs.getInt("gameID");
-        var whiteUsername = rs.getString("whiteUsername");
-        var blackUsername = rs.getString("blackUsername");
-        var gameName = rs.getString("gameName");
-        var game = rs.getString("game");
-        var gotGame = new Gson().fromJson(game, ChessGame.class);
+        int gameID = rs.getInt("gameID");
+        String whiteUsername = rs.getString("whiteUsername");
+        String blackUsername = rs.getString("blackUsername");
+        String gameName = rs.getString("gameName");
+        String game = rs.getString("game");
+        ChessGame gotGame = new Gson().fromJson(game, ChessGame.class);
         return new GameData(gameID, whiteUsername, blackUsername, gameName, gotGame);
     }
 

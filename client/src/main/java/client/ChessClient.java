@@ -110,24 +110,23 @@ public class ChessClient {
         String c;
         if (params.length >= 1) {
             state = State.PLAYGAME;
-            if ("WHITE".equals(params[1])){
-                ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
-                int gameID = Integer.parseInt(params[0]);
-                server.joinGame(color, gameID);
+            int gameID = Integer.parseInt(params[0]);
+            if ("white".equals(params[1])){
+                server.joinGame(ChessGame.TeamColor.WHITE, gameID);
                 c = "White";
             }
             else{
-                ChessGame.TeamColor color = ChessGame.TeamColor.BLACK;
-                int gameID = Integer.parseInt(params[0]);
-                server.joinGame(color, gameID);
+                server.joinGame(ChessGame.TeamColor.BLACK, gameID);
                 c = "Black";
             }
+            ChessGame currGame = new ChessGame();
             ListGamesResponse games = server.listGames();
             for (GameData game : games.getGames()){
-                if (game.getGameID() == Integer.parseInt(params[0])){
-                    gamePlay = new GamePlayUI(game.getGame());
+                if (game.getGameID() == gameID){
+                    currGame = game.getGame();
                 }
             }
+            gamePlay = new GamePlayUI(currGame);
             gamePlay.draw();
             return String.format("You have joined the game as %s", c);
         }

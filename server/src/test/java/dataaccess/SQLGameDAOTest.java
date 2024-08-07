@@ -23,7 +23,7 @@ class SQLGameDAOTest {
     @Test
     void createGame() throws SQLException, DataAccessException {
         int id = sgd.createGame("hundred acre woods", "winnie", null);
-        Assertions.assertNotNull(id);
+        Assertions.assertNotNull(sgd.getGame(id));
     }
 
     @Test
