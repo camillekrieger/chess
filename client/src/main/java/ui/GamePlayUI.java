@@ -58,10 +58,10 @@ public class GamePlayUI {
     private static boolean drawSquare(boolean boardColor, PrintStream out, ChessGame game, int squareRow, int boardCol){
         boolean result = false;
         if (boardColor){
-            out.print(SET_BG_COLOR_DARK_GREEN);
+            out.print(SET_BG_COLOR_RED);
         }
         else{
-            out.print(SET_BG_COLOR_GREEN);
+            out.print(SET_BG_COLOR_MAGENTA);
             result = true;
         }
         printCharacter(out, game, squareRow, boardCol);
@@ -88,8 +88,8 @@ public class GamePlayUI {
         }
     }
 
-    private static void drawHorizontalLine(PrintStream out){;
-        out.print(SET_BG_COLOR_DARK_GREEN);
+    private static void drawHorizontalLine(PrintStream out){
+        out.print(SET_BG_COLOR_BLACK);
         out.print(EMPTY.repeat(GAME_BOARD_DIMENSIONS + 2));
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
