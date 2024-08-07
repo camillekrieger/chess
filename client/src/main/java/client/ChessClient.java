@@ -47,7 +47,7 @@ public class ChessClient {
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
-                case "logout" -> logout(params);
+                case "logout" -> logout();
                 case "help" -> this.help();
                 case "quit" -> "quit";
                 case "exit" -> exit();
@@ -66,8 +66,8 @@ public class ChessClient {
 
     public String register(String... params) throws IOException {
         if (params.length >= 1) {
-            state = State.LOGGED_IN;
             server.register(params[0], params[1], params[2]);
+            state = State.LOGGED_IN;
             return String.format("Logged in as %s.", params[0]);
         }
         throw new IOException("Username already taken.");
@@ -75,8 +75,8 @@ public class ChessClient {
 
     public String login(String... params) throws URISyntaxException, IOException {
         if (params.length >= 1) {
-            state = State.LOGGED_IN;
             server.login(params[0], params[1]);
+            state = State.LOGGED_IN;
             return String.format("Logged in as %s.", params[0]);
         }
         throw new IOException("Wrong login credentials.");
@@ -109,7 +109,6 @@ public class ChessClient {
     public String joinGame(String... params) throws IOException {
         String c;
         if (params.length >= 1) {
-            state = State.PLAYGAME;
             int gameID = Integer.parseInt(params[0]);
             if ("white".equals(params[1])){
                 server.joinGame(ChessGame.TeamColor.WHITE, gameID);
@@ -128,6 +127,7 @@ public class ChessClient {
             }
             gamePlay = new GamePlayUI(currGame);
             gamePlay.draw();
+            state = State.PLAYGAME;
             return String.format("You have joined the game as %s.", c);
         }
         throw new IOException("Invalid credentials");
@@ -144,15 +144,15 @@ public class ChessClient {
                 }
             }
             gamePlay.draw();
+            state = State.PLAYGAME;
             return String.format("You are now observing %s game.", name);
         }
         throw new IOException("Game does not exist.");
     }
 
-    public String logout(String... params) throws IOException {
-        state = State.LOGGED_OUT;
+    public String logout() throws IOException {
         server.logout();
-        //if it is null that means you are logged out
+        state = State.LOGGED_OUT;
         return "You are logged out.";
     }
 }

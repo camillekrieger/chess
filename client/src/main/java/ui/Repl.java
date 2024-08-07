@@ -39,13 +39,24 @@ public class Repl {
     }
 
     private void changeState(String result){
-        if (result.contains("register") || result.contains("login") || result.contains("exit")){
+        String[] words = result.split("\\s+");
+        int size = words.length;
+        if (result.contains("register") && size == 4) {
+            state = State.LOGGED_IN;
+        }
+        else if (result.contains("login") && size == 3) {
+            state = State.LOGGED_IN;
+        }
+        else if (result.contains("exit")){
             state = State.LOGGED_IN;
         }
         else if (result.contains("logout")){
             state = State.LOGGED_OUT;
         }
-        else if (result.contains("join") || result.contains("observe")){
+        else if (result.contains("join") && size == 3){
+            state = State.PLAYGAME;
+        }
+        else if (result.contains("observe") && size == 2){
             state = State.PLAYGAME;
         }
     }
