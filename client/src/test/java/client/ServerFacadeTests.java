@@ -7,6 +7,7 @@ import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import serverfacade.ServerFacade;
+import ui.CreateGameResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -78,8 +79,8 @@ public class ServerFacadeTests {
     @Test
     void createGame() throws Exception {
         facade.register("player1", "password", "p1@email.com");
-        int gameID = facade.createGame("newGame");
-        Assertions.assertEquals(1, gameID);
+        CreateGameResponse response = facade.createGame("newGame");
+        Assertions.assertEquals(1, response.getGameID());
     }
 
     @Test
@@ -102,11 +103,11 @@ public class ServerFacadeTests {
     @Test
     void joinGame() throws Exception {
         facade.register("player1", "password", "p1@email.com");
-        int gameID = facade.createGame("newGame");
-        facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+        CreateGameResponse response = facade.createGame("newGame");
+        facade.joinGame(ChessGame.TeamColor.WHITE, response.getGameID());
         GameData[] games = facade.listGames();
         for (GameData game : games){
-            if (game.getGameID() == gameID) {
+            if (game.getGameID() == response.getGameID()) {
                 Assertions.assertEquals("player1", game.getWhiteUsername());
             }
         }
@@ -116,10 +117,10 @@ public class ServerFacadeTests {
     void joinGameFail(){
         Assertions.assertThrows(IOException.class, () -> {
             facade.register("player1", "password", "p1@email.com");
-            int gameID = facade.createGame("newGame");
-            facade.joinGame(ChessGame.TeamColor.BLACK, gameID);
+            CreateGameResponse response = facade.createGame("newGame");
+            facade.joinGame(ChessGame.TeamColor.BLACK, response.getGameID());
             facade.register("piglet", "wind", "pig@hawoods.com");
-            facade.joinGame(ChessGame.TeamColor.BLACK, gameID);
+            facade.joinGame(ChessGame.TeamColor.BLACK, response.getGameID());
         });
     }
 

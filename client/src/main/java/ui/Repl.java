@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Repl {
     private final ChessClient client;
-    private final State state;
+    private State state;
 
     public Repl(int serverURL){
         state = State.LOGGED_OUT;
@@ -14,21 +14,34 @@ public class Repl {
     }
 
     public void run(){
-        System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type help to get started. \uD83D\uDC36");
+        System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type help to get started. \uD83D\uDC51");
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
             printPrompt();
-            String input = scanner.nextLine();
+            result = scanner.nextLine();
             try {
-                result = client.eval(input);
-                System.out.print(result);
+                String output = client.eval(result);
+                System.out.print(output);
+                changeState(result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
             }
         }
         System.out.println();
+    }
+
+    private void changeState(String result){
+        if (result.contains("register") || result.contains("login")){
+            state = State.LOGGED_IN;
+        }
+        else if (result.contains("logout")){
+            state = State.LOGGED_OUT;
+        }
+        else if (result.contains("join") || result.contains("observe")){
+            state = State.PLAYGAME;
+        }
     }
 
     private void printPrompt() {

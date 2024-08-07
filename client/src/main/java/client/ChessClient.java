@@ -2,10 +2,7 @@ package client;
 
 import chess.ChessGame;
 import serverfacade.ServerFacade;
-import ui.GamePlayUI;
-import ui.PostloginUI;
-import ui.PreloginUI;
-import ui.State;
+import ui.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -59,13 +56,13 @@ public class ChessClient {
         }
     }
 
-    public String register(String... params) throws URISyntaxException, IOException {
+    public String register(String... params) throws IOException {
         if (params.length >= 1) {
             state = State.LOGGED_IN;
             server.register(params[0], params[1], params[2]);
             return String.format("Logged in as %s.", params[0]);
         }
-        throw new IOException();
+        throw new IOException("Username already taken.");
     }
 
     public String login(String... params) throws URISyntaxException, IOException {
@@ -74,26 +71,30 @@ public class ChessClient {
             server.login(params[0], params[1]);
             return String.format("Logged in as %s.", params[0]);
         }
-        throw new IOException();
+        throw new IOException("Wrong login credentials.");
     }
 
-    public String createGame(String... params) throws URISyntaxException, IOException {
+    public String createGame(String... params) throws IOException {
         if (params.length >= 1) {
-            server.createGame(params[0]);
-            return "You created a game";
+            CreateGameResponse response = server.createGame(params[0]);
+            if (response.getGameID() < 1){
+                return response.getMessage();
+            }
+            return String.format("Created %s game with %d id.", params[0], response.getGameID());
         }
-        throw new IOException();
+        throw new IOException("Invalid game name.");
     }
 
-    public String listGames(String... params) throws URISyntaxException, IOException {
+    public String listGames(String... params) throws IOException {
         if (params.length >= 1) {
             server.listGames();
+            //know if that returns null or not
             return "These are the current games.";
         }
-        throw new IOException();
+        throw new IOException("There are no current games.");
     }
 
-    public String joinGame(String... params) throws URISyntaxException, IOException {
+    public String joinGame(String... params) throws IOException {
         String c;
         if (params.length >= 1) {
             state = State.PLAYGAME;
@@ -112,23 +113,24 @@ public class ChessClient {
             gamePlay.draw();
             return String.format("You have joined the game as %s", c);
         }
-        throw new IOException();
+        throw new IOException("Invalid credentials");
     }
 
-    public String observeGame(String... params) throws URISyntaxException, IOException {
+    public String observeGame(String... params) throws IOException {
         if (params.length >= 1) {
             gamePlay.draw();
             return "You are now observing a game.";
         }
-        throw new IOException();
+        throw new IOException("Game does not exist.");
     }
 
-    public String logout(String... params) throws URISyntaxException, IOException {
+    public String logout(String... params) throws IOException {
         if (params.length >= 1) {
             state = State.LOGGED_OUT;
             server.logout();
+            //if it is null that means you are logged out
             return "You are logged out";
         }
-        throw new IOException();
+        throw new IOException("You are not logged out.");
     }
 }

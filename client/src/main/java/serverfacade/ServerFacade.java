@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import ui.CreateGameRequest;
+import ui.CreateGameResponse;
 import ui.JoinGameRequest;
 import ui.LoginRequest;
 
@@ -58,12 +59,11 @@ public class ServerFacade {
         return response.games();
     }
 
-    public int createGame(String gameName) throws IOException {
+    public CreateGameResponse createGame(String gameName) throws IOException {
         path = "/game";
         CreateGameRequest cgr = new CreateGameRequest(gameName);
-        record createGameResponse(int gameID){}
-        createGameResponse response = makeRequest("POST", path, cgr, authToken, createGameResponse.class);
-        return response.gameID;
+        //make this a class
+        return makeRequest("POST", path, cgr, authToken, CreateGameResponse.class);
     }
 
     public void joinGame(ChessGame.TeamColor color, int gameID) throws IOException {
