@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
@@ -8,15 +9,18 @@ import ui.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class ChessClient {
     private State state;
     private final ServerFacade server;
     private GamePlayUI gamePlay;
+    private HashMap <Integer, Integer> numToID;
 
     public ChessClient(int serverURL, State state) throws IOException {
         this.server = new ServerFacade(serverURL);
         this.state = state;
+        this.numToID = new HashMap<>();
     }
 
     public String help(){
@@ -65,89 +69,123 @@ public class ChessClient {
     }
 
     public String register(String... params) throws IOException {
-        if (params.length >= 1) {
+        if (params.length == 3) {
             server.register(params[0], params[1], params[2]);
             state = State.LOGGED_IN;
             return String.format("Logged in as %s.", params[0]);
         }
-        throw new IOException("Username already taken.");
+        return null;
     }
 
-    public String login(String... params) throws URISyntaxException, IOException {
-        if (params.length >= 1) {
+    public String login(String... params) throws IOException {
+        if (params.length == 2) {
             server.login(params[0], params[1]);
             state = State.LOGGED_IN;
             return String.format("Logged in as %s.", params[0]);
         }
-        throw new IOException("Wrong login credentials.");
+        else{
+            return null;
+        }
     }
 
     public String createGame(String... params) throws IOException {
-        if (params.length >= 1) {
+        if (params.length == 1) {
             CreateGameResponse response = server.createGame(params[0]);
             if (response.getGameID() == 0 || response.getGameID() == -1){
-                return "Invalid name or name already taken.";
+                return null;
             }
-            return String.format("Created game name: %s with game id: %d.", params[0], response.getGameID());
+            return String.format("Created game: %s.", params[0]);
         }
-        throw new IOException("Invalid game name.");
+        return null;
     }
 
     public String listGames() throws IOException {
         ListGamesResponse response = server.listGames();
+        int i = 1;
         if (response.getGames().isEmpty()){
             return response.getMessage();
         }
         else{
+            System.out.println("Current games:");
             for (GameData game : response.getGames()){
-                System.out.println(game);
+                int gameID = game.getGameID();
+                String gameName = game.getGameName();
+                String whitePlayer = game.getWhiteUsername();
+                String blackPlayer = game.getBlackUsername();
+                System.out.printf("%d\tNAME: %s\tWHITE PLAYER: %s\tBLACK PLAYER: %s", i, gameName, whitePlayer, blackPlayer);
+                System.out.println();
+                numToID.put(i, gameID);
+                i++;
             }
-            return "These are the current games.";
+            return "You can join a game with at least one null player.";
         }
     }
 
     public String joinGame(String... params) throws IOException {
-        String c;
-        if (params.length >= 1) {
-            int gameID = Integer.parseInt(params[0]);
-            if ("white".equals(params[1])){
-                server.joinGame(ChessGame.TeamColor.WHITE, gameID);
-                c = "White";
-            }
-            else{
-                server.joinGame(ChessGame.TeamColor.BLACK, gameID);
-                c = "Black";
-            }
-            ChessGame currGame = new ChessGame();
-            ListGamesResponse games = server.listGames();
-            for (GameData game : games.getGames()){
-                if (game.getGameID() == gameID){
-                    currGame = game.getGame();
+        try {
+            String c;
+            if (params.length == 2) {
+                int gameNum = Integer.parseInt(params[0]);
+                int gameID = numToID.get(gameNum);
+                if ("white".equals(params[1])) {
+                    server.joinGame(ChessGame.TeamColor.WHITE, gameID);
+                    c = "White";
+                } else {
+                    server.joinGame(ChessGame.TeamColor.BLACK, gameID);
+                    c = "Black";
                 }
+                ChessGame currGame = new ChessGame();
+                ListGamesResponse games = server.listGames();
+                for (GameData game : games.getGames()) {
+                    if (game.getGameID() == gameID) {
+                        currGame = game.getGame();
+                    }
+                }
+                gamePlay = new GamePlayUI(currGame);
+                gamePlay.draw();
+                state = State.PLAYGAME;
+                return String.format("You have joined the game as %s.", c);
             }
-            gamePlay = new GamePlayUI(currGame);
-            gamePlay.draw();
-            state = State.PLAYGAME;
-            return String.format("You have joined the game as %s.", c);
+        } catch (Exception e) {
+            return null;
         }
-        throw new IOException("Invalid credentials");
+        return null;
+    }
+
+    private void populateList() throws IOException {
+        ListGamesResponse response = server.listGames();
+        int i = 1;
+        for (GameData game : response.getGames()){
+            int gameID = game.getGameID();
+            numToID.put(i, gameID);
+            i++;
+        }
     }
 
     public String observeGame(String... params) throws IOException {
-        String name = null;
-        if (params.length >= 1) {
-            ListGamesResponse games = server.listGames();
-            for (GameData game : games.getGames()){
-                if (game.getGameID() == Integer.parseInt(params[0])){
-                    gamePlay = new GamePlayUI(game.getGame());
-                    name = game.getGameName();
+        try {
+            String name = null;
+            if (params.length == 1) {
+                ListGamesResponse games = server.listGames();
+                int gameNum = Integer.parseInt(params[0]);
+                if (gameNum > numToID.size()) {
+                    populateList();
                 }
+                int gameID = numToID.get(gameNum);
+                for (GameData game : games.getGames()) {
+                    if (game.getGameID() == gameID) {
+                        gamePlay = new GamePlayUI(game.getGame());
+                        name = game.getGameName();
+                    }
+                }
+                gamePlay.draw();
+                state = State.PLAYGAME;
+                return String.format("You are now observing %s.", name);
             }
-            gamePlay.draw();
-            state = State.PLAYGAME;
-            return String.format("You are now observing %s game.", name);
+        } catch (Exception e) {
+            return null;
         }
-        throw new IOException("Game does not exist.");
+        return null;
     }
 
     public String logout() throws IOException {

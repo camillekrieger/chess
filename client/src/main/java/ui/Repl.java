@@ -28,7 +28,7 @@ public class Repl {
                     changeState(result);
                 }
                 else{
-                    System.out.print("Invalid input.");
+                    System.out.print("Invalid input. Please try again.");
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
