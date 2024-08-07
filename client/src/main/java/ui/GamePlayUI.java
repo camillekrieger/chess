@@ -55,6 +55,19 @@ public class GamePlayUI {
         out.println();
     }
 
+    private static boolean drawSquare(boolean boardColor, PrintStream out, ChessGame game, int squareRow, int boardCol){
+        boolean result = false;
+        if (boardColor){
+            out.print(SET_BG_COLOR_DARK_GREEN);
+        }
+        else{
+            out.print(SET_BG_COLOR_GREEN);
+            result = true;
+        }
+        printCharacter(out, game, squareRow, boardCol);
+        return result;
+    }
+
     private static void drawUpsideDown(PrintStream out, ChessGame game){
         boolean boardColor;
         for (int squareRow = 1; squareRow <= GAME_BOARD_DIMENSIONS; squareRow++) {
@@ -63,16 +76,8 @@ public class GamePlayUI {
             out.print(SIDE_HEADERS[squareRow - 1]);
             out.print(" ");
             boardColor = squareRow % 2 == 0;
-            for (int boardCol = 1; boardCol <= GAME_BOARD_DIMENSIONS; boardCol++) {
-                if (boardColor){
-                    out.print(SET_BG_COLOR_DARK_GREEN);
-                    boardColor = false;
-                }
-                else{
-                    out.print(SET_BG_COLOR_GREEN);
-                    boardColor = true;
-                }
-                printCharacter(out, game, squareRow, boardCol);
+            for (int boardCol = 8; boardCol > 0; boardCol--) {
+                boardColor = drawSquare(boardColor, out, game, squareRow, boardCol);
             }
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
@@ -99,16 +104,8 @@ public class GamePlayUI {
             out.print(SIDE_HEADERS[squareRow - 1]);
             out.print(" ");
             boardColor = squareRow % 2 == 1;
-            for (int boardCol = 8; boardCol > 0; boardCol--) {
-                if (boardColor){
-                    out.print(SET_BG_COLOR_DARK_GREEN);
-                    boardColor = false;
-                }
-                else{
-                    out.print(SET_BG_COLOR_GREEN);
-                    boardColor = true;
-                }
-                printCharacter(out, game, squareRow, boardCol);
+            for (int boardCol = 1; boardCol <= GAME_BOARD_DIMENSIONS; boardCol++) {
+                boardColor = drawSquare(boardColor, out, game, squareRow, boardCol);
             }
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
