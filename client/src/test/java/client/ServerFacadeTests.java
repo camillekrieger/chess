@@ -68,6 +68,15 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void loginWrongUsername(){
+        Assertions.assertThrows(IOException.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            facade.logout();
+            facade.login("wrong", "password");
+        });
+    }
+
+    @Test
     void logout() throws Exception {
         facade.register("player1", "password", "p1@email.com");
         facade.login("player1", "password");
@@ -122,6 +131,15 @@ public class ServerFacadeTests {
             facade.joinGame(ChessGame.TeamColor.BLACK, response.getGameID());
             facade.register("piglet", "wind", "pig@hawoods.com");
             facade.joinGame(ChessGame.TeamColor.BLACK, response.getGameID());
+        });
+    }
+
+    @Test
+    void joinGameWrongId(){
+        Assertions.assertThrows(IOException.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            facade.createGame("newGame");
+            facade.joinGame(ChessGame.TeamColor.BLACK, 0);
         });
     }
 
