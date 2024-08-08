@@ -58,10 +58,10 @@ public class GamePlayUI {
     private static boolean drawSquare(boolean boardColor, PrintStream out, ChessGame game, int squareRow, int boardCol){
         boolean result = false;
         if (boardColor){
-            out.print(SET_BG_COLOR_RED);
+            out.print(SET_BG_COLOR_DARK_GREEN);
         }
         else{
-            out.print(SET_BG_COLOR_MAGENTA);
+            out.print(SET_BG_COLOR_TAN);
             result = true;
         }
         printCharacter(out, game, squareRow, boardCol);
