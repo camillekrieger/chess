@@ -1,13 +1,11 @@
 package client;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -15,7 +13,9 @@ public class ChessClient {
     private State state;
     private final ServerFacade server;
     private GamePlayUI gamePlay;
-    private HashMap <Integer, Integer> numToID;
+    private final HashMap <Integer, Integer> numToID;
+
+    private String currColor;
 
     public ChessClient(int serverURL, State state) throws IOException {
         this.server = new ServerFacade(serverURL);
@@ -55,6 +55,7 @@ public class ChessClient {
                 case "help" -> this.help();
                 case "quit" -> "quit";
                 case "leave" -> exit();
+                case "redraw" -> redrawBoard();
                 default -> help();
             };
         } catch (Exception ex) {
@@ -62,6 +63,10 @@ public class ChessClient {
         }
     }
 
+    public String redrawBoard(){
+        gamePlay.redrawBoard(currColor);
+        return "Here is the current game board.";
+    }
 
     public String exit(){
         state = State.LOGGED_IN;
@@ -121,18 +126,17 @@ public class ChessClient {
         }
     }
 
-    public String joinGame(String... params) throws IOException {
+    public String joinGame(String... params) {
         try {
-            String c;
             if (params.length == 2) {
                 int gameNum = Integer.parseInt(params[0]);
                 int gameID = numToID.get(gameNum);
                 if ("white".equals(params[1])) {
                     server.joinGame(ChessGame.TeamColor.WHITE, gameID);
-                    c = "White";
+                    currColor = "White";
                 } else {
                     server.joinGame(ChessGame.TeamColor.BLACK, gameID);
-                    c = "Black";
+                    currColor = "Black";
                 }
                 ChessGame currGame = new ChessGame();
                 ListGamesResponse games = server.listGames();
@@ -142,14 +146,14 @@ public class ChessClient {
                     }
                 }
                 gamePlay = new GamePlayUI(currGame);
-                if (c.equals("White")){
+                if (currColor.equals("White")){
                     gamePlay.drawWhite();
                 }
                 else {
                     gamePlay.drawBlack();
                 }
                 state = State.PLAYGAME;
-                return String.format("You have joined the game as %s.", c);
+                return String.format("You have joined the game as %s.", currColor);
             }
         } catch (Exception e) {
             return null;

@@ -31,6 +31,15 @@ public class GamePlayUI {
                 \thelp - with possible commands""";
     }
 
+    public void redrawBoard(String color){
+        if (color.equals("White")){
+            drawWhite();
+        }
+        else {
+            drawBlack();
+        }
+    }
+
     public void draw() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
