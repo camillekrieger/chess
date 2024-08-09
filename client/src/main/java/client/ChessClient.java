@@ -8,16 +8,17 @@ import ui.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class ChessClient {
     private State state;
     private final ServerFacade server;
     private GamePlayUI gamePlay;
     private final HashMap <Integer, Integer> numToID;
-
     private String currColor;
+    private String currGameNum;
 
-    public ChessClient(int serverURL, State state) throws IOException {
+    public ChessClient(int serverURL, State state) {
         this.server = new ServerFacade(serverURL);
         this.state = state;
         this.numToID = new HashMap<>();
@@ -52,14 +53,27 @@ public class ChessClient {
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
-                case "help" -> this.help();
                 case "quit" -> "quit";
                 case "leave" -> exit();
                 case "redraw" -> redrawBoard();
+                case "resign" -> resign();
                 default -> help();
             };
         } catch (Exception ex) {
             return ex.getMessage();
+        }
+    }
+
+    public String resign(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Do you wish to resign? [Y/N] >>> ");
+        String result = scanner.nextLine();
+        if (result.equals("Y")){
+            return "Game Over. You forfeited the game.";
+        }
+        else {
+            gamePlay.redrawBoard(currColor);
+            return "Continue game play";
         }
     }
 
@@ -134,7 +148,8 @@ public class ChessClient {
                 if ("white".equals(params[1])) {
                     server.joinGame(ChessGame.TeamColor.WHITE, gameID);
                     currColor = "White";
-                } else {
+                }
+                else {
                     server.joinGame(ChessGame.TeamColor.BLACK, gameID);
                     currColor = "Black";
                 }
@@ -152,6 +167,7 @@ public class ChessClient {
                 else {
                     gamePlay.drawBlack();
                 }
+                currGameNum = params[0];
                 state = State.PLAYGAME;
                 return String.format("You have joined the game as %s.", currColor);
             }
@@ -171,7 +187,7 @@ public class ChessClient {
         }
     }
 
-    public String observeGame(String... params) throws IOException {
+    public String observeGame(String... params) {
         try {
             String name = null;
             if (params.length == 1) {
