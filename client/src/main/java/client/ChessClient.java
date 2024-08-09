@@ -57,6 +57,8 @@ public class ChessClient {
                 case "leave" -> exit();
                 case "redraw" -> redrawBoard();
                 case "resign" -> resign();
+                case "move" -> makeMove();
+                case "legal" -> legalMoves();
                 default -> help();
             };
         } catch (Exception ex) {
@@ -64,12 +66,27 @@ public class ChessClient {
         }
     }
 
+    public String makeMove(){
+        return null;
+    }
+
+    public String legalMoves(){
+        return null;
+    }
+
     public String resign(){
         Scanner scanner = new Scanner(System.in);
         System.out.print("Do you wish to resign? [Y/N] >>> ");
         String result = scanner.nextLine();
-        if (result.equals("Y")){
-            return "Game Over. You forfeited the game.";
+        if (result.equals("y") || result.equals("yes")){
+            String winner;
+            if (currColor.equals("White")){
+                winner = "Black";
+            }
+            else{
+                winner = "White";
+            }
+            return String.format("Game Over. %s wins.", winner);
         }
         else {
             gamePlay.redrawBoard(currColor);
