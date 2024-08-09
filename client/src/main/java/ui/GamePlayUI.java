@@ -23,13 +23,38 @@ public class GamePlayUI {
 
     public String help(){
         return """
-                \texit - exit the game""";
+                \tredraw - redraws the chess board
+                \tmove <MOVE> - make a move
+                \tlegal <PIECE> - highlights legal moves
+                \tresign - forfeit the game
+                \tleave - leave the game
+                \thelp - with possible commands""";
     }
 
     public void draw() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
         drawBoard(out);
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
+    }
+
+    public void drawWhite() {
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        out.print(ERASE_SCREEN);
+        drawHeaders(out);
+        drawSquares(out, currGame);
+        drawHeaders(out);
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
+    }
+
+    public void drawBlack() {
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        out.print(ERASE_SCREEN);
+        drawHeadersUpsideDown(out);
+        drawUpsideDown(out, currGame);
+        drawHeadersUpsideDown(out);
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
     }

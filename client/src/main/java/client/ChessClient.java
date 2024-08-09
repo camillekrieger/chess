@@ -54,7 +54,7 @@ public class ChessClient {
                 case "logout" -> logout();
                 case "help" -> this.help();
                 case "quit" -> "quit";
-                case "exit" -> exit();
+                case "leave" -> exit();
                 default -> help();
             };
         } catch (Exception ex) {
@@ -65,7 +65,7 @@ public class ChessClient {
 
     public String exit(){
         state = State.LOGGED_IN;
-        return "exit";
+        return "leave game";
     }
 
     public String register(String... params) throws IOException {
@@ -142,7 +142,12 @@ public class ChessClient {
                     }
                 }
                 gamePlay = new GamePlayUI(currGame);
-                gamePlay.draw();
+                if (c.equals("White")){
+                    gamePlay.drawWhite();
+                }
+                else {
+                    gamePlay.drawBlack();
+                }
                 state = State.PLAYGAME;
                 return String.format("You have joined the game as %s.", c);
             }
@@ -178,7 +183,7 @@ public class ChessClient {
                         name = game.getGameName();
                     }
                 }
-                gamePlay.draw();
+                gamePlay.drawWhite();
                 state = State.PLAYGAME;
                 return String.format("You are now observing %s.", name);
             }
