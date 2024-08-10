@@ -91,7 +91,7 @@ public class ChessClient {
         else {
             ChessPosition currPos = new ChessPosition(row, col);
             Collection<ChessMove> validMoves = currGame.validMoves(currPos);
-            gamePlay.drawLegalMoves(validMoves, currColor);
+            gamePlay.drawLegalMoves(currPos, validMoves, currColor);
             return "These are your legal moves.";
         }
     }
