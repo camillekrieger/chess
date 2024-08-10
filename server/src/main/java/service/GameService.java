@@ -84,4 +84,8 @@ public class GameService {
         }
         return null;
     }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        return gameDAO.getGame(gameID);
+    }
 }

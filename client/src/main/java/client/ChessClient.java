@@ -1,12 +1,15 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -58,8 +61,8 @@ public class ChessClient {
                 case "leave" -> exit();
                 case "redraw" -> redrawBoard();
                 case "resign" -> resign();
-                case "move" -> makeMove();
-                case "legal" -> legalMoves();
+                case "move" -> makeMove(params);
+                case "legal" -> legalMoves(params);
                 default -> help();
             };
         } catch (Exception ex) {
@@ -67,12 +70,27 @@ public class ChessClient {
         }
     }
 
-    public String makeMove(){
-        return null;
+    public String makeMove(String... params){
+        try{
+            //make the move
+
+        }
+        catch{
+            return "Invalid move.";
+        }
     }
 
-    public String legalMoves(){
-        return null;
+    public String legalMoves(String... params) throws IOException {
+        int gameNum = Integer.parseInt(currGameNum);
+        int gameID = numToID.get(gameNum);
+        GameData gameData = server.getGame(gameID);
+        ChessGame game = gameData.getGame();
+        int row = Integer.parseInt(params[1]);
+        int col = Integer.parseInt(params[2]);
+        ChessPosition currPos = new ChessPosition(row, col);
+        Collection<ChessMove> validMoves = game.validMoves(currPos);
+        gamePlay.drawLegalMoves(validMoves, currColor);
+        return "These are your legal moves.";
     }
 
     public String resign(){

@@ -2,12 +2,15 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 
 import static chess.ChessPiece.PieceType.*;
 import static ui.EscapeSequences.*;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class GamePlayUI {
 
@@ -46,6 +49,86 @@ public class GamePlayUI {
         drawBoard(out);
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
+    }
+
+    public void drawLegalMoves(Collection<ChessMove> validMoves, String color){
+        Collection<ChessPosition> positions = new ArrayList<>();
+        for (ChessMove move : validMoves){
+            ChessPosition pos = move.getEndPosition();
+            positions.add(pos);
+        }
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        out.print(ERASE_SCREEN);
+        if (color.equals("White")){
+            drawHeaders(out);
+            drawWhiteLegal(out, positions);
+            drawHeaders(out);
+        }
+        else{
+            drawHeadersUpsideDown(out);
+            drawBlackLegal(out, positions);
+            drawHeadersUpsideDown(out);
+        }
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
+    }
+
+    private void drawBlackLegal(PrintStream out, Collection<ChessPosition> positions){
+        boolean boardColor;
+        for (int squareRow = 1; squareRow <= GAME_BOARD_DIMENSIONS; squareRow++) {
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" ");
+            out.print(SIDE_HEADERS[squareRow - 1]);
+            out.print(" ");
+            boardColor = squareRow % 2 == 1;
+            for (int boardCol = 8; boardCol > 0; boardCol--) {
+                for (ChessPosition pos : positions){
+                    if (pos.getRow() == squareRow && pos.getColumn() == boardCol){
+                        out.print(SET_BG_COLOR_GREEN);
+                        printCharacter(out, currGame, squareRow, boardCol);
+                        boardColor = !boardColor;
+                    }
+                    else{
+                        boardColor = drawSquare(boardColor, out, currGame, squareRow, boardCol);
+                    }
+                }
+            }
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" ");
+            out.print(SIDE_HEADERS[squareRow - 1]);
+            out.print(" ");
+            out.println();
+        }
+    }
+
+    private void drawWhiteLegal(PrintStream out, Collection<ChessPosition> positions){
+        boolean boardColor;
+        for (int squareRow = 8; squareRow > 0; squareRow--) {
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" ");
+            out.print(SIDE_HEADERS[squareRow - 1]);
+            out.print(" ");
+            boardColor = squareRow % 2 == 1;
+            for (int boardCol = 1; boardCol <= GAME_BOARD_DIMENSIONS; boardCol++) {
+                for (ChessPosition pos : positions){
+                    if (pos.getRow() == squareRow && pos.getColumn() == boardCol){
+                        out.print(SET_BG_COLOR_GREEN);
+                        printCharacter(out, currGame, squareRow, boardCol);
+                        boardColor = !boardColor;
+                    }
+                    else{
+                        boardColor = drawSquare(boardColor, out, currGame, squareRow, boardCol);
+                    }
+                }
+            }
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" ");
+            out.print(SIDE_HEADERS[squareRow - 1]);
+            out.print(" ");
+            out.println();
+        }
     }
 
     public void drawWhite() {

@@ -1,10 +1,11 @@
-package server;
+package ui;
 
-public class CreateGameResult {
-    int gameID;
+public class GetGameRequest {
 
-    public CreateGameResult(int id){
-        this.gameID = id;
+    private int gameID;
+
+    public GetGameRequest(int gameID){
+        this.gameID = gameID;
     }
 
     public int getGameID() {

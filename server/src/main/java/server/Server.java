@@ -35,6 +35,7 @@ public class Server {
         Spark.post("/game", this::createGameHandler);
         Spark.put("/game", this::joinGameHandler);
         Spark.delete("game", this::leaveGameHandler);
+        Spark.get("/game", this::getGameHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -193,5 +194,11 @@ public class Server {
         }
         JsonObject emptyJsonObject = new JsonObject();
         return new Gson().toJson(emptyJsonObject);
+    }
+
+    private Object getGameHandler(Request request, Response response) throws DataAccessException {
+        var serializer = new Gson();
+        CreateGameResult info = serializer.fromJson(request.body(), CreateGameResult.class);
+        return gameService.getGame(info.getGameID());
     }
 }
