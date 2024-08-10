@@ -21,6 +21,7 @@ public class ChessClient {
     private String currColor;
     private String currGameNum;
     private boolean observing;
+    private ChessGame currGame;
 
     public ChessClient(int serverURL, State state) {
         this.server = new ServerFacade(serverURL);
@@ -81,11 +82,7 @@ public class ChessClient {
         return null;
     }
 
-    public String legalMoves(String... params) throws IOException {
-        int gameNum = Integer.parseInt(currGameNum);
-        int gameID = numToID.get(gameNum);
-        GameData gameData = server.getGame(gameID);
-        ChessGame game = gameData.getGame();
+    public String legalMoves(String... params) {
         int row = Integer.parseInt(params[0]);
         int col = letterToNum(params[1]);
         if (col == 0 || row < 1 || row > 8){
@@ -93,7 +90,7 @@ public class ChessClient {
         }
         else {
             ChessPosition currPos = new ChessPosition(row, col);
-            Collection<ChessMove> validMoves = game.validMoves(currPos);
+            Collection<ChessMove> validMoves = currGame.validMoves(currPos);
             gamePlay.drawLegalMoves(validMoves, currColor);
             return "These are your legal moves.";
         }
@@ -222,7 +219,7 @@ public class ChessClient {
                     server.joinGame(ChessGame.TeamColor.BLACK, gameID);
                     currColor = "Black";
                 }
-                ChessGame currGame = new ChessGame();
+                currGame = new ChessGame();
                 ListGamesResponse games = server.listGames();
                 for (GameData game : games.getGames()) {
                     if (game.getGameID() == gameID) {

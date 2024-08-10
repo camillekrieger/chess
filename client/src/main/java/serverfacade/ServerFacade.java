@@ -3,7 +3,6 @@ package serverfacade;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import ui.*;
 
@@ -71,12 +70,6 @@ public class ServerFacade {
         path = "/game";
         JoinGameRequest leaveGameRequest = new JoinGameRequest(color, gameID);
         makeRequest("DELETE", path, leaveGameRequest, authToken, null);
-    }
-
-    public GameData getGame(int gameID) throws IOException {
-        path = "/game/:id";
-        GetGameRequest getGameRequest = new GetGameRequest(gameID);
-        return makeRequest("GET", path, getGameRequest, null, GameData.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, String headerValue, Class<T> response) throws IOException {

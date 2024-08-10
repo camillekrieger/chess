@@ -15,7 +15,6 @@ import java.util.Collection;
 public class GamePlayUI {
 
     private static ChessGame currGame;
-
     private static final int GAME_BOARD_DIMENSIONS = 8;
     private static final String[] TOP_HEADERS = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final String[] SIDE_HEADERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
@@ -104,6 +103,7 @@ public class GamePlayUI {
 
     private void drawWhiteLegal(PrintStream out, Collection<ChessPosition> positions){
         boolean boardColor;
+        boolean legalMove = false;
         for (int squareRow = 8; squareRow > 0; squareRow--) {
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
@@ -113,13 +113,20 @@ public class GamePlayUI {
             for (int boardCol = 1; boardCol <= GAME_BOARD_DIMENSIONS; boardCol++) {
                 for (ChessPosition pos : positions){
                     if (pos.getRow() == squareRow && pos.getColumn() == boardCol){
-                        out.print(SET_BG_COLOR_GREEN);
-                        printCharacter(out, currGame, squareRow, boardCol);
-                        boardColor = !boardColor;
+                        legalMove = true;
+                        break;
                     }
                     else{
-                        boardColor = drawSquare(boardColor, out, currGame, squareRow, boardCol);
+                        legalMove = false;
                     }
+                }
+                if (legalMove) {
+                    out.print(SET_BG_COLOR_GREEN);
+                    printCharacter(out, currGame, squareRow, boardCol);
+                    boardColor = !boardColor;
+                }
+                else {
+                    boardColor = drawSquare(boardColor, out, currGame, squareRow, boardCol);
                 }
             }
             out.print(SET_BG_COLOR_LIGHT_GREY);
