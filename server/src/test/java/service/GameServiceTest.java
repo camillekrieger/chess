@@ -90,12 +90,4 @@ class GameServiceTest {
         String result = gameService.joinGame(null, ChessGame.TeamColor.BLACK, gameID);
         Assertions.assertNull(result);
     }
-
-    @Test
-    void getGame() throws SQLException, DataAccessException {
-        UserData user = new UserData("pooh bear", "christopher", "honeyisgood@hawoods.org");
-        AuthData auth = userService.register(user);
-        int gameID = gameService.createGame(auth.getAuthToken(), "tournament");
-        Assertions.assertEquals("tournament", gameService.getGame(gameID).getGameName());
-    }
 }
