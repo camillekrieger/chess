@@ -7,8 +7,12 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
 
+import javax.management.Notification;
+
 @WebSocket
 public class WebSocketHandler {
+
+    WebSocketSessions sessionsSet = new WebSocketSessions();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message){
@@ -21,8 +25,10 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(int gameID, Session session, String message){
+    private void connect(int gameID, Session session){
         //join or observe a game
+        sessionsSet.addSessionToGame(gameID, session);
+        String response = String.format("%s joined %s as %s", username, gameName, color);
     }
 
     private void makeMove(int gameID, String authToken, Session session, String message, ChessMove move){
@@ -35,5 +41,13 @@ public class WebSocketHandler {
 
     private void resign(int gameID, String message){
         //resign game
+    }
+
+    public void sendMessage(String message, Session session){
+        //do stuff
+    }
+
+    public void broadcastMessage(int gameID, String message, Session exceptThisSession){
+        //do stuff
     }
 }
