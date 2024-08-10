@@ -1,11 +1,13 @@
 package ui;
 
 import client.ChessClient;
+import client.websocket.NotificationHandler;
 
+import javax.management.Notification;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ChessClient client;
     private State state;
 
@@ -59,6 +61,11 @@ public class Repl {
         else if (result.contains("observe") && size == 2){
             state = State.PLAYGAME;
         }
+    }
+
+    public void notify(Notification notification){
+        System.out.println(notification.getMessage());
+        printPrompt();
     }
 
     private void printPrompt() {
