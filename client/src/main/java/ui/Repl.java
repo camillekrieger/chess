@@ -47,7 +47,7 @@ public class Repl {
         else if (result.contains("login") && size == 3) {
             state = State.LOGGED_IN;
         }
-        else if (result.contains("exit")){
+        else if (result.contains("leave")){
             state = State.LOGGED_IN;
         }
         else if (result.contains("logout")){

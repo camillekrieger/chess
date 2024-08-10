@@ -69,7 +69,7 @@ public class ServerFacade {
     public void leaveGame(ChessGame.TeamColor color, int gameID) throws IOException {
         path = "/game";
         JoinGameRequest leaveGameRequest = new JoinGameRequest(color, gameID);
-        makeRequest("PUT", path, leaveGameRequest, authToken, null);
+        makeRequest("DELETE", path, leaveGameRequest, authToken, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, String headerValue, Class<T> response) throws IOException {
