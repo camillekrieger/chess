@@ -79,4 +79,9 @@ public class MemoryGameDAO implements GameDAO{
     public HashMap<Integer, GameData> getGames(){
         return games;
     }
+
+    @Override
+    public String removeUser(GameData gameData, ChessGame.TeamColor color, String username){
+        return null;
+    }
 }

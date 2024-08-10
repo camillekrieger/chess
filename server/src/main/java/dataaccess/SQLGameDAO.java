@@ -90,7 +90,7 @@ public class SQLGameDAO implements GameDAO{
         return result;
     }
 
-    private String checkUpdate(ChessGame.TeamColor color, Connection conn, ResultSet rs, String username, int id) throws SQLException {
+    private String joinUpdate(ChessGame.TeamColor color, Connection conn, ResultSet rs, String username, int id) throws SQLException {
         if (color == ChessGame.TeamColor.WHITE) {
             String user = rs.getString("whiteUsername");
             if (user == null) {
@@ -132,7 +132,47 @@ public class SQLGameDAO implements GameDAO{
                 ps.setInt(1, id);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return checkUpdate(color, conn, rs, username, id);
+                        return joinUpdate(color, conn, rs, username, id);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data");
+        }
+        return null;
+    }
+
+    @Override
+    public String removeUser(GameData gameData, ChessGame.TeamColor color, String username) throws DataAccessException {
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            int id = gameData.getGameID();
+            try (var ps = conn.prepareStatement(statement)){
+                ps.setInt(1, id);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        if (color.equals(ChessGame.TeamColor.WHITE)){
+                            String wUser = rs.getString("whiteUsername");
+                            if (wUser.equals(username)){
+                                var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
+                                var ts = conn.prepareStatement(updateStatement);
+                                ts.setString(1, null);
+                                ts.setInt(2, id);
+                                ts.executeUpdate();
+                                return "{}";
+                            }
+                        }
+                        else{
+                            String bUser = rs.getString("blackUsername");
+                            if (bUser.equals(username)){
+                                var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
+                                var ts = conn.prepareStatement(updateStatement);
+                                ts.setString(1, null);
+                                ts.setInt(2, id);
+                                ts.executeUpdate();
+                                return "{}";
+                            }
+                        }
                     }
                 }
             }

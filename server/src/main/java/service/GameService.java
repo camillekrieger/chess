@@ -69,4 +69,19 @@ public class GameService {
     public static GameDAO getGameDAO() {
         return gameDAO;
     }
+
+    public String leaveGame(String authToken, ChessGame.TeamColor color, int gameID) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null){
+            GameData gameData = gameDAO.getGame(gameID);
+            if (gameData != null){
+                String username = authData.getUsername();
+                return gameDAO.removeUser(gameData, color, username);
+            }
+            else {
+                return null;
+            }
+        }
+        return null;
+    }
 }

@@ -34,6 +34,7 @@ public class Server {
         Spark.get("/game", this::listGamesHandler);
         Spark.post("/game", this::createGameHandler);
         Spark.put("/game", this::joinGameHandler);
+        Spark.put("game", this::leaveGameHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -167,6 +168,27 @@ public class Server {
             response.status(403);
             ErrorClass ec = new ErrorClass();
             ec.setMessage("Error: already taken");
+            return new Gson().toJson(ec);
+        }
+        JsonObject emptyJsonObject = new JsonObject();
+        return new Gson().toJson(emptyJsonObject);
+    }
+
+    private Object leaveGameHandler(Request request, Response response) throws DataAccessException {
+        var serializer = new Gson();
+        String authToken = request.headers("authorization");
+        JoinRequest info = serializer.fromJson(request.body(), JoinRequest.class);
+        if (info.getGameID() == null || info.getColor() == null || info.getGameID() < 1){
+            response.status(400);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: bad request");
+            return new Gson().toJson(ec);
+        }
+        String result = gameService.leaveGame(authToken, info.getColor(), info.getGameID());
+        if (result == null){
+            response.status(401);
+            ErrorClass ec = new ErrorClass();
+            ec.setMessage("Error: Not able to perform request");
             return new Gson().toJson(ec);
         }
         JsonObject emptyJsonObject = new JsonObject();

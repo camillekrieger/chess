@@ -99,8 +99,16 @@ public class ChessClient {
         return "Here is the current game board.";
     }
 
-    public String exit(){
+    public String exit() throws IOException {
         state = State.LOGGED_IN;
+        int gameNum = Integer.parseInt(currGameNum);
+        int gameID = numToID.get(gameNum);
+        if (currColor.equals("White")){
+            server.leaveGame(ChessGame.TeamColor.WHITE, gameID);
+        }
+        else{
+            server.leaveGame(ChessGame.TeamColor.BLACK, gameID);
+        }
         return "leave game";
     }
 

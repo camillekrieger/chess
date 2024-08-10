@@ -22,4 +22,6 @@ public interface GameDAO {
     HashMap<Integer, GameData> getGames() throws DataAccessException;
 
     GameData getGameByName(String name) throws DataAccessException;
+
+    String removeUser(GameData gameData, ChessGame.TeamColor color, String username) throws DataAccessException;
 }

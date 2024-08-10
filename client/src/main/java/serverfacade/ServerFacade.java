@@ -66,6 +66,12 @@ public class ServerFacade {
         makeRequest("PUT", path, joinGameRequest, authToken, null);
     }
 
+    public void leaveGame(ChessGame.TeamColor color, int gameID) throws IOException {
+        path = "/game";
+        JoinGameRequest leaveGameRequest = new JoinGameRequest(color, gameID);
+        makeRequest("PUT", path, leaveGameRequest, authToken, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, String headerValue, Class<T> response) throws IOException {
         try {
             String scheme = "http";
