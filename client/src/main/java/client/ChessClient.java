@@ -17,6 +17,7 @@ public class ChessClient {
     private final HashMap <Integer, Integer> numToID;
     private String currColor;
     private String currGameNum;
+    private boolean observing;
 
     public ChessClient(int serverURL, State state) {
         this.server = new ServerFacade(serverURL);
@@ -100,16 +101,18 @@ public class ChessClient {
     }
 
     public String exit() throws IOException {
+        if (!observing){
+            int gameNum = Integer.parseInt(currGameNum);
+            int gameID = numToID.get(gameNum);
+            if (currColor.equals("White")){
+                server.leaveGame(ChessGame.TeamColor.WHITE, gameID);
+            }
+            else{
+                server.leaveGame(ChessGame.TeamColor.BLACK, gameID);
+            }
+        }
         state = State.LOGGED_IN;
-        int gameNum = Integer.parseInt(currGameNum);
-        int gameID = numToID.get(gameNum);
-        if (currColor.equals("White")){
-            server.leaveGame(ChessGame.TeamColor.WHITE, gameID);
-        }
-        else{
-            server.leaveGame(ChessGame.TeamColor.BLACK, gameID);
-        }
-        return "leave game";
+        return "left game";
     }
 
     public String register(String... params) throws IOException {
@@ -161,7 +164,7 @@ public class ChessClient {
                 numToID.put(i, gameID);
                 i++;
             }
-            return "You can join a game with at least one null player.";
+            return "You can join a game with at least one null player, or a game you have already joined.";
         }
     }
 
@@ -230,6 +233,7 @@ public class ChessClient {
                 }
                 gamePlay.drawWhite();
                 state = State.PLAYGAME;
+                observing = true;
                 return String.format("You are now observing %s.", name);
             }
         } catch (Exception e) {
