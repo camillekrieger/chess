@@ -74,7 +74,7 @@ public class ServerFacade {
     }
 
     public GameData getGame(int gameID) throws IOException {
-        path = "/game";
+        path = "/game/:id";
         GetGameRequest getGameRequest = new GetGameRequest(gameID);
         return makeRequest("GET", path, getGameRequest, null, GameData.class);
     }

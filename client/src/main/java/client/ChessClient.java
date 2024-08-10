@@ -75,9 +75,10 @@ public class ChessClient {
             //make the move
 
         }
-        catch{
+        catch(Exception e){
             return "Invalid move.";
         }
+        return null;
     }
 
     public String legalMoves(String... params) throws IOException {
@@ -85,12 +86,31 @@ public class ChessClient {
         int gameID = numToID.get(gameNum);
         GameData gameData = server.getGame(gameID);
         ChessGame game = gameData.getGame();
-        int row = Integer.parseInt(params[1]);
-        int col = Integer.parseInt(params[2]);
-        ChessPosition currPos = new ChessPosition(row, col);
-        Collection<ChessMove> validMoves = game.validMoves(currPos);
-        gamePlay.drawLegalMoves(validMoves, currColor);
-        return "These are your legal moves.";
+        int row = Integer.parseInt(params[0]);
+        int col = letterToNum(params[1]);
+        if (col == 0 || row < 1 || row > 8){
+            return "Not valid input.";
+        }
+        else {
+            ChessPosition currPos = new ChessPosition(row, col);
+            Collection<ChessMove> validMoves = game.validMoves(currPos);
+            gamePlay.drawLegalMoves(validMoves, currColor);
+            return "These are your legal moves.";
+        }
+    }
+
+    private int letterToNum(String letter){
+        return switch (letter) {
+            case "a" -> 1;
+            case "b" -> 2;
+            case "c" -> 3;
+            case "d" -> 4;
+            case "e" -> 5;
+            case "f" -> 6;
+            case "g" -> 7;
+            case "h" -> 8;
+            default -> 0;
+        };
     }
 
     public String resign(){
@@ -190,6 +210,9 @@ public class ChessClient {
         try {
             if (params.length == 2) {
                 int gameNum = Integer.parseInt(params[0]);
+                if (gameNum > numToID.size()) {
+                    populateList();
+                }
                 int gameID = numToID.get(gameNum);
                 if ("white".equals(params[1])) {
                     server.joinGame(ChessGame.TeamColor.WHITE, gameID);

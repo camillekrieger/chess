@@ -27,8 +27,8 @@ public class GamePlayUI {
     public String help(){
         return """
                 \tredraw - redraws the chess board
-                \tmove <PIECE> <FROM ROW> <FROM COL> <TO ROW> <TO COL> - make a move
-                \tlegal <PIECE> <ROW> <COL> - highlights legal moves
+                \tmove <FROM ROW> <FROM COL> <TO ROW> <TO COL> - make a move
+                \tlegal <ROW> <COL> - highlights legal moves
                 \tresign - forfeit the game
                 \tleave - leave the game
                 \thelp - with possible commands""";
