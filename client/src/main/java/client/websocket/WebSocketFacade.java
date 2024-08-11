@@ -12,18 +12,7 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
     //gameHandler?
 
     @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-        //do stuff
-    }
-    @Override
-    public void onClose(){
-        //do stuff
-    }
-
-    @Override
-    public void onError(){
-        //do stuff
-    }
+    public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
     public void connect(){
         //do stuff
@@ -43,7 +32,8 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
 
     public void onMessage(String message){
         //deserialize method
-        //call GameHAndler to process message
+        //call GameHandler to process message
+        //needs a switch to know what message your getting
     }
 
     private void sendMessage(){

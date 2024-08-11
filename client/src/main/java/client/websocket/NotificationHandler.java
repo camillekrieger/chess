@@ -1,7 +1,10 @@
 package client.websocket;
 
+import chess.ChessGame;
+
 import javax.management.Notification;
 
 public interface NotificationHandler {
-    void notify(Notification notification);
+    void updateGame(ChessGame game);
+    void printMessage(String message);
 }

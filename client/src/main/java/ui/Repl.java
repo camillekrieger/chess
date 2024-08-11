@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import client.ChessClient;
 import client.websocket.NotificationHandler;
 
@@ -63,12 +64,17 @@ public class Repl implements NotificationHandler {
         }
     }
 
-    public void notify(Notification notification){
-        System.out.println(notification.getMessage());
-        printPrompt();
-    }
-
     private void printPrompt() {
         System.out.printf("\n[%s] >>> ", state);
+    }
+
+    @Override
+    public void updateGame(ChessGame game) {
+        //send a game to where you will print it out
+    }
+
+    @Override
+    public void printMessage(String message) {
+        //prepare the notification message
     }
 }
