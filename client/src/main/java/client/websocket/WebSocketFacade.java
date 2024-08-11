@@ -32,8 +32,8 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
 
     public void onMessage(String message){
         //deserialize method
-        //call GameHandler to process message
-        //needs a switch to know what message your getting
+        //call Repl to process message
+        //needs a switch to know what message you're getting
     }
 
     private void sendMessage(){
