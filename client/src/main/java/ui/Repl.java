@@ -3,7 +3,9 @@ package ui;
 import chess.ChessGame;
 import client.ChessClient;
 import client.websocket.NotificationHandler;
+import com.google.gson.Gson;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import javax.management.Notification;
@@ -71,13 +73,13 @@ public class Repl implements NotificationHandler {
     }
 
     @Override
-    public void updateGame(UserGameCommand command) {
-        //send a game to where you will print it out
+    public void updateGame(ChessGame game) {
+        client.setCurrGame(game);
+        client.redrawBoard();
     }
 
     @Override
     public void printMessage(String message) {
-        //prepare the notification message
         System.out.println(message);
     }
 }

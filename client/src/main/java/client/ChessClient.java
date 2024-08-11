@@ -71,6 +71,10 @@ public class ChessClient {
         }
     }
 
+    public void setCurrGame(ChessGame game){
+        this.currGame = game;
+    }
+
     public String makeMove(String... params){
         try{
             if (params.length == 4) {

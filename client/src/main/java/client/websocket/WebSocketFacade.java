@@ -1,5 +1,6 @@
 package client.websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import websocket.commands.MakeMoveCommand;
@@ -34,7 +35,10 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
                 @Override
                 public void onMessage(String message) {
                     MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-                    notificationHandler.updateGame(command);
+                    int gameID = command.getGameID();
+//                    WebSocketService wss = new WebSocketService();
+//                    ChessGame game = wss.getGame(gameID);
+//                    notificationHandler.updateGame(game);
                     switch (command.getCommandType()){
                         case CONNECT -> {
                             try {

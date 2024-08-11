@@ -26,7 +26,7 @@ public class WebSocketService {
         if (authData != null){
             sessionsSet.addSessionToGame(gameID, session);
             GameData gameData = gameDAO.getGame(gameID);
-            String gameJson = new Gson().toJson(gameData.getGame());
+            String gameJson = new Gson().toJson(gameData.getGameName());
             LoadGameMessage lgm = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameJson);
             String user = authData.getUsername();
             String color;
@@ -103,5 +103,10 @@ public class WebSocketService {
             case 8 -> "h";
             default -> "invalid";
         };
+    }
+
+    public ChessGame getGame(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.getGame(gameID);
+        return gameData.getGame();
     }
 }
