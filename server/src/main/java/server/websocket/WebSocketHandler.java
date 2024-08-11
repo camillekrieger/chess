@@ -8,7 +8,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.WebSocketService;
 import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -22,10 +21,10 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws DataAccessException, IOException {
         //listens for message from client
-        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(command.getGameID(), session, command.getAuthToken());
-            case MAKE_MOVE -> makeMove(command.getGameID(), command.getAuthToken(), session);
+            case MAKE_MOVE -> makeMove(command.getGameID(), command.getAuthToken(), session, command.getMove());
             case LEAVE -> leave(command.getGameID(), session, command.getAuthToken());
             case RESIGN -> resign(command.getGameID(), command.getAuthToken(), session);
         }
@@ -37,8 +36,10 @@ public class WebSocketHandler {
         broadcastMessage(gameID, json, session);
     }
 
-    private void makeMove(int gameID, String authToken, Session session){
-//        ServerMessage message = service.makeMove(gameID, session, authToken, sessionsSet);
+    private void makeMove(int gameID, String authToken, Session session, ChessMove move) throws IOException, DataAccessException {
+        ServerMessage message = service.makeMove(gameID, authToken, move);
+        String json = new Gson().toJson(message);
+        broadcastMessage(gameID, json, session);
     }
 
     private void leave(int gameID, Session session, String authToken) throws DataAccessException, IOException {
@@ -59,7 +60,7 @@ public class WebSocketHandler {
 
     public void broadcastMessage(int gameID, String message, Session exceptThisSession) throws IOException {
         Set<Session> sessions = sessionsSet.getSessionsFromGame(gameID);
-        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
+//        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
         for (Session ses : sessions){
             if (ses != exceptThisSession){
                 sendMessage(message, ses);

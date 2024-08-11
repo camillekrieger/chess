@@ -1,6 +1,9 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -65,5 +68,38 @@ public class WebSocketService {
             return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         }
         return null;
+    }
+
+    public ServerMessage makeMove(int gameID, String authToken, ChessMove move) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null){
+            GameData gameData = gameDAO.getGame(gameID);
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            ChessPiece piece = gameData.getGame().getBoard().getPiece(start);
+            String user = authData.getUsername();
+            String pieceType = piece.getPieceType().toString();
+            int startRow = start.getRow();
+            String startCol = intToLet(start.getColumn());
+            int endRow = end.getRow();
+            String endCol = intToLet(end.getColumn());
+            String message = String.format("%s moved %s at [%d,%s] to [%d,%s].", user, pieceType, startRow, startCol, endRow, endCol);
+            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        }
+        return null;
+    }
+
+    private String intToLet(int col){
+        return switch (col) {
+            case 1 -> "a";
+            case 2 -> "b";
+            case 3 -> "c";
+            case 4 -> "d";
+            case 5 -> "e";
+            case 6 -> "f";
+            case 7 -> "g";
+            case 8 -> "h";
+            default -> "invalid";
+        };
     }
 }
