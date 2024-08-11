@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import client.ChessClient;
 import client.websocket.NotificationHandler;
+import websocket.messages.NotificationMessage;
 
 import javax.management.Notification;
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class Repl implements NotificationHandler {
     }
 
     @Override
-    public void updateGame(ChessGame game) {
+    public void updateGame(NotificationMessage notification) {
         //send a game to where you will print it out
     }
 
