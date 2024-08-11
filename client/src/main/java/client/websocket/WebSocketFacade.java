@@ -1,5 +1,7 @@
 package client.websocket;
 
+import ui.Repl;
+
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
@@ -8,6 +10,7 @@ import javax.websocket.Session;
 
 public class WebSocketFacade extends Endpoint implements MessageHandler {
     private Session session;
+    private Repl repl;
 
     //gameHandler?
 
