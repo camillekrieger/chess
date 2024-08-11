@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -25,7 +26,8 @@ public class WebSocketService {
         if (authData != null){
             sessionsSet.addSessionToGame(gameID, session);
             GameData gameData = gameDAO.getGame(gameID);
-            LoadGameMessage lgm = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+            String gameJson = new Gson().toJson(gameData.getGame());
+            LoadGameMessage lgm = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameJson);
             String user = authData.getUsername();
             String color;
             if (user.equals(gameData.getWhiteUsername())){
