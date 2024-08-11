@@ -45,4 +45,25 @@ public class WebSocketService {
         }
         return null;
     }
+
+    public ServerMessage leave(int gameID, Session session, String authToken, WebSocketSessions sessionsSet) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null){
+            sessionsSet.removeSessionFromGame(gameID, session);
+            GameData gameData = gameDAO.getGame(gameID);
+            String message = String.format("%s left %s", authData.getUsername(), gameData.getGame());
+            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        }
+        return null;
+    }
+
+    public ServerMessage resign(int gameID, String authToken) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null){
+            GameData gameData = gameDAO.getGame(gameID);
+            String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
+            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        }
+        return null;
+    }
 }
