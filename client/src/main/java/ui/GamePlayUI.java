@@ -14,14 +14,11 @@ import java.util.Collection;
 
 public class GamePlayUI {
 
-    private static ChessGame currGame;
     private static final int GAME_BOARD_DIMENSIONS = 8;
     private static final String[] TOP_HEADERS = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final String[] SIDE_HEADERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
-    public GamePlayUI(ChessGame game){
-        currGame = game;
-    }
+    public GamePlayUI(){}
 
     public String help(){
         return """
@@ -33,24 +30,24 @@ public class GamePlayUI {
                 \thelp - with possible commands""";
     }
 
-    public void redrawBoard(String color){
+    public void redrawBoard(String color, ChessGame currGame){
         if (color.equals("White")){
-            drawWhite();
+            drawWhite(currGame);
         }
         else {
-            drawBlack();
+            drawBlack(currGame);
         }
     }
 
-    public void draw() {
+    public void draw(ChessGame currGame) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
-        drawBoard(out);
+        drawBoard(out, currGame);
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
     }
 
-    public void drawLegalMoves(ChessPosition start, Collection<ChessMove> validMoves, String color){
+    public void drawLegalMoves(ChessPosition start, Collection<ChessMove> validMoves, String color, ChessGame currGame){
         Collection<ChessPosition> positions = new ArrayList<>();
         for (ChessMove move : validMoves){
             ChessPosition pos = move.getEndPosition();
@@ -60,19 +57,19 @@ public class GamePlayUI {
         out.print(ERASE_SCREEN);
         if (color.equals("White")){
             drawHeaders(out);
-            drawWhiteLegal(out, positions, start);
+            drawWhiteLegal(out, positions, start, currGame);
             drawHeaders(out);
         }
         else{
             drawHeadersUpsideDown(out);
-            drawBlackLegal(out, positions, start);
+            drawBlackLegal(out, positions, start, currGame);
             drawHeadersUpsideDown(out);
         }
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
     }
 
-    private void drawBlackLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start){
+    private void drawBlackLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start, ChessGame currGame){
         boolean boardColor;
         boolean legalMove = false;
         for (int squareRow = 1; squareRow <= GAME_BOARD_DIMENSIONS; squareRow++) {
@@ -114,7 +111,7 @@ public class GamePlayUI {
         }
     }
 
-    private void drawWhiteLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start){
+    private void drawWhiteLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start, ChessGame currGame){
         boolean boardColor;
         boolean legalMove = false;
         for (int squareRow = 8; squareRow > 0; squareRow--) {
@@ -156,7 +153,7 @@ public class GamePlayUI {
         }
     }
 
-    public void drawWhite() {
+    public void drawWhite(ChessGame currGame) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
         drawHeaders(out);
@@ -166,7 +163,7 @@ public class GamePlayUI {
         out.print(RESET_TEXT_COLOR);
     }
 
-    public void drawBlack() {
+    public void drawBlack(ChessGame currGame) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
         drawHeadersUpsideDown(out);
@@ -176,7 +173,7 @@ public class GamePlayUI {
         out.print(RESET_TEXT_COLOR);
     }
 
-    private static void drawBoard(PrintStream out){
+    private static void drawBoard(PrintStream out, ChessGame currGame){
         //draw the initial board
         drawHeaders(out);
         drawSquares(out, currGame);

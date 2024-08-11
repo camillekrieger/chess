@@ -8,7 +8,6 @@ import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
 
-import javax.websocket.MessageHandler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,8 +36,7 @@ public class ChessClient {
             return preLog.help();
         }
         else if (state == State.PLAYGAME){
-            ChessGame game = new ChessGame();
-            gamePlay = new GamePlayUI(game);
+            gamePlay = new GamePlayUI();
             return gamePlay.help();
         }
         else{
@@ -77,20 +75,24 @@ public class ChessClient {
         try{
             if (params.length == 4) {
                 int startRow = Integer.parseInt(params[0]);
-                int startCol = Integer.parseInt(params[1]);
+                int startCol = letterToNum(params[1]);
                 int endRow = Integer.parseInt(params[2]);
-                int endCol = Integer.parseInt(params[3]);
+                int endCol = letterToNum(params[3]);
                 ChessPosition start = new ChessPosition(startRow, startCol);
                 ChessPosition end = new ChessPosition(endRow, endCol);
                 ChessPiece.PieceType promo = null;
                 ChessMove move = new ChessMove(start, end, promo);
                 currGame.makeMove(move);
+                String nextMove;
                 if (currColor.equals("White")){
-                    gamePlay.drawWhite();
+                    gamePlay.drawWhite(currGame);
+                    nextMove = "Black";
                 }
                 else{
-                    gamePlay.drawBlack();
+                    gamePlay.drawBlack(currGame);
+                    nextMove = "White";
                 }
+                return String.format("%s's turn.", nextMove);
             }
         }
         catch(Exception e){
@@ -108,7 +110,7 @@ public class ChessClient {
             } else {
                 ChessPosition currPos = new ChessPosition(row, col);
                 Collection<ChessMove> validMoves = currGame.validMoves(currPos);
-                gamePlay.drawLegalMoves(currPos, validMoves, currColor);
+                gamePlay.drawLegalMoves(currPos, validMoves, currColor, currGame);
                 return "These are your legal moves.";
             }
         }
@@ -144,13 +146,13 @@ public class ChessClient {
             return String.format("Game Over. %s wins.", winner);
         }
         else {
-            gamePlay.redrawBoard(currColor);
+            gamePlay.redrawBoard(currColor, currGame);
             return "Continue game play";
         }
     }
 
     public String redrawBoard(){
-        gamePlay.redrawBoard(currColor);
+        gamePlay.redrawBoard(currColor, currGame);
         return "Here is the current game board.";
     }
 
@@ -238,19 +240,18 @@ public class ChessClient {
                     server.joinGame(ChessGame.TeamColor.BLACK, gameID);
                     currColor = "Black";
                 }
-                currGame = new ChessGame();
                 ListGamesResponse games = server.listGames();
                 for (GameData game : games.getGames()) {
                     if (game.getGameID() == gameID) {
                         currGame = game.getGame();
                     }
                 }
-                gamePlay = new GamePlayUI(currGame);
+                gamePlay = new GamePlayUI();
                 if (currColor.equals("White")){
-                    gamePlay.drawWhite();
+                    gamePlay.drawWhite(currGame);
                 }
                 else {
-                    gamePlay.drawBlack();
+                    gamePlay.drawBlack(currGame);
                 }
                 currGameNum = params[0];
                 state = State.PLAYGAME;
@@ -284,11 +285,11 @@ public class ChessClient {
                 int gameID = numToID.get(gameNum);
                 for (GameData game : games.getGames()) {
                     if (game.getGameID() == gameID) {
-                        gamePlay = new GamePlayUI(game.getGame());
+                        gamePlay = new GamePlayUI();
                         name = game.getGameName();
                     }
                 }
-                gamePlay.drawWhite();
+                gamePlay.drawWhite(currGame);
                 state = State.PLAYGAME;
                 observing = true;
                 return String.format("You are now observing %s.", name);
