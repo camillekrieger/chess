@@ -12,7 +12,7 @@ public class Repl implements NotificationHandler {
     private final ChessClient client;
     private State state;
 
-    public Repl(int serverURL) throws IOException {
+    public Repl(int serverURL) {
         state = State.LOGGED_OUT;
         client = new ChessClient(serverURL, state);
     }

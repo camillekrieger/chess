@@ -2,11 +2,13 @@ package client;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
 
+import javax.websocket.MessageHandler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,8 +75,23 @@ public class ChessClient {
 
     public String makeMove(String... params){
         try{
-            //make the move
-
+            if (params.length == 4) {
+                int startRow = Integer.parseInt(params[0]);
+                int startCol = Integer.parseInt(params[1]);
+                int endRow = Integer.parseInt(params[2]);
+                int endCol = Integer.parseInt(params[3]);
+                ChessPosition start = new ChessPosition(startRow, startCol);
+                ChessPosition end = new ChessPosition(endRow, endCol);
+                ChessPiece.PieceType promo = null;
+                ChessMove move = new ChessMove(start, end, promo);
+                currGame.makeMove(move);
+                if (currColor.equals("White")){
+                    gamePlay.drawWhite();
+                }
+                else{
+                    gamePlay.drawBlack();
+                }
+            }
         }
         catch(Exception e){
             return "Invalid move.";
@@ -83,17 +100,19 @@ public class ChessClient {
     }
 
     public String legalMoves(String... params) {
-        int row = Integer.parseInt(params[0]);
-        int col = letterToNum(params[1]);
-        if (col == 0 || row < 1 || row > 8){
-            return "Not valid input.";
+        if (params.length == 2) {
+            int row = Integer.parseInt(params[0]);
+            int col = letterToNum(params[1]);
+            if (col == 0 || row < 1 || row > 8) {
+                return "Not valid input.";
+            } else {
+                ChessPosition currPos = new ChessPosition(row, col);
+                Collection<ChessMove> validMoves = currGame.validMoves(currPos);
+                gamePlay.drawLegalMoves(currPos, validMoves, currColor);
+                return "These are your legal moves.";
+            }
         }
-        else {
-            ChessPosition currPos = new ChessPosition(row, col);
-            Collection<ChessMove> validMoves = currGame.validMoves(currPos);
-            gamePlay.drawLegalMoves(currPos, validMoves, currColor);
-            return "These are your legal moves.";
-        }
+        return null;
     }
 
     private int letterToNum(String letter){

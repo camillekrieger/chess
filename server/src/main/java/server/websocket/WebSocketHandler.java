@@ -8,6 +8,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.WebSocketService;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -15,18 +16,16 @@ import java.util.Set;
 
 @WebSocket
 public class WebSocketHandler {
-
     WebSocketSessions sessionsSet = new WebSocketSessions();
-    //make a websocket service class in server to get all the data access
     WebSocketService service = new WebSocketService();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws DataAccessException, IOException {
         //listens for message from client
-        MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(command.getGameID(), session, command.getAuthToken());
-            case MAKE_MOVE -> makeMove(command.getGameID(), command.getAuthToken(), session, message, command.getMove());
+            case MAKE_MOVE -> makeMove(command.getGameID(), command.getAuthToken(), session);
             case LEAVE -> leave(command.getGameID(), session, command.getAuthToken());
             case RESIGN -> resign(command.getGameID(), command.getAuthToken(), session);
         }
@@ -38,19 +37,17 @@ public class WebSocketHandler {
         broadcastMessage(gameID, json, session);
     }
 
-    private void makeMove(int gameID, String authToken, Session session, String message, ChessMove move){
-        //make a move
+    private void makeMove(int gameID, String authToken, Session session){
+//        ServerMessage message = service.makeMove(gameID, session, authToken, sessionsSet);
     }
 
     private void leave(int gameID, Session session, String authToken) throws DataAccessException, IOException {
-        //leave the game
         ServerMessage message = service.leave(gameID, session, authToken, sessionsSet);
         String json = new Gson().toJson(message);
         broadcastMessage(gameID, json, session);
     }
 
     private void resign(int gameID, String authToken, Session session) throws DataAccessException, IOException {
-        //resign game
         ServerMessage message = service.resign(gameID, authToken);
         String json = new Gson().toJson(message);
         broadcastMessage(gameID, json, session);
