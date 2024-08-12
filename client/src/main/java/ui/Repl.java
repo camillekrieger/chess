@@ -11,7 +11,7 @@ public class Repl implements NotificationHandler {
 
     public Repl(int serverURL) {
         state = State.LOGGED_OUT;
-        client = new ChessClient(serverURL, state);
+        client = new ChessClient(serverURL, state, this);
     }
 
     public void run(){

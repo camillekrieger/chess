@@ -4,6 +4,9 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
+import model.AuthData;
 import model.GameData;
 import serverfacade.ServerFacade;
 import ui.*;
@@ -23,11 +26,16 @@ public class ChessClient {
     private String currGameNum;
     private boolean observing;
     private ChessGame currGame;
-
-    public ChessClient(int serverURL, State state) {
+    private WebSocketFacade ws;
+    private final int serverURL;
+    private final NotificationHandler notificationHandler;
+    private String currAuthToken;
+    public ChessClient(int serverURL, State state, NotificationHandler notificationHandler) {
         this.server = new ServerFacade(serverURL);
         this.state = state;
         this.numToID = new HashMap<>();
+        this.serverURL = serverURL;
+        this.notificationHandler = notificationHandler;
     }
 
     public String help(){
@@ -96,6 +104,10 @@ public class ChessClient {
                     gamePlay.drawBlack(currGame);
                     nextMove = "White";
                 }
+                int gameID = numToID.get(Integer.parseInt(currGameNum));
+                String newURL = "http://localhost:" + serverURL;
+                ws = new WebSocketFacade(newURL, notificationHandler);
+                ws.makeMove(currAuthToken, gameID, move);
                 return String.format("%s's turn.", nextMove);
             }
         }
@@ -135,7 +147,7 @@ public class ChessClient {
         };
     }
 
-    public String resign(){
+    public String resign() throws Exception {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Do you wish to resign? [Y/N] >>> ");
         String result = scanner.nextLine();
@@ -147,6 +159,10 @@ public class ChessClient {
             else{
                 winner = "White";
             }
+            int gameID = numToID.get(Integer.parseInt(currGameNum));
+            String newURL = "http://localhost:" + serverURL;
+            ws = new WebSocketFacade(newURL, notificationHandler);
+            ws.resignGame(currAuthToken, gameID);
             return String.format("Game Over. %s wins.", winner);
         }
         else {
@@ -160,7 +176,7 @@ public class ChessClient {
         return "Here is the current game board.";
     }
 
-    public String exit() throws IOException {
+    public String exit() throws Exception {
         if (!observing){
             int gameNum = Integer.parseInt(currGameNum);
             int gameID = numToID.get(gameNum);
@@ -172,12 +188,17 @@ public class ChessClient {
             }
         }
         state = State.LOGGED_IN;
+        int gameID = numToID.get(Integer.parseInt(currGameNum));
+        String newURL = "http://localhost:" + serverURL;
+        ws = new WebSocketFacade(newURL, notificationHandler);
+        ws.leaveGame(currAuthToken, gameID);
         return "left game";
     }
 
     public String register(String... params) throws IOException {
         if (params.length == 3) {
-            server.register(params[0], params[1], params[2]);
+            AuthData authData = server.register(params[0], params[1], params[2]);
+            currAuthToken = authData.getAuthToken();
             state = State.LOGGED_IN;
             return String.format("Logged in as %s.", params[0]);
         }
@@ -186,7 +207,8 @@ public class ChessClient {
 
     public String login(String... params) throws IOException {
         if (params.length == 2) {
-            server.login(params[0], params[1]);
+            AuthData authData = server.login(params[0], params[1]);
+            currAuthToken = authData.getAuthToken();
             state = State.LOGGED_IN;
             return String.format("Logged in as %s.", params[0]);
         }
@@ -259,6 +281,9 @@ public class ChessClient {
                 }
                 currGameNum = params[0];
                 state = State.PLAYGAME;
+                String newURL = "http://localhost:" + serverURL;
+                ws = new WebSocketFacade(newURL, notificationHandler);
+                ws.connect(currAuthToken, gameID);
                 return String.format("You have joined the game as %s.", currColor);
             }
         } catch (Exception e) {
@@ -296,6 +321,9 @@ public class ChessClient {
                 gamePlay.drawWhite(currGame);
                 state = State.PLAYGAME;
                 observing = true;
+                String newURL = "http://localhost:" + serverURL;
+                ws = new WebSocketFacade(newURL, notificationHandler);
+                ws.connect(currAuthToken, gameID);
                 return String.format("You are now observing %s.", name);
             }
         } catch (Exception e) {
