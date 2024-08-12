@@ -30,6 +30,7 @@ public class ChessClient {
     private final int serverURL;
     private final NotificationHandler notificationHandler;
     private String currAuthToken;
+    private String nextMove;
     public ChessClient(int serverURL, State state, NotificationHandler notificationHandler) {
         this.server = new ServerFacade(serverURL);
         this.state = state;
@@ -95,18 +96,18 @@ public class ChessClient {
                 ChessPiece.PieceType promo = null;
                 ChessMove move = new ChessMove(start, end, promo);
                 currGame.makeMove(move);
-                String nextMove;
-                if (currColor.equals("White")){
-                    gamePlay.drawWhite(currGame);
-                    nextMove = "Black";
+                if (nextMove.equals(currColor)) {
+                    if (currColor.equals("White")) {
+                        gamePlay.drawWhite(currGame);
+                        nextMove = "Black";
+                    } else {
+                        gamePlay.drawBlack(currGame);
+                        nextMove = "White";
+                    }
+                    int gameID = numToID.get(Integer.parseInt(currGameNum));
+                    ws.makeMove(currAuthToken, gameID, move);
+                    return String.format("%s's turn.", nextMove);
                 }
-                else{
-                    gamePlay.drawBlack(currGame);
-                    nextMove = "White";
-                }
-                int gameID = numToID.get(Integer.parseInt(currGameNum));
-                ws.makeMove(currAuthToken, gameID, move);
-                return String.format("%s's turn.", nextMove);
             }
         }
         catch(Exception e){

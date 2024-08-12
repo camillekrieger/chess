@@ -102,13 +102,29 @@ public class WebSocketService {
         if (authData != null){
             GameData gameData = gameDAO.getGame(gameID);
             if (gameData != null) {
-                Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
-                for (ChessMove m : moves){
-                    if (m.equals(move)){
-                        return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
-                    }
+                ChessGame.TeamColor currTurn = gameData.getGame().getTeamTurn();
+                ChessGame.TeamColor player;
+                if (authData.getUsername().equals(gameData.getWhiteUsername())){
+                    player = ChessGame.TeamColor.WHITE;
                 }
-                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid move.");
+                else if (authData.getUsername().equals(gameData.getBlackUsername())){
+                    player = ChessGame.TeamColor.BLACK;
+                }
+                else{
+                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "observers cannot make moves.");
+                }
+                if(player.equals(currTurn)) {
+                    Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
+                    for (ChessMove m : moves) {
+                        if (m.equals(move)) {
+                            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+                        }
+                    }
+                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid move.");
+                }
+                else{
+                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "it is not your turn.");
+                }
             }
             else{
                 return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
