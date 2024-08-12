@@ -74,6 +74,40 @@ public class WebSocketHandler {
                 String notifyJson = new Gson().toJson(nm);
                 broadcastMessage(gameID, notifyJson, session);
                 //need to still check if in check, checkmate, or stalemate
+                if (service.notifyCheck(gameID)){
+                    String color = null;
+                    if(service.getGame(gameID).getWhiteUsername().equals(service.getUsername(authToken))){
+                        color = "White";
+                    }
+                    else if(service.getGame(gameID).getBlackUsername().equals(service.getUsername(authToken))){
+                        color = "Black";
+                    }
+                    NotificationMessage nm1 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in check.", color));
+                    String newJson = new Gson().toJson(nm1);
+                    sendMessage(newJson, session);
+                    broadcastMessage(gameID, newJson, session);
+                }
+                if (service.notifyCheckmate(gameID)){
+                    String color = null;
+                    if(service.getGame(gameID).getWhiteUsername().equals(service.getUsername(authToken))){
+                        color = "White";
+                    }
+                    else if(service.getGame(gameID).getBlackUsername().equals(service.getUsername(authToken))){
+                        color = "Black";
+                    }
+                    NotificationMessage nm2 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in checkmate.", color));
+                    String nnJson = new Gson().toJson(nm2);
+                    sendMessage(nnJson, session);
+                    broadcastMessage(gameID, nnJson, session);
+                    resignedGame = true;
+                }
+                if (service.notifyStalemate(gameID)){
+                    NotificationMessage nm3 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game in stalemate.");
+                    String nnnJson = new Gson().toJson(nm3);
+                    sendMessage(nnnJson, session);
+                    broadcastMessage(gameID, nnnJson, session);
+                    resignedGame = true;
+                }
             }
         }
     }
@@ -90,16 +124,22 @@ public class WebSocketHandler {
     }
 
     private void resign(int gameID, String authToken, Session session) throws DataAccessException, IOException {
-        ServerMessage message = service.resign(gameID, authToken);
-        if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)){
-            String json = new Gson().toJson(message);
+        if (resignedGame) {
+            ErrorMessage msg = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game Over. No further actions can be made.");
+            String json = new Gson().toJson(msg);
             sendMessage(json, session);
         }
         else {
-            resignedGame = true;
-            String json = new Gson().toJson(message);
-            sendMessage(json, session);
-            broadcastMessage(gameID, json, session);
+            ServerMessage message = service.resign(gameID, authToken);
+            if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
+                String json = new Gson().toJson(message);
+                sendMessage(json, session);
+            } else {
+                resignedGame = true;
+                String json = new Gson().toJson(message);
+                sendMessage(json, session);
+                broadcastMessage(gameID, json, session);
+            }
         }
     }
 

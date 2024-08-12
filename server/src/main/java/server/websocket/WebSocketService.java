@@ -85,8 +85,13 @@ public class WebSocketService {
         if (authData != null){
             GameData gameData = gameDAO.getGame(gameID);
             if (gameData != null) {
-                String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
-                return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                if(authData.getUsername().equals(gameData.getBlackUsername()) || authData.getUsername().equals(gameData.getWhiteUsername())){
+                    String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
+                    return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                }
+                else{
+                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "observers cannot resign the game");
+                }
             }
             else{
                 return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
@@ -135,6 +140,24 @@ public class WebSocketService {
         }
     }
 
+    public boolean notifyCheck(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.getGame(gameID);
+        ChessGame.TeamColor currTurn = gameData.getGame().getTeamTurn();
+        return gameData.getGame().isInCheck(currTurn);
+    }
+
+    public boolean notifyCheckmate(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.getGame(gameID);
+        ChessGame.TeamColor currTurn = gameData.getGame().getTeamTurn();
+        return gameData.getGame().isInCheckmate(currTurn);
+    }
+
+    public boolean notifyStalemate(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.getGame(gameID);
+        ChessGame.TeamColor currTurn = gameData.getGame().getTeamTurn();
+        return gameData.getGame().isInStalemate(currTurn);
+    }
+
     public String notifyMakeMove(int gameId, String authToken, ChessMove move) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null) {
@@ -167,8 +190,12 @@ public class WebSocketService {
         };
     }
 
-    public ChessGame getGame(int gameID) throws DataAccessException {
-        GameData gameData = gameDAO.getGame(gameID);
-        return gameData.getGame();
+    public GameData getGame(int gameID) throws DataAccessException {
+        return gameDAO.getGame(gameID);
+    }
+
+    public String getUsername(String authToken) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        return authData.getUsername();
     }
 }
