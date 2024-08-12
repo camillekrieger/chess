@@ -101,15 +101,15 @@ public class WebSocketService {
                     return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 }
                 else{
-                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "observers cannot resign the game");
+                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Observers cannot resign the game");
                 }
             }
             else{
-                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
+                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid game id.");
             }
         }
         else {
-            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid auth token.");
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid auth token.");
         }
     }
 

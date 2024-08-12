@@ -89,7 +89,7 @@ public class ChessClient {
                 if (observing){
                     return "Unauthorized";
                 }
-                if (!currGame.isGameOver()) {
+                else if (currGame.isGameOver()) {
                     return "Game Over. No further actions can be made";
                 }
                 else{
@@ -100,6 +100,40 @@ public class ChessClient {
                     ChessPosition start = new ChessPosition(startRow, startCol);
                     ChessPosition end = new ChessPosition(endRow, endCol);
                     ChessPiece.PieceType promo = null;
+                    if (currGame.getBoard().getPiece(start) == null){
+                        return "There is no piece at that location to move. Try again";
+                    }
+                    //check the piece, check if it has a promotion and have that equal promo
+                    if(currColor == ChessGame.TeamColor.BLACK && endRow == 1) {
+                        ChessPiece.PieceType currPiece = currGame.getBoard().getPiece(start).getPieceType();
+                        if (currPiece.equals(ChessPiece.PieceType.PAWN)){
+                            Scanner scanner = new Scanner(System.in);
+                            var result = "";
+                            System.out.print("\nDesired Promotion Piece [QUEEN|KNIGHT|BISHOP|ROOK] >>> ");
+                            result = scanner.nextLine();
+                            promo = switch(result){
+                                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
+                                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
+                                case "ROOK" -> ChessPiece.PieceType.ROOK;
+                                default -> ChessPiece.PieceType.QUEEN;
+                            };
+                        }
+                    }
+                    if(currColor == ChessGame.TeamColor.WHITE && endRow == 8) {
+                        ChessPiece.PieceType currPiece = currGame.getBoard().getPiece(start).getPieceType();
+                        if (currPiece.equals(ChessPiece.PieceType.PAWN)){
+                            Scanner scanner = new Scanner(System.in);
+                            var result = "";
+                            System.out.print("\nDesired Promotion Piece [QUEEN|KNIGHT|BISHOP|ROOK] >>> ");
+                            result = scanner.nextLine();
+                            promo = switch(result){
+                                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
+                                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
+                                case "ROOK" -> ChessPiece.PieceType.ROOK;
+                                default -> ChessPiece.PieceType.QUEEN;
+                            };
+                        }
+                    }
                     ChessMove move = new ChessMove(start, end, promo);
                     if (currGame.getTeamTurn().equals(currColor)) {
                         int gameID = numToID.get(Integer.parseInt(currGameNum));
@@ -162,9 +196,10 @@ public class ChessClient {
         if (observing){
             return "Unauthorized";
         }
-        if(currGame.isGameOver()) {
+        else if(currGame.isGameOver()) {
             return "Game Over, No further actions can be made.";
-        }else{
+        }
+        else{
             Scanner scanner = new Scanner(System.in);
             System.out.print("Do you wish to resign? [Y/N] >>> ");
             String result = scanner.nextLine();
@@ -172,7 +207,8 @@ public class ChessClient {
                 int gameID = numToID.get(Integer.parseInt(currGameNum));
                 ws.resignGame(currAuthToken, gameID);
                 return "Game Over";
-            } else {
+            }
+            else {
                 String color;
                 if (currColor.equals(ChessGame.TeamColor.WHITE)) {
                     color = "White";
@@ -186,14 +222,18 @@ public class ChessClient {
     }
 
     public String redrawBoard(){
-        String color;
-        if (currColor.equals(ChessGame.TeamColor.WHITE)){
-            color = "White";
+        if (observing){
+            gamePlay.redrawBoard("White", currGame);
         }
-        else{
-            color = "Black";
+        else {
+            String color;
+            if (currColor.equals(ChessGame.TeamColor.WHITE)) {
+                color = "White";
+            } else {
+                color = "Black";
+            }
+            gamePlay.redrawBoard(color, currGame);
         }
-        gamePlay.redrawBoard(color, currGame);
         return "Here is the current game board.";
     }
 
@@ -339,6 +379,8 @@ public class ChessClient {
                         name = game.getGameName();
                     }
                 }
+                gamePlay = new GamePlayUI();
+                currGameNum = params[0];
                 state = State.PLAYGAME;
                 observing = true;
                 String newURL = "http://localhost:" + serverURL;
