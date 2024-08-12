@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -21,10 +22,14 @@ public class Server {
 
     ClearService clearService = new ClearService();
 
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clearHandler);
