@@ -35,7 +35,7 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
                 @Override
                 public void onMessage(String message) {
                     MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-                    int gameID = command.getGameID();
+//                    int gameID = command.getGameID();
 //                    WebSocketService wss = new WebSocketService();
 //                    ChessGame game = wss.getGame(gameID);
 //                    notificationHandler.updateGame(game);
