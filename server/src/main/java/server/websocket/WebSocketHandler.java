@@ -7,15 +7,22 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.zip.GZIPOutputStream;
 
 @WebSocket
 public class WebSocketHandler {
-    WebSocketSessions sessionsSet = new WebSocketSessions();
-    WebSocketService service = new WebSocketService();
+    WebSocketSessions sessionsSet;
+    WebSocketService service;
+
+    public WebSocketHandler(){
+        sessionsSet = new WebSocketSessions();
+        service = new WebSocketService();
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws DataAccessException, IOException {
@@ -32,7 +39,11 @@ public class WebSocketHandler {
     private void connect(int gameID, Session session, String authToken) throws DataAccessException, IOException {
         ServerMessage message = service.connect(gameID, session, authToken, sessionsSet);
         String json = new Gson().toJson(message);
-        broadcastMessage(gameID, json, session);
+        sendMessage(json, session);
+        String notifyMessage = service.notifyConnectMessage(gameID, authToken);
+        NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
+        String notifyJson = new Gson().toJson(nm);
+        broadcastMessage(gameID, notifyJson, session);
     }
 
     private void makeMove(int gameID, String authToken, Session session, ChessMove move) throws IOException, DataAccessException {
@@ -59,7 +70,6 @@ public class WebSocketHandler {
 
     public void broadcastMessage(int gameID, String message, Session exceptThisSession) throws IOException {
         Set<Session> sessions = sessionsSet.getSessionsFromGame(gameID);
-//        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
         for (Session ses : sessions){
             if (ses != exceptThisSession){
                 sendMessage(message, ses);

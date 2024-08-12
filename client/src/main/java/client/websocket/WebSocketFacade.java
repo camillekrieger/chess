@@ -36,44 +36,19 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-                    int gameID = command.getGameID();
-                    WebSocketService wss = new WebSocketService();
-                    ChessGame game;
-                    try {
-                        game = wss.getGame(gameID);
-                    } catch (DataAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                    notificationHandler.updateGame(game);
-                    switch (command.getCommandType()){
-                        case CONNECT -> {
-                            try {
-                                connect(command.getAuthToken(), command.getGameID());
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                    ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
+                    switch (msg.getServerMessageType()){
+                        case LOAD_GAME-> {
+                            LoadGameMessage lgm = new Gson().fromJson(message, LoadGameMessage.class);
+                            notificationHandler.updateGame(lgm.getGame());
                         }
-                        case MAKE_MOVE -> {
-                            try {
-                                makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                        case NOTIFICATION -> {
+                            NotificationMessage nm = new Gson().fromJson(message, NotificationMessage.class);
+                            notificationHandler.printMessage(nm.getMessage());
                         }
-                        case LEAVE -> {
-                            try {
-                                leaveGame(command.getAuthToken(), command.getGameID());
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        case RESIGN -> {
-                            try {
-                                resignGame(command.getAuthToken(), command.getGameID());
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                        case ERROR -> {
+                            ErrorMessage em = new Gson().fromJson(message, ErrorMessage.class);
+                            notificationHandler.printMessage(em.getErrorMessage());
                         }
                     }
                 }
@@ -86,7 +61,7 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
     public void connect(String authToken, int gameID) throws IOException {
         try {
             UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            sendMessage(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new IOException(ex);
         }
@@ -95,7 +70,7 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
     public void makeMove(String authToken, int gameID, ChessMove move) throws IOException {
         try {
             MakeMoveCommand command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            sendMessage(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new IOException(ex);
         }
@@ -104,8 +79,7 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
     public void leaveGame(String authToken, int gameID) throws IOException {
         try {
             UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-            this.session.close();
+            sendMessage(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new IOException(ex);
         }
@@ -114,17 +88,13 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
     public void resignGame(String authToken, int gameID) throws IOException {
         try {
             UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            sendMessage(new Gson().toJson(command));
         } catch (IOException ex){
             throw new IOException(ex);
         }
     }
 
-    private void sendMessage(ServerMessage.ServerMessageType type, String message){
-        switch(type){
-            case ERROR -> notificationHandler.printMessage(new ErrorMessage(type, message).getErrorMessage());
-            case LOAD_GAME -> notificationHandler.printMessage(new LoadGameMessage(type, message).getGame());
-            case NOTIFICATION -> notificationHandler.printMessage(new NotificationMessage(type, message).getMessage());
-        }
+    private void sendMessage(String command) throws IOException {
+        this.session.getBasicRemote().sendText(command);
     }
 }

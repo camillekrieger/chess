@@ -11,7 +11,6 @@ import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import server.websocket.WebSocketSessions;
 import service.GameService;
 import service.UserService;
 import websocket.messages.LoadGameMessage;
@@ -28,27 +27,31 @@ public class WebSocketService {
         if (authData != null){
             sessionsSet.addSessionToGame(gameID, session);
             GameData gameData = gameDAO.getGame(gameID);
-            String gameJson = new Gson().toJson(gameData.getGameName());
-            LoadGameMessage lgm = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameJson);
+            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+        }
+        return null;
+    }
+
+    public String notifyConnectMessage(int gameID, String authToken) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null) {
+            GameData gameData = gameDAO.getGame(gameID);
             String user = authData.getUsername();
             String color;
-            if (user.equals(gameData.getWhiteUsername())){
+            if (user.equals(gameData.getWhiteUsername())) {
                 color = "white";
-            }
-            else if (user.equals(gameData.getBlackUsername())){
+            } else if (user.equals(gameData.getBlackUsername())) {
                 color = "black";
-            }
-            else{
+            } else {
                 color = "observing";
             }
             String message;
-            if(color.equals("observing")){
+            if (color.equals("observing")) {
                 message = String.format("%s joined %s as an observer", user, gameData.getGameName());
-            }
-            else {
+            } else {
                 message = String.format("%s joined %s as %s", user, gameData.getGameName(), color);
             }
-            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            return message;
         }
         return null;
     }

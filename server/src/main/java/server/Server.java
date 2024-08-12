@@ -19,9 +19,7 @@ public class Server {
 
     UserService userService = new UserService();
     GameService gameService = new GameService();
-
     ClearService clearService = new ClearService();
-
     private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
