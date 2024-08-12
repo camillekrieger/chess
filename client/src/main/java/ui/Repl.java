@@ -68,11 +68,15 @@ public class Repl implements NotificationHandler {
     @Override
     public void updateGame(ChessGame game) {
         client.setCurrGame(game);
+        System.out.println();
         client.redrawBoard();
+        printPrompt();
     }
 
     @Override
     public void printMessage(String message) {
+        System.out.println();
         System.out.println(message);
+        printPrompt();
     }
 }

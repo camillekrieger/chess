@@ -22,7 +22,7 @@ public class ChessClient {
     private final ServerFacade server;
     private GamePlayUI gamePlay;
     private final HashMap <Integer, Integer> numToID;
-    private String currColor;
+    private ChessGame.TeamColor currColor;
     private String currGameNum;
     private boolean observing;
     private ChessGame currGame;
@@ -30,7 +30,6 @@ public class ChessClient {
     private final int serverURL;
     private final NotificationHandler notificationHandler;
     private String currAuthToken;
-    private String nextMove;
     public ChessClient(int serverURL, State state, NotificationHandler notificationHandler) {
         this.server = new ServerFacade(serverURL);
         this.state = state;
@@ -87,26 +86,32 @@ public class ChessClient {
     public String makeMove(String... params){
         try{
             if (params.length == 4) {
-                int startRow = Integer.parseInt(params[0]);
-                int startCol = letterToNum(params[1]);
-                int endRow = Integer.parseInt(params[2]);
-                int endCol = letterToNum(params[3]);
-                ChessPosition start = new ChessPosition(startRow, startCol);
-                ChessPosition end = new ChessPosition(endRow, endCol);
-                ChessPiece.PieceType promo = null;
-                ChessMove move = new ChessMove(start, end, promo);
-                currGame.makeMove(move);
-                if (nextMove.equals(currColor)) {
-                    if (currColor.equals("White")) {
-                        gamePlay.drawWhite(currGame);
-                        nextMove = "Black";
-                    } else {
-                        gamePlay.drawBlack(currGame);
-                        nextMove = "White";
+                if (observing){
+                    return "Unauthorized";
+                }
+                if (!currGame.isGameOver()) {
+                    return "Game Over. No further actions can be made";
+                }
+                else{
+                    int startRow = Integer.parseInt(params[0]);
+                    int startCol = letterToNum(params[1]);
+                    int endRow = Integer.parseInt(params[2]);
+                    int endCol = letterToNum(params[3]);
+                    ChessPosition start = new ChessPosition(startRow, startCol);
+                    ChessPosition end = new ChessPosition(endRow, endCol);
+                    ChessPiece.PieceType promo = null;
+                    ChessMove move = new ChessMove(start, end, promo);
+                    if (currGame.getTeamTurn().equals(currColor)) {
+                        int gameID = numToID.get(Integer.parseInt(currGameNum));
+                        ws.makeMove(currAuthToken, gameID, move);
+                        String nextMove;
+                        if (currGame.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
+                            nextMove = "Black";
+                        } else {
+                            nextMove = "White";
+                        }
+                        return String.format("%s's turn.", nextMove);
                     }
-                    int gameID = numToID.get(Integer.parseInt(currGameNum));
-                    ws.makeMove(currAuthToken, gameID, move);
-                    return String.format("%s's turn.", nextMove);
                 }
             }
         }
@@ -125,7 +130,14 @@ public class ChessClient {
             } else {
                 ChessPosition currPos = new ChessPosition(row, col);
                 Collection<ChessMove> validMoves = currGame.validMoves(currPos);
-                gamePlay.drawLegalMoves(currPos, validMoves, currColor, currGame);
+                String color;
+                if (currColor.equals(ChessGame.TeamColor.WHITE)){
+                    color = "White";
+                }
+                else{
+                    color = "Black";
+                }
+                gamePlay.drawLegalMoves(currPos, validMoves, color, currGame);
                 return "These are your legal moves.";
             }
         }
@@ -147,29 +159,41 @@ public class ChessClient {
     }
 
     public String resign() throws Exception {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Do you wish to resign? [Y/N] >>> ");
-        String result = scanner.nextLine();
-        if (result.equals("y") || result.equals("yes")){
-            String winner;
-            if (currColor.equals("White")){
-                winner = "Black";
-            }
-            else{
-                winner = "White";
-            }
-            int gameID = numToID.get(Integer.parseInt(currGameNum));
-            ws.resignGame(currAuthToken, gameID);
-            return String.format("Game Over. %s wins.", winner);
+        if (observing){
+            return "Unauthorized";
         }
-        else {
-            gamePlay.redrawBoard(currColor, currGame);
-            return "Continue game play";
+        if(currGame.isGameOver()) {
+            return "Game Over, No further actions can be made.";
+        }else{
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Do you wish to resign? [Y/N] >>> ");
+            String result = scanner.nextLine();
+            if (result.equals("y") || result.equals("yes")) {
+                int gameID = numToID.get(Integer.parseInt(currGameNum));
+                ws.resignGame(currAuthToken, gameID);
+                return "Game Over";
+            } else {
+                String color;
+                if (currColor.equals(ChessGame.TeamColor.WHITE)) {
+                    color = "White";
+                } else {
+                    color = "Black";
+                }
+                gamePlay.redrawBoard(color, currGame);
+                return "Continue game play";
+            }
         }
     }
 
     public String redrawBoard(){
-        gamePlay.redrawBoard(currColor, currGame);
+        String color;
+        if (currColor.equals(ChessGame.TeamColor.WHITE)){
+            color = "White";
+        }
+        else{
+            color = "Black";
+        }
+        gamePlay.redrawBoard(color, currGame);
         return "Here is the current game board.";
     }
 
@@ -177,7 +201,7 @@ public class ChessClient {
         if (!observing){
             int gameNum = Integer.parseInt(currGameNum);
             int gameID = numToID.get(gameNum);
-            if (currColor.equals("White")){
+            if (currColor.equals(ChessGame.TeamColor.WHITE)){
                 server.leaveGame(ChessGame.TeamColor.WHITE, gameID);
             }
             else{
@@ -256,11 +280,11 @@ public class ChessClient {
                 int gameID = numToID.get(gameNum);
                 if ("white".equals(params[1])) {
                     server.joinGame(ChessGame.TeamColor.WHITE, gameID);
-                    currColor = "White";
+                    currColor = ChessGame.TeamColor.WHITE;
                 }
                 else {
                     server.joinGame(ChessGame.TeamColor.BLACK, gameID);
-                    currColor = "Black";
+                    currColor = ChessGame.TeamColor.BLACK;
                 }
                 ListGamesResponse games = server.listGames();
                 for (GameData game : games.getGames()) {
@@ -269,18 +293,19 @@ public class ChessClient {
                     }
                 }
                 gamePlay = new GamePlayUI();
-                if (currColor.equals("White")){
-                    gamePlay.drawWhite(currGame);
-                }
-                else {
-                    gamePlay.drawBlack(currGame);
-                }
                 currGameNum = params[0];
                 state = State.PLAYGAME;
                 String newURL = "http://localhost:" + serverURL;
                 ws = new WebSocketFacade(newURL, notificationHandler);
                 ws.connect(currAuthToken, gameID);
-                return String.format("You have joined the game as %s.", currColor);
+                String color;
+                if (currGame.getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
+                    color = "White";
+                }
+                else{
+                    color = "Black";
+                }
+                return String.format("You have joined the game as %s. It is %s's move.", currColor, color);
             }
         } catch (Exception e) {
             return null;
@@ -314,7 +339,6 @@ public class ChessClient {
                         name = game.getGameName();
                     }
                 }
-                gamePlay.drawWhite(currGame);
                 state = State.PLAYGAME;
                 observing = true;
                 String newURL = "http://localhost:" + serverURL;

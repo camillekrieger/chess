@@ -94,8 +94,9 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             if (gameData != null) {
                 if(authData.getUsername().equals(gameData.getBlackUsername()) || authData.getUsername().equals(gameData.getWhiteUsername())){
-                    gameData.getGame().setGameOver(true);
-                    gameDAO.updateChessGame(gameData.getGameID(), gameData.getGame());
+                    ChessGame newGame = gameData.getGame();
+                    newGame.setGameOver(true);
+                    gameDAO.updateChessGame(gameData.getGameID(), newGame);
                     String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
                     return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 }
@@ -135,7 +136,7 @@ public class WebSocketService {
                             ChessGame newGame = gameDAO.getGame(gameID).getGame();
                             newGame.makeMove(move);
                             gameDAO.updateChessGame(gameID, newGame);
-                            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+                            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame);
                         }
                     }
                     return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid move.");
