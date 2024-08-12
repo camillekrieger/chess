@@ -105,8 +105,6 @@ public class ChessClient {
                     nextMove = "White";
                 }
                 int gameID = numToID.get(Integer.parseInt(currGameNum));
-                String newURL = "http://localhost:" + serverURL;
-                ws = new WebSocketFacade(newURL, notificationHandler);
                 ws.makeMove(currAuthToken, gameID, move);
                 return String.format("%s's turn.", nextMove);
             }
@@ -160,8 +158,6 @@ public class ChessClient {
                 winner = "White";
             }
             int gameID = numToID.get(Integer.parseInt(currGameNum));
-            String newURL = "http://localhost:" + serverURL;
-            ws = new WebSocketFacade(newURL, notificationHandler);
             ws.resignGame(currAuthToken, gameID);
             return String.format("Game Over. %s wins.", winner);
         }
@@ -189,9 +185,8 @@ public class ChessClient {
         }
         state = State.LOGGED_IN;
         int gameID = numToID.get(Integer.parseInt(currGameNum));
-        String newURL = "http://localhost:" + serverURL;
-        ws = new WebSocketFacade(newURL, notificationHandler);
         ws.leaveGame(currAuthToken, gameID);
+        ws = null;
         return "left game";
     }
 
