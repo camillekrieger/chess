@@ -3,6 +3,8 @@ package client.websocket;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
+import server.websocket.WebSocketService;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -35,10 +37,15 @@ public class WebSocketFacade extends Endpoint implements MessageHandler {
                 @Override
                 public void onMessage(String message) {
                     MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-//                    int gameID = command.getGameID();
-//                    WebSocketService wss = new WebSocketService();
-//                    ChessGame game = wss.getGame(gameID);
-//                    notificationHandler.updateGame(game);
+                    int gameID = command.getGameID();
+                    WebSocketService wss = new WebSocketService();
+                    ChessGame game;
+                    try {
+                        game = wss.getGame(gameID);
+                    } catch (DataAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                    notificationHandler.updateGame(game);
                     switch (command.getCommandType()){
                         case CONNECT -> {
                             try {

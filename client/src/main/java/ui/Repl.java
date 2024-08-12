@@ -3,13 +3,6 @@ package ui;
 import chess.ChessGame;
 import client.ChessClient;
 import client.websocket.NotificationHandler;
-import com.google.gson.Gson;
-import websocket.commands.UserGameCommand;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-
-import javax.management.Notification;
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Repl implements NotificationHandler {

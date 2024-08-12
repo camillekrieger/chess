@@ -1,4 +1,4 @@
-package service;
+package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -12,6 +12,8 @@ import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.websocket.WebSocketSessions;
+import service.GameService;
+import service.UserService;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;

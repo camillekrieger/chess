@@ -6,7 +6,6 @@ import dataaccess.DataAccessException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import service.WebSocketService;
 import websocket.commands.MakeMoveCommand;
 import websocket.messages.ServerMessage;
 
