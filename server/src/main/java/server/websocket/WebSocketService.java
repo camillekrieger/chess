@@ -76,7 +76,7 @@ public class WebSocketService {
                     color = ChessGame.TeamColor.BLACK;
                 }
                 gameDAO.removeUser(gameData, color, authData.getUsername());
-                String message = String.format("%s left %s", authData.getUsername(), gameData.getGame());
+                String message = String.format("%s left %s", authData.getUsername(), gameData.getGameName());
                 return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             }
             else{
