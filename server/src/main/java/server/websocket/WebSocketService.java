@@ -68,6 +68,14 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             if (gameData != null) {
                 sessionsSet.removeSessionFromGame(gameID, session);
+                ChessGame.TeamColor color;
+                if(gameData.getWhiteUsername() != null && gameData.getWhiteUsername().equals(authData.getUsername())){
+                    color = ChessGame.TeamColor.WHITE;
+                }
+                else{
+                    color = ChessGame.TeamColor.BLACK;
+                }
+                gameDAO.removeUser(gameData, color, authData.getUsername());
                 String message = String.format("%s left %s", authData.getUsername(), gameData.getGame());
                 return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             }
@@ -86,6 +94,8 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             if (gameData != null) {
                 if(authData.getUsername().equals(gameData.getBlackUsername()) || authData.getUsername().equals(gameData.getWhiteUsername())){
+                    gameData.getGame().setGameOver(true);
+                    gameDAO.updateChessGame(gameData.getGameID(), gameData.getGame());
                     String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
                     return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 }
@@ -122,6 +132,9 @@ public class WebSocketService {
                     Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
                     for (ChessMove m : moves) {
                         if (m.equals(move)) {
+                            ChessGame newGame = gameDAO.getGame(gameID).getGame();
+                            newGame.makeMove(move);
+                            gameDAO.updateChessGame(gameID, newGame);
                             return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
                         }
                     }
@@ -164,7 +177,7 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameId);
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
-            ChessPiece piece = gameData.getGame().getBoard().getPiece(start);
+            ChessPiece piece = gameData.getGame().getBoard().getPiece(end);
             String user = authData.getUsername();
             String pieceType = piece.getPieceType().toString();
             int startRow = start.getRow();

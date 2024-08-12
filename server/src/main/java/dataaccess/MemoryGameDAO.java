@@ -20,6 +20,11 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
+    public void updateChessGame(int gameID, ChessGame game){
+        //do stuff
+    }
+
+    @Override
     public GameData getGame(int gameID) throws DataAccessException {
         return games.get(gameID);
     }

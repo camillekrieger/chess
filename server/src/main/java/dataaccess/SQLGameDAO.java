@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import static java.sql.Types.NULL;
+
 public class SQLGameDAO implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException {
@@ -142,6 +144,18 @@ public class SQLGameDAO implements GameDAO{
         return null;
     }
 
+    public void updateChessGame(int gameID, ChessGame newGame) throws DataAccessException {
+        var statement = "UPDATE game SET game=? WHERE gameID=?";
+        String gameJson = new Gson().toJson(newGame);
+        try(var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement)){
+            ps.setString(1, gameJson);
+            ps.setInt(2, gameID);
+            ps.executeUpdate();
+        }catch (Exception e) {
+            throw new DataAccessException("Unable to read data");
+        }
+    }
+
     @Override
     public String removeUser(GameData gameData, ChessGame.TeamColor color, String username) throws DataAccessException {
         var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
@@ -156,7 +170,7 @@ public class SQLGameDAO implements GameDAO{
                             if (wUser.equals(username)){
                                 var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
                                 var ts = conn.prepareStatement(updateStatement);
-                                ts.setString(1, null);
+                                ts.setNull(1, NULL);
                                 ts.setInt(2, id);
                                 ts.executeUpdate();
                                 return "{}";
@@ -165,9 +179,9 @@ public class SQLGameDAO implements GameDAO{
                         else{
                             String bUser = rs.getString("blackUsername");
                             if (bUser.equals(username)){
-                                var updateStatement = "UPDATE game SET whiteUsername = ? WHERE gameID=?";
+                                var updateStatement = "UPDATE game SET blackUsername = ? WHERE gameID=?";
                                 var ts = conn.prepareStatement(updateStatement);
-                                ts.setString(1, null);
+                                ts.setNull(1, NULL);
                                 ts.setInt(2, id);
                                 ts.executeUpdate();
                                 return "{}";

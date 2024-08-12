@@ -15,6 +15,8 @@ public class ChessGame {
     TeamColor currTeamTurn;
     ChessBoard currBoard = new ChessBoard();
 
+    boolean gameOver = false;
+
     public ChessGame() {
         currBoard.resetBoard();
         currTeamTurn = TeamColor.WHITE;
@@ -25,6 +27,14 @@ public class ChessGame {
      */
     public TeamColor getTeamTurn() {
         return currTeamTurn;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
     /**
@@ -120,10 +130,9 @@ public class ChessGame {
         if (pp != null) {
             if (pp.getTeamColor() == currTeamTurn) {
                 Collection<ChessMove> vM = validMoves(start);
-                if (vM.isEmpty()){
+                if (vM.isEmpty()) {
                     illegal = true;
-                }
-                else {
+                } else {
                     illegal = checkValidMoves(vM, move);
                 }
             }
@@ -155,6 +164,9 @@ public class ChessGame {
             }
             else{
                 setTeamTurn(TeamColor.WHITE);
+            }
+            if (isInCheckmate(currTeamTurn) || isInStalemate(currTeamTurn)){
+                setGameOver(true);
             }
         }
     }
