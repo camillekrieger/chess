@@ -45,7 +45,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void registerFail() throws IOException {
+    void registerFail() {
         Assertions.assertThrows(IOException.class, () -> {
             facade.register("player1", "password", "p1@email.com");
             facade.register("player1", "newPassword", "player@email.com");

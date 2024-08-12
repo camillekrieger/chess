@@ -122,7 +122,7 @@ public class ChessGame {
     }
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        boolean illegal = false;
+        boolean illegal;
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promo = move.getPromotionPiece();
@@ -293,7 +293,7 @@ public class ChessGame {
     }
 
     public boolean isInCheckmate(TeamColor teamColor) {
-        boolean checkmate = false;
+        boolean checkmate;
         if (teamColor == TeamColor.WHITE) {
             ChessPosition wKingStart = currBoard.getWKingPos();
             if (wKingStart == null) {
