@@ -1,10 +1,6 @@
 package server.websocket;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
-import com.google.gson.Gson;
+import chess.*;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -17,6 +13,8 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
+
+import java.util.Collection;
 
 public class WebSocketService {
 
@@ -67,31 +65,58 @@ public class WebSocketService {
     public ServerMessage leave(int gameID, Session session, String authToken, WebSocketSessions sessionsSet) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
-            sessionsSet.removeSessionFromGame(gameID, session);
             GameData gameData = gameDAO.getGame(gameID);
-            String message = String.format("%s left %s", authData.getUsername(), gameData.getGame());
-            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            if (gameData != null) {
+                sessionsSet.removeSessionFromGame(gameID, session);
+                String message = String.format("%s left %s", authData.getUsername(), gameData.getGame());
+                return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            }
+            else{
+                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
+            }
         }
-        return null;
+        else {
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid auth token.");
+        }
     }
 
     public ServerMessage resign(int gameID, String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             GameData gameData = gameDAO.getGame(gameID);
-            String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
-            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            if (gameData != null) {
+                String message = String.format("%s forfeits %s. Game Over.", authData.getUsername(), gameData.getGameName());
+                return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            }
+            else{
+                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
+            }
         }
-        return null;
+        else {
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid auth token.");
+        }
     }
 
-    public ServerMessage makeMove(int gameID, String authToken, ChessMove move) throws DataAccessException {
+    public ServerMessage makeMove(int gameID, String authToken, ChessMove move) throws DataAccessException, InvalidMoveException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             GameData gameData = gameDAO.getGame(gameID);
-            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+            if (gameData != null) {
+                Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
+                for (ChessMove m : moves){
+                    if (m.equals(move)){
+                        return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+                    }
+                }
+                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid move.");
+            }
+            else{
+                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
+            }
         }
-        return null;
+        else {
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid auth token.");
+        }
     }
 
     public String notifyMakeMove(int gameId, String authToken, ChessMove move) throws DataAccessException {

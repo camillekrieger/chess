@@ -1,23 +1,25 @@
 package server.websocket;
 
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.zip.GZIPOutputStream;
 
 @WebSocket
 public class WebSocketHandler {
     WebSocketSessions sessionsSet;
     WebSocketService service;
+    private boolean resignedGame = false;
 
     public WebSocketHandler(){
         sessionsSet = new WebSocketSessions();
@@ -25,7 +27,7 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws DataAccessException, IOException {
+    public void onMessage(Session session, String message) throws DataAccessException, IOException, InvalidMoveException {
         //listens for message from client
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
         switch (command.getCommandType()) {
@@ -52,29 +54,53 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(int gameID, String authToken, Session session, ChessMove move) throws IOException, DataAccessException {
-        ServerMessage message = service.makeMove(gameID, authToken, move);
-        String json = new Gson().toJson(message);
-        sendMessage(json, session);
-        broadcastMessage(gameID, json, session);
-        String notifyMessage = service.notifyMakeMove(gameID, authToken, move);
-        NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
-        String notifyJson = new Gson().toJson(nm);
-        broadcastMessage(gameID, notifyJson, session);
-        //need to still check if in check, checkmate, or stalemate
+    private void makeMove(int gameID, String authToken, Session session, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
+        if (resignedGame) {
+            ErrorMessage msg = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game Over. No more moves can be made.");
+            String json = new Gson().toJson(msg);
+            sendMessage(json, session);
+        }
+        else {
+            ServerMessage message = service.makeMove(gameID, authToken, move);
+            if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
+                String json = new Gson().toJson(message);
+                sendMessage(json, session);
+            } else {
+                String json = new Gson().toJson(message);
+                sendMessage(json, session);
+                broadcastMessage(gameID, json, session);
+                String notifyMessage = service.notifyMakeMove(gameID, authToken, move);
+                NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
+                String notifyJson = new Gson().toJson(nm);
+                broadcastMessage(gameID, notifyJson, session);
+                //need to still check if in check, checkmate, or stalemate
+            }
+        }
     }
 
     private void leave(int gameID, Session session, String authToken) throws DataAccessException, IOException {
         ServerMessage message = service.leave(gameID, session, authToken, sessionsSet);
         String json = new Gson().toJson(message);
-        broadcastMessage(gameID, json, session);
+        if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)){
+            sendMessage(json, session);
+        }
+        else {
+            broadcastMessage(gameID, json, session);
+        }
     }
 
     private void resign(int gameID, String authToken, Session session) throws DataAccessException, IOException {
         ServerMessage message = service.resign(gameID, authToken);
-        String json = new Gson().toJson(message);
-        sendMessage(json, session);
-        broadcastMessage(gameID, json, session);
+        if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)){
+            String json = new Gson().toJson(message);
+            sendMessage(json, session);
+        }
+        else {
+            resignedGame = true;
+            String json = new Gson().toJson(message);
+            sendMessage(json, session);
+            broadcastMessage(gameID, json, session);
+        }
     }
 
     public void sendMessage(String message, Session session) throws IOException {
