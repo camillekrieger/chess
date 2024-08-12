@@ -38,18 +38,30 @@ public class WebSocketHandler {
 
     private void connect(int gameID, Session session, String authToken) throws DataAccessException, IOException {
         ServerMessage message = service.connect(gameID, session, authToken, sessionsSet);
-        String json = new Gson().toJson(message);
-        sendMessage(json, session);
-        String notifyMessage = service.notifyConnectMessage(gameID, authToken);
-        NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
-        String notifyJson = new Gson().toJson(nm);
-        broadcastMessage(gameID, notifyJson, session);
+        if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)){
+            String json = new Gson().toJson(message);
+            sendMessage(json, session);
+        }
+        else {
+            String json = new Gson().toJson(message);
+            sendMessage(json, session);
+            String notifyMessage = service.notifyConnectMessage(gameID, authToken);
+            NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
+            String notifyJson = new Gson().toJson(nm);
+            broadcastMessage(gameID, notifyJson, session);
+        }
     }
 
     private void makeMove(int gameID, String authToken, Session session, ChessMove move) throws IOException, DataAccessException {
         ServerMessage message = service.makeMove(gameID, authToken, move);
         String json = new Gson().toJson(message);
+        sendMessage(json, session);
         broadcastMessage(gameID, json, session);
+        String notifyMessage = service.notifyMakeMove(gameID, authToken, move);
+        NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
+        String notifyJson = new Gson().toJson(nm);
+        broadcastMessage(gameID, notifyJson, session);
+        //need to still check if in check, checkmate, or stalemate
     }
 
     private void leave(int gameID, Session session, String authToken) throws DataAccessException, IOException {
@@ -61,6 +73,7 @@ public class WebSocketHandler {
     private void resign(int gameID, String authToken, Session session) throws DataAccessException, IOException {
         ServerMessage message = service.resign(gameID, authToken);
         String json = new Gson().toJson(message);
+        sendMessage(json, session);
         broadcastMessage(gameID, json, session);
     }
 

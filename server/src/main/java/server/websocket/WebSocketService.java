@@ -13,6 +13,7 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import service.UserService;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -25,11 +26,18 @@ public class WebSocketService {
     public ServerMessage connect(int gameID, Session session, String authToken, WebSocketSessions sessionsSet) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
-            sessionsSet.addSessionToGame(gameID, session);
             GameData gameData = gameDAO.getGame(gameID);
-            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+            if (gameData != null) {
+                sessionsSet.addSessionToGame(gameID, session);
+                return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+            }
+            else {
+                return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
+            }
         }
-        return null;
+        else {
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid auth token.");
+        }
     }
 
     public String notifyConnectMessage(int gameID, String authToken) throws DataAccessException {
@@ -81,6 +89,15 @@ public class WebSocketService {
         AuthData authData = authDAO.getAuth(authToken);
         if (authData != null){
             GameData gameData = gameDAO.getGame(gameID);
+            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.getGame());
+        }
+        return null;
+    }
+
+    public String notifyMakeMove(int gameId, String authToken, ChessMove move) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData != null) {
+            GameData gameData = gameDAO.getGame(gameId);
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
             ChessPiece piece = gameData.getGame().getBoard().getPiece(start);
@@ -90,8 +107,7 @@ public class WebSocketService {
             String startCol = intToLet(start.getColumn());
             int endRow = end.getRow();
             String endCol = intToLet(end.getColumn());
-            String message = String.format("%s moved %s at [%d,%s] to [%d,%s].", user, pieceType, startRow, startCol, endRow, endCol);
-            return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            return String.format("%s moved %s at [%d,%s] to [%d,%s].", user, pieceType, startRow, startCol, endRow, endCol);
         }
         return null;
     }
