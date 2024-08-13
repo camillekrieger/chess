@@ -168,6 +168,9 @@ public class ChessGame {
             if (isInCheckmate(currTeamTurn) || isInStalemate(currTeamTurn)){
                 setGameOver(true);
             }
+            if (isInCheck(currTeamTurn)){
+                setGameOver(false);
+            }
         }
     }
 
@@ -273,6 +276,7 @@ public class ChessGame {
 
     private boolean blackInCheckmate(){
         boolean checkmate = false;
+        outerLoop:
         for (int i = 1; i <=8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition maybePos = new ChessPosition(i, j);
@@ -285,7 +289,7 @@ public class ChessGame {
                 }
                 else{
                     checkmate = false;
-                    break;
+                    break outerLoop;
                 }
             }
         }

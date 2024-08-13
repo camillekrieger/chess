@@ -83,10 +83,10 @@ public class WebSocketHandler {
                 if (service.notifyCheckmate(id)){
                     String c = null;
                     if(service.getGame(id).getWhiteUsername().equals(service.getUsername(authToken))){
-                        c = "White";
+                        c = "Black";
                     }
                     else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
-                        c = "Black";
+                        c = "White";
                     }
                     NotificationMessage n = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,String.format("%s in checkmate", c));
                     String nnJson = new Gson().toJson(n);
