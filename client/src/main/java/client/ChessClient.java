@@ -83,6 +83,57 @@ public class ChessClient {
         this.currGame = game;
     }
 
+    private ChessPiece.PieceType findPromo(ChessPosition start){
+        ChessPiece.PieceType promo = null;
+        ChessPiece.PieceType currPiece = currGame.getBoard().getPiece(start).getPieceType();
+        if (currPiece.equals(ChessPiece.PieceType.PAWN)){
+            Scanner scanner = new Scanner(System.in);
+            var result = "";
+            System.out.print("\nDesired Promotion Piece [QUEEN|KNIGHT|BISHOP|ROOK] >>> ");
+            result = scanner.nextLine();
+            promo = switch(result){
+                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
+                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
+                case "ROOK" -> ChessPiece.PieceType.ROOK;
+                default -> ChessPiece.PieceType.QUEEN;
+            };
+        }
+        return promo;
+    }
+
+    private String actuallyMakeMove(String... params) throws IOException {
+        int startRow = Integer.parseInt(params[0]);
+        int startCol = letterToNum(params[1]);
+        int endRow = Integer.parseInt(params[2]);
+        int endCol = letterToNum(params[3]);
+        ChessPosition start = new ChessPosition(startRow, startCol);
+        ChessPosition end = new ChessPosition(endRow, endCol);
+        ChessPiece.PieceType promo = null;
+        if (currGame.getBoard().getPiece(start) == null){
+            return "There is no piece at that location to move. Try again";
+        }
+        //check the piece, check if it has a promotion and have that equal promo
+        if(currColor == ChessGame.TeamColor.BLACK && endRow == 1) {
+            promo = findPromo(start);
+        }
+        if(currColor == ChessGame.TeamColor.WHITE && endRow == 8) {
+            promo = findPromo(start);
+        }
+        ChessMove move = new ChessMove(start, end, promo);
+        if (currGame.getTeamTurn().equals(currColor)) {
+            int gameID = numToID.get(Integer.parseInt(currGameNum));
+            ws.makeMove(currAuthToken, gameID, move);
+            String nextMove;
+            if (currGame.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
+                nextMove = "Black";
+            } else {
+                nextMove = "White";
+            }
+            return String.format("%s's turn.", nextMove);
+        }
+        return null;
+    }
+
     public String makeMove(String... params){
         try{
             if (params.length == 4) {
@@ -93,59 +144,7 @@ public class ChessClient {
                     return "Game Over. No further actions can be made";
                 }
                 else{
-                    int startRow = Integer.parseInt(params[0]);
-                    int startCol = letterToNum(params[1]);
-                    int endRow = Integer.parseInt(params[2]);
-                    int endCol = letterToNum(params[3]);
-                    ChessPosition start = new ChessPosition(startRow, startCol);
-                    ChessPosition end = new ChessPosition(endRow, endCol);
-                    ChessPiece.PieceType promo = null;
-                    if (currGame.getBoard().getPiece(start) == null){
-                        return "There is no piece at that location to move. Try again";
-                    }
-                    //check the piece, check if it has a promotion and have that equal promo
-                    if(currColor == ChessGame.TeamColor.BLACK && endRow == 1) {
-                        ChessPiece.PieceType currPiece = currGame.getBoard().getPiece(start).getPieceType();
-                        if (currPiece.equals(ChessPiece.PieceType.PAWN)){
-                            Scanner scanner = new Scanner(System.in);
-                            var result = "";
-                            System.out.print("\nDesired Promotion Piece [QUEEN|KNIGHT|BISHOP|ROOK] >>> ");
-                            result = scanner.nextLine();
-                            promo = switch(result){
-                                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
-                                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
-                                case "ROOK" -> ChessPiece.PieceType.ROOK;
-                                default -> ChessPiece.PieceType.QUEEN;
-                            };
-                        }
-                    }
-                    if(currColor == ChessGame.TeamColor.WHITE && endRow == 8) {
-                        ChessPiece.PieceType currPiece = currGame.getBoard().getPiece(start).getPieceType();
-                        if (currPiece.equals(ChessPiece.PieceType.PAWN)){
-                            Scanner scanner = new Scanner(System.in);
-                            var result = "";
-                            System.out.print("\nDesired Promotion Piece [QUEEN|KNIGHT|BISHOP|ROOK] >>> ");
-                            result = scanner.nextLine();
-                            promo = switch(result){
-                                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
-                                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
-                                case "ROOK" -> ChessPiece.PieceType.ROOK;
-                                default -> ChessPiece.PieceType.QUEEN;
-                            };
-                        }
-                    }
-                    ChessMove move = new ChessMove(start, end, promo);
-                    if (currGame.getTeamTurn().equals(currColor)) {
-                        int gameID = numToID.get(Integer.parseInt(currGameNum));
-                        ws.makeMove(currAuthToken, gameID, move);
-                        String nextMove;
-                        if (currGame.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
-                            nextMove = "Black";
-                        } else {
-                            nextMove = "White";
-                        }
-                        return String.format("%s's turn.", nextMove);
-                    }
+                    return actuallyMakeMove(params);
                 }
             }
         }

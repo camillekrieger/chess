@@ -112,6 +112,23 @@ public class WebSocketService {
             return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid auth token.");
         }
     }
+    private ServerMessage actuallyMakeMove(ChessGame.TeamColor player, ChessGame.TeamColor currTurn, GameData gameData, ChessMove move, int gameID) throws DataAccessException, InvalidMoveException {
+        if(player.equals(currTurn)) {
+            Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
+            for (ChessMove m : moves) {
+                if (m.equals(move)) {
+                    ChessGame newGame = gameDAO.getGame(gameID).getGame();
+                    newGame.makeMove(move);
+                    gameDAO.updateChessGame(gameID, newGame);
+                    return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame);
+                }
+            }
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid move.");
+        }
+        else{
+            return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "it is not your turn.");
+        }
+    }
 
     public ServerMessage makeMove(int gameID, String authToken, ChessMove move) throws DataAccessException, InvalidMoveException {
         AuthData authData = authDAO.getAuth(authToken);
@@ -129,21 +146,7 @@ public class WebSocketService {
                 else{
                     return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "observers cannot make moves.");
                 }
-                if(player.equals(currTurn)) {
-                    Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
-                    for (ChessMove m : moves) {
-                        if (m.equals(move)) {
-                            ChessGame newGame = gameDAO.getGame(gameID).getGame();
-                            newGame.makeMove(move);
-                            gameDAO.updateChessGame(gameID, newGame);
-                            return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame);
-                        }
-                    }
-                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid move.");
-                }
-                else{
-                    return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "it is not your turn.");
-                }
+                return actuallyMakeMove(player, currTurn, gameData, move, gameID);
             }
             else{
                 return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");

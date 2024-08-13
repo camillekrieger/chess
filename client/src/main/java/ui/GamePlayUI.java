@@ -39,14 +39,6 @@ public class GamePlayUI {
         }
     }
 
-    public void draw(ChessGame currGame) {
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        out.print(ERASE_SCREEN);
-        drawBoard(out, currGame);
-        out.print(RESET_BG_COLOR);
-        out.print(RESET_TEXT_COLOR);
-    }
-
     public void drawLegalMoves(ChessPosition start, Collection<ChessMove> validMoves, String color, ChessGame currGame){
         Collection<ChessPosition> positions = new ArrayList<>();
         for (ChessMove move : validMoves){
@@ -79,15 +71,7 @@ public class GamePlayUI {
             out.print(" ");
             boardColor = squareRow % 2 == 1;
             for (int boardCol = 8; boardCol > 0; boardCol--) {
-                for (ChessPosition pos : positions){
-                    if (pos.getRow() == squareRow && pos.getColumn() == boardCol){
-                        legalMove = true;
-                        break;
-                    }
-                    else{
-                        legalMove = false;
-                    }
-                }
+                legalMove = legalMove(positions, squareRow, boardCol);
                 if(squareRow == start.getRow() && boardCol == start.getColumn()){
                     out.print(SET_BG_COLOR_YELLOW);
                     printCharacter(out, currGame, squareRow, boardCol);
@@ -111,9 +95,20 @@ public class GamePlayUI {
         }
     }
 
+    private boolean legalMove(Collection<ChessPosition> positions, int squareRow, int boardCol){
+        boolean legalMove = false;
+        for (ChessPosition pos : positions){
+            if (pos.getRow() == squareRow && pos.getColumn() == boardCol){
+                legalMove = true;
+                break;
+            }
+        }
+        return legalMove;
+    }
+
     private void drawWhiteLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start, ChessGame currGame){
         boolean boardColor;
-        boolean legalMove = false;
+        boolean legalMove;
         for (int squareRow = 8; squareRow > 0; squareRow--) {
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
@@ -121,15 +116,7 @@ public class GamePlayUI {
             out.print(" ");
             boardColor = squareRow % 2 == 1;
             for (int boardCol = 1; boardCol <= GAME_BOARD_DIMENSIONS; boardCol++) {
-                for (ChessPosition pos : positions){
-                    if (pos.getRow() == squareRow && pos.getColumn() == boardCol){
-                        legalMove = true;
-                        break;
-                    }
-                    else{
-                        legalMove = false;
-                    }
-                }
+                legalMove = legalMove(positions, squareRow, boardCol);
                 if(squareRow == start.getRow() && boardCol == start.getColumn()){
                     out.print(SET_BG_COLOR_YELLOW);
                     printCharacter(out, currGame, squareRow, boardCol);

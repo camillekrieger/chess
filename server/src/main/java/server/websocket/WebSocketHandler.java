@@ -59,58 +59,58 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(int gameID, String authToken, Session session, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
-        boolean resignedGame = service.gameDAO.getGame(gameID).getGame().isGameOver();
+    private void makeMove(int id, String authToken, Session session, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
+        boolean resignedGame = service.gameDAO.getGame(id).getGame().isGameOver();
         if (resignedGame) {
             ErrorMessage msg = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Game Over. No more moves can be made.");
             String json = new Gson().toJson(msg);
             sendMessage(json, session);
         }
         else {
-            ServerMessage message = service.makeMove(gameID, authToken, move);
+            ServerMessage message = service.makeMove(id, authToken, move);
             if (message.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
                 String json = new Gson().toJson(message);
                 sendMessage(json, session);
             } else {
                 String json = new Gson().toJson(message);
                 sendMessage(json, session);
-                broadcastMessage(gameID, json, session);
-                String notifyMessage = service.notifyMakeMove(gameID, authToken, move);
+                broadcastMessage(id, json, session);
+                String notifyMessage = service.notifyMakeMove(id, authToken, move);
                 NotificationMessage nm = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notifyMessage);
                 String notifyJson = new Gson().toJson(nm);
-                broadcastMessage(gameID, notifyJson, session);
+                broadcastMessage(id, notifyJson, session);
                 //need to still check if in check, checkmate, or stalemate
-                if (service.notifyCheckmate(gameID)){
-                    String color = null;
-                    if(service.getGame(gameID).getWhiteUsername().equals(service.getUsername(authToken))){
-                        color = "White";
+                if (service.notifyCheckmate(id)){
+                    String col = null;
+                    if(service.getGame(id).getWhiteUsername().equals(service.getUsername(authToken))){
+                        col = "White";
                     }
-                    else if(service.getGame(gameID).getBlackUsername().equals(service.getUsername(authToken))){
-                        color = "Black";
+                    else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
+                        col = "Black";
                     }
-                    NotificationMessage nm2 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in checkmate.", color));
+                    NotificationMessage nm2 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in checkmate.", col));
                     String nnJson = new Gson().toJson(nm2);
                     sendMessage(nnJson, session);
-                    broadcastMessage(gameID, nnJson, session);
+                    broadcastMessage(id, nnJson, session);
                 }
-                else if (service.notifyCheck(gameID)){
-                    String color = null;
-                    if(service.getGame(gameID).getWhiteUsername().equals(service.getUsername(authToken))){
-                        color = "Black";
+                else if (service.notifyCheck(id)){
+                    String col = null;
+                    if(service.getGame(id).getWhiteUsername().equals(service.getUsername(authToken))){
+                        col = "Black";
                     }
-                    else if(service.getGame(gameID).getBlackUsername().equals(service.getUsername(authToken))){
-                        color = "White";
+                    else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
+                        col = "White";
                     }
-                    NotificationMessage nm1 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in check.", color));
+                    NotificationMessage nm1 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in check.", col));
                     String newJson = new Gson().toJson(nm1);
                     sendMessage(newJson, session);
-                    broadcastMessage(gameID, newJson, session);
+                    broadcastMessage(id, newJson, session);
                 }
-                else if (service.notifyStalemate(gameID)){
+                else if (service.notifyStalemate(id)){
                     NotificationMessage nm3 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game in stalemate.");
                     String nnnJson = new Gson().toJson(nm3);
                     sendMessage(nnnJson, session);
-                    broadcastMessage(gameID, nnnJson, session);
+                    broadcastMessage(id, nnnJson, session);
                 }
             }
         }
