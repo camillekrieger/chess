@@ -112,14 +112,14 @@ public class WebSocketService {
             return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid auth token.");
         }
     }
-    private ServerMessage actuallyMakeMove(ChessGame.TeamColor player, ChessGame.TeamColor currTurn, GameData gameData, ChessMove move, int gameID) throws DataAccessException, InvalidMoveException {
-        if(player.equals(currTurn)) {
-            Collection<ChessMove> moves = gameData.getGame().validMoves(move.getStartPosition());
-            for (ChessMove m : moves) {
-                if (m.equals(move)) {
-                    ChessGame newGame = gameDAO.getGame(gameID).getGame();
-                    newGame.makeMove(move);
-                    gameDAO.updateChessGame(gameID, newGame);
+    private ServerMessage actuallyMakeMove(ChessGame.TeamColor p, ChessGame.TeamColor c, GameData g, ChessMove m, int id) throws DataAccessException, InvalidMoveException {
+        if(p.equals(c)) {
+            Collection<ChessMove> moves = g.getGame().validMoves(m.getStartPosition());
+            for (ChessMove mov : moves) {
+                if (mov.equals(m)) {
+                    ChessGame newGame = gameDAO.getGame(id).getGame();
+                    newGame.makeMove(m);
+                    gameDAO.updateChessGame(id, newGame);
                     return new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame);
                 }
             }

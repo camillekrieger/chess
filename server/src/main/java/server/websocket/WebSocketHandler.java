@@ -88,8 +88,8 @@ public class WebSocketHandler {
                     else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
                         col = "Black";
                     }
-                    NotificationMessage nm2 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in checkmate.", col));
-                    String nnJson = new Gson().toJson(nm2);
+                    NotificationMessage n = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in checkmate", col));
+                    String nnJson = new Gson().toJson(n);
                     sendMessage(nnJson, session);
                     broadcastMessage(id, nnJson, session);
                 }
@@ -101,8 +101,8 @@ public class WebSocketHandler {
                     else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
                         col = "White";
                     }
-                    NotificationMessage nm1 = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in check.", col));
-                    String newJson = new Gson().toJson(nm1);
+                    NotificationMessage m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in check", col));
+                    String newJson = new Gson().toJson(m);
                     sendMessage(newJson, session);
                     broadcastMessage(id, newJson, session);
                 }
