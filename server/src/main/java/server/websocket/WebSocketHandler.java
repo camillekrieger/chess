@@ -81,14 +81,14 @@ public class WebSocketHandler {
                 broadcastMessage(id, notifyJson, session);
                 //need to still check if in check, checkmate, or stalemate
                 if (service.notifyCheckmate(id)){
-                    String col = null;
+                    String c = null;
                     if(service.getGame(id).getWhiteUsername().equals(service.getUsername(authToken))){
-                        col = "White";
+                        c = "White";
                     }
                     else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
-                        col = "Black";
+                        c = "Black";
                     }
-                    NotificationMessage n = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in checkmate", col));
+                    NotificationMessage n = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,String.format("%s in checkmate", c));
                     String nnJson = new Gson().toJson(n);
                     sendMessage(nnJson, session);
                     broadcastMessage(id, nnJson, session);

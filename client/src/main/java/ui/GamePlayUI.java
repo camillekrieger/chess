@@ -63,7 +63,7 @@ public class GamePlayUI {
 
     private void drawBlackLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start, ChessGame currGame){
         boolean boardColor;
-        boolean legalMove = false;
+        boolean legalMove;
         for (int squareRow = 1; squareRow <= GAME_BOARD_DIMENSIONS; squareRow++) {
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" ");
@@ -94,21 +94,21 @@ public class GamePlayUI {
         return legalMove;
     }
 
-    private boolean getBoardColor(boolean boardColor, boolean legalMove, int squareRow, int boardCol, ChessPosition start, ChessGame currGame, PrintStream out){
-        if(squareRow == start.getRow() && boardCol == start.getColumn()){
+    private boolean getBoardColor(boolean b, boolean l, int s, int boardCol, ChessPosition start, ChessGame c, PrintStream out){
+        if(s == start.getRow() && boardCol == start.getColumn()){
             out.print(SET_BG_COLOR_YELLOW);
-            printCharacter(out, currGame, squareRow, boardCol);
-            boardColor = !boardColor;
+            printCharacter(out, c, s, boardCol);
+            b = !b;
         }
-        else if (legalMove) {
+        else if (l) {
             out.print(SET_BG_COLOR_GREEN);
-            printCharacter(out, currGame, squareRow, boardCol);
-            boardColor = !boardColor;
+            printCharacter(out, c, s, boardCol);
+            b = !b;
         }
         else {
-            boardColor = drawSquare(boardColor, out, currGame, squareRow, boardCol);
+            b = drawSquare(b, out, c, s, boardCol);
         }
-        return boardColor;
+        return b;
     }
 
     private void drawWhiteLegal(PrintStream out, Collection<ChessPosition> positions, ChessPosition start, ChessGame currGame){
@@ -194,14 +194,6 @@ public class GamePlayUI {
             out.print(" ");
             out.println();
         }
-    }
-
-    private static void drawHorizontalLine(PrintStream out){
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(EMPTY.repeat(GAME_BOARD_DIMENSIONS + 2));
-        out.print(SET_BG_COLOR_LIGHT_GREY);
-        out.print(SET_TEXT_COLOR_BLACK);
-        out.println();
     }
 
     private static void drawSquares(PrintStream out, ChessGame game){

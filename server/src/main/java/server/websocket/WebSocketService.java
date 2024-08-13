@@ -112,7 +112,7 @@ public class WebSocketService {
             return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid auth token.");
         }
     }
-    private ServerMessage actuallyMakeMove(ChessGame.TeamColor p, ChessGame.TeamColor c, GameData g, ChessMove m, int id) throws DataAccessException, InvalidMoveException {
+    private ServerMessage aMM(ChessGame.TeamColor p, ChessGame.TeamColor c, GameData g, ChessMove m, int id) throws DataAccessException, InvalidMoveException {
         if(p.equals(c)) {
             Collection<ChessMove> moves = g.getGame().validMoves(m.getStartPosition());
             for (ChessMove mov : moves) {
@@ -146,7 +146,7 @@ public class WebSocketService {
                 else{
                     return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "observers cannot make moves.");
                 }
-                return actuallyMakeMove(player, currTurn, gameData, move, gameID);
+                return aMM(player, currTurn, gameData, move, gameID);
             }
             else{
                 return new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "invalid game id.");
