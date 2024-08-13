@@ -96,10 +96,10 @@ public class WebSocketHandler {
                 else if (service.notifyCheck(id)){
                     String col = null;
                     if(service.getGame(id).getWhiteUsername().equals(service.getUsername(authToken))){
-                        col = "Black";
+                        col = service.getGame(id).getBlackUsername();
                     }
                     else if(service.getGame(id).getBlackUsername().equals(service.getUsername(authToken))){
-                        col = "White";
+                        col = service.getGame(id).getWhiteUsername();
                     }
                     NotificationMessage m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s in check", col));
                     String newJson = new Gson().toJson(m);
